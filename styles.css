@@ -1962,13 +1962,16 @@ footer {
     display: grid;
     grid-template-columns: 1fr 1fr;
     grid-template-rows: 1fr 1fr;
-    gap: 40px;
+    gap: 25px;
     position: relative;
     height: 600px;
+    align-items: center;
+    justify-items: center;
 }
 
 .quadrant-layout .feature-card {
-    max-width: 300px;
+    max-width: 320px;
+    min-width: 280px;
     padding: 30px;
     background: rgba(255, 255, 255, 0.02);
     border: 1px solid rgba(255, 255, 255, 0.05);
@@ -1979,34 +1982,35 @@ footer {
 .quadrant-layout .feature-card:hover {
     background: rgba(255, 255, 255, 0.04);
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-    transform: translateY(-5px);
+    transform: translateY(-3px);
 }
 
 .quadrant-layout .card-icon {
-    width: 52px;
-    height: 52px;
-    border-radius: 14px;
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
     background: rgba(66, 153, 225, 0.3);
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
 }
 
 .quadrant-layout .card-icon i {
-    font-size: 24px;
+    font-size: 20px;
     color: #4299e1;
 }
 
 .quadrant-layout .card-content h4 {
-    font-size: 19px;
+    font-size: 20px;
     margin-bottom: 10px;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.3px;
 }
 
 .quadrant-layout .card-content p {
     color: rgba(255, 255, 255, 0.65);
     line-height: 1.6;
+    font-size: 16px;
 }
 
 .quadrant-layout .top-left {
@@ -2038,16 +2042,18 @@ footer {
 }
 
 .quadrant-layout .showcase-visual {
-    max-width: 400px;
+    max-width: 380px;
+    min-width: 280px;
     border-radius: 12px;
     overflow: hidden;
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
 }
 
 .quadrant-layout .showcase-visual img {
     width: 100%;
-    height: auto;
+    height: 220px;
     object-fit: cover;
+    object-position: center;
 }
 
 .showcase-visual {
