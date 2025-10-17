@@ -1,88 +1,3 @@
-// 单页应用页面切换功能
-document.addEventListener('DOMContentLoaded', () => {
-    // 获取所有导航链接和页面内容
-    const navLinks = document.querySelectorAll('.nav-link[data-page]');
-    const pageContents = document.querySelectorAll('.page-content');
-    
-    // 页面切换函数
-    function switchPage(pageId) {
-        // 隐藏所有页面内容
-        pageContents.forEach(content => {
-            content.classList.remove('active');
-        });
-        
-        // 移除所有导航链接的active类
-        navLinks.forEach(link => {
-            link.classList.remove('active');
-        });
-        
-        // 显示目标页面
-        const targetPage = document.getElementById(`${pageId}-content`);
-        if (targetPage) {
-            setTimeout(() => {
-                targetPage.classList.add('active');
-            }, 100);
-        }
-        
-        // 添加active类到目标导航链接
-        const targetLink = document.querySelector(`.nav-link[data-page="${pageId}"]`);
-        if (targetLink) {
-            targetLink.classList.add('active');
-        }
-        
-        // 如果切换到首页，重新初始化背景图片
-        if (pageId === 'home') {
-            initHeroBackground();
-        }
-    }
-    
-    // 为导航链接添加点击事件
-    navLinks.forEach(link => {
-        link.addEventListener('click', (e) => {
-            e.preventDefault();
-            const pageId = link.getAttribute('data-page');
-            switchPage(pageId);
-            
-            // 关闭移动端菜单
-            hamburger.classList.remove('active');
-            navMenu.classList.remove('active');
-        });
-    });
-    
-    // 为带有data-page属性的按钮添加点击事件
-    document.querySelectorAll('.btn[data-page]').forEach(button => {
-        button.addEventListener('click', (e) => {
-            e.preventDefault();
-            const pageId = button.getAttribute('data-page');
-            switchPage(pageId);
-        });
-    });
-});
-
-// 初始化背景图片
-function initHeroBackground() {
-    const heroSection = document.querySelector('.hero');
-    if (heroSection) {
-        // 获取已存在的背景元素
-        const heroBg = heroSection.querySelector('.hero-bg');
-        const heroBgLayer = heroSection.querySelector('.hero-bg-layer');
-        
-        // 设置背景图片
-        if (heroBg) {
-            heroBg.style.backgroundImage = "url('images/EF13DDC8136672FB8AB3C77429A5FE14.jpg')";
-            heroBg.style.backgroundSize = 'cover';
-            heroBg.style.backgroundPosition = 'center';
-            heroBg.style.backgroundRepeat = 'no-repeat';
-        }
-        
-        // 延迟一点时间后开始渐显效果
-        setTimeout(() => {
-            if (heroBg) heroBg.style.opacity = '1';
-            if (heroBgLayer) heroBgLayer.style.opacity = '1';
-        }, 100);
-    }
-}
-
 // 移动端导航菜单切换
 const hamburger = document.querySelector('.hamburger');
 const navMenu = document.querySelector('.nav-menu');
@@ -117,8 +32,27 @@ window.addEventListener('load', () => {
     // 添加loaded类到body，使页面内容显示
     document.body.classList.add('loaded');
     
-    // 初始化背景图片
-    initHeroBackground();
+    // 使用HTML中已存在的背景元素
+    const heroSection = document.querySelector('.hero');
+    if (heroSection) {
+        // 获取已存在的背景元素
+        const heroBg = heroSection.querySelector('.hero-bg');
+        const heroBgLayer = heroSection.querySelector('.hero-bg-layer');
+        
+        // 设置背景图片
+        if (heroBg) {
+            heroBg.style.backgroundImage = "url('images/EF13DDC8136672FB8AB3C77429A5FE14.jpg')";
+            heroBg.style.backgroundSize = 'cover';
+            heroBg.style.backgroundPosition = 'center';
+            heroBg.style.backgroundRepeat = 'no-repeat';
+        }
+        
+        // 延迟一点时间后开始渐显效果
+        setTimeout(() => {
+            if (heroBg) heroBg.style.opacity = '1';
+            if (heroBgLayer) heroBgLayer.style.opacity = '1';
+        }, 100);
+    }
 });
 
 // 服务器状态模拟更新
@@ -228,8 +162,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// 平滑滚动效果 - 仅用于页面内锚点
-document.querySelectorAll('a[href^="#"]:not([data-page])').forEach(anchor => {
+// 平滑滚动效果
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function (e) {
         e.preventDefault();
         const target = document.querySelector(this.getAttribute('href'));

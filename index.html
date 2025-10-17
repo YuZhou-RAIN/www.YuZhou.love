@@ -18,19 +18,19 @@
                 </div>
                 <ul class="nav-menu">
                     <li class="nav-item">
-                        <a href="index.html" class="nav-link active">首页</a>
+                        <a href="#home" class="nav-link active" data-page="home">首页</a>
                     </li>
                     <li class="nav-item">
-                        <a href="features.html" class="nav-link">服务器特色</a>
+                        <a href="#features" class="nav-link" data-page="features">服务器特色</a>
                     </li>
                     <li class="nav-item">
-                        <a href="join.html" class="nav-link">加入指南</a>
+                        <a href="#join" class="nav-link" data-page="join">加入指南</a>
                     </li>
                     <li class="nav-item">
-                        <a href="rules.html" class="nav-link">服务器规则</a>
+                        <a href="#rules" class="nav-link" data-page="rules">服务器规则</a>
                     </li>
                     <li class="nav-item">
-                        <a href="contact.html" class="nav-link">联系我们</a>
+                        <a href="#contact" class="nav-link" data-page="contact">联系我们</a>
                     </li>
                 </ul>
                 <div class="hamburger">
@@ -44,88 +44,443 @@
 
     <!-- 主要内容 -->
     <main>
-        <!-- 主页横幅 -->
-        <section class="hero">
-            <div class="hero-bg"></div>
-            <div class="hero-bg-layer"></div>
-            <div class="hero-content">
-                <h1 class="hero-title">雨州 Minecraft 服务器</h1>
-                <p class="hero-subtitle">Java与基岩版互通，打造最佳游戏体验</p>
-                <div class="hero-buttons">
-                    <a href="join.html" class="btn btn-primary">
-                        <i class="fas fa-play"></i> 立即加入
-                    </a>
-                    <a href="features.html" class="btn btn-secondary">
-                        <i class="fas fa-info-circle"></i> 了解更多
-                    </a>
-                </div>
-                <div class="server-info">
-                    <div class="server-ip">
-                        <i class="fas fa-server"></i>
-                        <span>服务器地址: <strong>mc.yuzhou.love</strong></span>
+            <!-- 首页内容 -->
+            <div id="home-content" class="page-content active">
+                <!-- 主页横幅 -->
+                <section class="hero" id="hero">
+                    <div class="hero-bg"></div>
+                    <div class="hero-bg-layer"></div>
+                    <div class="hero-content">
+                        <h1 class="hero-title">雨州 Minecraft 服务器</h1>
+                        <p class="hero-subtitle">Java与基岩版互通，打造最佳游戏体验</p>
+                        <div class="hero-buttons">
+                            <a href="#join" class="btn btn-primary" data-page="join">
+                                <i class="fas fa-play"></i> 立即加入
+                            </a>
+                            <a href="#features" class="btn btn-secondary" data-page="features">
+                                <i class="fas fa-info-circle"></i> 了解更多
+                            </a>
+                        </div>
+                        <div class="server-info">
+                            <div class="server-ip">
+                                <i class="fas fa-server"></i>
+                                <span>服务器地址: <strong>mc.yuzhou.love</strong></span>
+                            </div>
+                            <div class="server-qq">
+                                <i class="fab fa-qq"></i>
+                                <span>QQ群: <strong>823557774</strong></span>
+                            </div>
+                        </div>
                     </div>
-                    <div class="server-qq">
-                        <i class="fab fa-qq"></i>
-                        <span>QQ群: <strong>823557774</strong></span>
-                    </div>
-                </div>
-            </div>
-        </section>
+                </section>
 
-        <!-- 服务器特点 -->
-        <section class="features">
-            <div class="container">
-                <h2 class="section-title">服务器特点</h2>
-                <div class="features-grid">
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <i class="fas fa-globe"></i>
+                <!-- 服务器特点 -->
+                <section class="features" id="features">
+                    <div class="container">
+                        <h2 class="section-title">服务器特点</h2>
+                        <div class="features-grid">
+                            <div class="feature-card">
+                                <div class="feature-icon">
+                                    <i class="fas fa-globe"></i>
+                                </div>
+                                <h3>跨平台支持</h3>
+                                <p>Java版与基岩版完全互通，无论使用什么设备都能一起游戏</p>
+                            </div>
+                            <div class="feature-card">
+                                <div class="feature-icon">
+                                    <i class="fas fa-shield-alt"></i>
+                                </div>
+                                <h3>安全稳定</h3>
+                                <p>24小时不间断运行，专业防护系统确保游戏数据安全</p>
+                            </div>
+                            <div class="feature-card">
+                                <div class="feature-icon">
+                                    <i class="fas fa-users"></i>
+                                </div>
+                                <h3>活跃社区</h3>
+                                <p>友好的玩家社区，定期举办活动，让游戏更有趣</p>
+                            </div>
                         </div>
-                        <h3>跨平台支持</h3>
-                        <p>Java版与基岩版完全互通，无论使用什么设备都能一起游戏</p>
                     </div>
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <i class="fas fa-shield-alt"></i>
-                        </div>
-                        <h3>安全稳定</h3>
-                        <p>24小时不间断运行，专业防护系统确保游戏数据安全</p>
-                    </div>
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <i class="fas fa-users"></i>
-                        </div>
-                        <h3>活跃社区</h3>
-                        <p>友好的玩家社区，定期举办活动，让游戏更有趣</p>
-                    </div>
-                </div>
-            </div>
-        </section>
+                </section>
 
-        <!-- 最新动态 -->
-        <section class="news">
-            <div class="container">
-                <h2 class="section-title">最新动态</h2>
-                <div class="news-grid">
-                    <div class="news-card">
-                        <div class="news-date">2025-09-21</div>
-                        <h3>服务器开始测试</h3>
-                        <p>雨州服务器正式开启测试阶段，欢迎各位玩家加入体验！Java版和基岩版玩家均可加入。</p>
+                <!-- 最新动态 -->
+                <section class="news">
+                    <div class="container">
+                        <h2 class="section-title">最新动态</h2>
+                        <div class="news-grid">
+                            <div class="news-card">
+                                <div class="news-date">2025-09-21</div>
+                                <h3>服务器开始测试</h3>
+                                <p>雨州服务器正式开启测试阶段，欢迎各位玩家加入体验！Java版和基岩版玩家均可加入。</p>
+                            </div>
+                            <div class="news-card">
+                                <div class="news-date">2025-10-17</div>
+                                <h3>主城正在建设</h3>
+                                <p>主城建设计划已启动，期待与各位玩家共同打造美丽家园！欢迎参与建设活动。</p>
+                            </div>
+                            <div class="news-card">
+                                <div class="news-date">2025-10-25</div>
+                                <h3>新功能上线</h3>
+                                <p>领地保护系统已全面升级，现在可以更方便地保护您的建筑和物品。</p>
+                            </div>
+                        </div>
                     </div>
-                    <div class="news-card">
-                        <div class="news-date">2025-10-17</div>
-                        <h3>主城正在建设</h3>
-                        <p>主城建设计划已启动，期待与各位玩家共同打造美丽家园！欢迎参与建设活动。</p>
+                </section>
+            </div>
+
+            <!-- 特色内容 -->
+            <div id="features-content" class="page-content">
+                <div class="page-header">
+                    <div class="container">
+                        <h1>服务器特色</h1>
+                        <p>探索我们服务器提供的独特功能和玩法</p>
                     </div>
-                    <div class="news-card">
-                        <div class="news-date">2025-10-25</div>
-                        <h3>新功能上线</h3>
-                        <p>领地保护系统已全面升级，现在可以更方便地保护您的建筑和物品。</p>
+                </div>
+
+                <div class="container">
+                    <div class="feature-detail">
+                        <div class="feature-detail-content">
+                            <h2>原版体验</h2>
+                            <p>我们坚持原版Minecraft的游戏体验，只添加必要的插件来保证服务器的稳定运行和玩家的游戏体验。没有复杂的游戏机制，让你回归Minecraft最初的乐趣。</p>
+                        </div>
+                    </div>
+
+                    <div class="feature-detail">
+                        <div class="feature-detail-content">
+                            <h2>友好社区</h2>
+                            <p>我们拥有一个友好、互助的玩家社区。无论你是新手还是老玩家，都能在这里找到志同道合的朋友。我们的管理团队会定期组织各种活动，增进玩家之间的交流。</p>
+                        </div>
+                    </div>
+
+                    <div class="feature-detail">
+                        <div class="feature-detail-content">
+                            <h2>稳定运行</h2>
+                            <p>服务器采用高性能硬件，24小时不间断运行，保证你随时都能加入游戏。我们定期备份世界数据，确保你的建筑和进度不会丢失。</p>
+                        </div>
+                    </div>
+
+                    <div class="feature-detail">
+                        <div class="feature-detail-content">
+                            <h2>公平环境</h2>
+                            <p>我们严格禁止作弊行为，有完善的反作弊系统。管理团队会公正处理违规行为，为所有玩家创造一个公平的游戏环境。</p>
+                        </div>
+                    </div>
+
+                    <div class="features-plugins">
+                        <h2>主要插件</h2>
+                        <div class="plugins-grid">
+                            <div class="plugin-card">
+                                <h3>WorldEdit</h3>
+                                <p>强大的世界编辑工具，帮助玩家更轻松地建造大型项目</p>
+                            </div>
+                            <div class="plugin-card">
+                                <h3>WorldGuard</h3>
+                                <p>领地保护插件，让你的建筑免受破坏</p>
+                            </div>
+                            <div class="plugin-card">
+                                <h3>EssentialsX</h3>
+                                <p>提供基础游戏命令和功能，增强游戏体验</p>
+                            </div>
+                            <div class="plugin-card">
+                                <h3>ChestShop</h3>
+                                <p>玩家商店系统，创建自己的经济帝国</p>
+                            </div>
+                            <div class="plugin-card">
+                                <h3> dynmap</h3>
+                                <p>在线地图，可以在浏览器中查看整个服务器世界</p>
+                            </div>
+                            <div class="plugin-card">
+                                <h3>DiscordSRV</h3>
+                                <p>连接游戏和Discord，实现跨平台聊天</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-        </section>
-    </main>
+
+            <!-- 加入内容 -->
+            <div id="join-content" class="page-content">
+                <div class="page-header">
+                    <div class="container">
+                        <h1>加入服务器</h1>
+                        <p>简单几步，即可开始你的冒险之旅</p>
+                    </div>
+                </div>
+
+                <div class="container">
+                    <div class="server-info">
+                        <h2>服务器信息</h2>
+                        <div class="server-details">
+                            <div class="server-detail">
+                                <h3>服务器地址</h3>
+                                <p>mc.yuzhou.love</p>
+                            </div>
+                            <div class="server-detail">
+                                <h3>游戏版本</h3>
+                                <p>Java版: 1.19.2+</p>
+                                <p>基岩版: 1.19.2+</p>
+                            </div>
+                            <div class="server-detail">
+                                <h3>游戏模式</h3>
+                                <p>生存</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="join-steps">
+                        <h2>如何加入</h2>
+                        <div class="steps">
+                            <div class="step">
+                                <div class="step-number">1</div>
+                                <div class="step-content">
+                                    <h3>启动Minecraft</h3>
+                                    <p>打开你的Minecraft游戏客户端</p>
+                                </div>
+                            </div>
+                            <div class="step">
+                                <div class="step-number">2</div>
+                                <div class="step-content">
+                                    <h3>添加服务器</h3>
+                                    <p>在多人游戏中点击"添加服务器"</p>
+                                </div>
+                            </div>
+                            <div class="step">
+                                <div class="step-number">3</div>
+                                <div class="step-content">
+                                    <h3>输入地址</h3>
+                                    <p>服务器地址填写: mc.yuzhou.love</p>
+                                </div>
+                            </div>
+                            <div class="step">
+                                <div class="step-number">4</div>
+                                <div class="step-content">
+                                    <h3>开始游戏</h3>
+                                    <p>点击"完成"，然后选择服务器加入</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="join-java">
+                        <h2>Java版加入指南</h2>
+                        <p>如果你使用Java版Minecraft，请按照以下步骤操作：</p>
+                        <ol>
+                            <li>确保你的Minecraft版本为1.19.2或更高</li>
+                            <li>启动Minecraft客户端</li>
+                            <li>点击"多人游戏"</li>
+                            <li>点击"添加服务器"</li>
+                            <li>在服务器地址栏输入: mc.yuzhou.love</li>
+                            <li>服务器名称可以自定义，如"雨州服务器"</li>
+                            <li>点击"完成"保存服务器</li>
+                            <li>从服务器列表中选择并加入服务器</li>
+                        </ol>
+                    </div>
+
+                    <div class="join-bedrock">
+                        <h2>基岩版加入指南</h2>
+                        <p>如果你使用基岩版Minecraft（手机、平板、Windows 10版等），请按照以下步骤操作：</p>
+                        <ol>
+                            <li>确保你的Minecraft版本为1.19.2或更高</li>
+                            <li>启动Minecraft客户端</li>
+                            <li>点击"游戏"</li>
+                            <li>点击"服务器"选项卡</li>
+                            <li>点击"添加服务器"</li>
+                            <li>在服务器地址栏输入: mc.yuzhou.love</li>
+                            <li>服务器端口: 19132</li>
+                            <li>服务器名称可以自定义，如"雨州服务器"</li>
+                            <li>点击"保存"服务器</li>
+                            <li>从服务器列表中选择并加入服务器</li>
+                        </ol>
+                    </div>
+
+                    <div class="join-faq">
+                        <h2>常见问题</h2>
+                        <div class="faq">
+                            <div class="faq-item">
+                                <h3>服务器是否需要正版验证？</h3>
+                                <p>是的，我们的服务器需要正版Minecraft账户才能加入。</p>
+                            </div>
+                            <div class="faq-item">
+                                <h3>服务器是否有白名单？</h3>
+                                <p>目前服务器没有白名单，任何人都可以直接加入。</p>
+                            </div>
+                            <div class="faq-item">
+                                <h3>服务器是否有模组要求？</h3>
+                                <p>不需要任何模组，请使用原版客户端加入。</p>
+                            </div>
+                            <div class="faq-item">
+                                <h3>如何获得帮助？</h3>
+                                <p>你可以在游戏中联系管理员，或者加入我们的QQ群获得帮助。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 规则内容 -->
+            <div id="rules-content" class="page-content">
+                <div class="page-header">
+                    <div class="container">
+                        <h1>服务器规则</h1>
+                        <p>为了维护良好的游戏环境，请所有玩家遵守以下规则</p>
+                    </div>
+                </div>
+
+                <div class="container">
+                    <div class="rules-intro">
+                        <p>欢迎来到雨州Minecraft服务器！为了确保所有玩家都能有一个愉快、公平的游戏体验，我们制定了一些基本规则。请仔细阅读并遵守这些规则，违反规则可能会导致警告、临时禁言甚至封禁。</p>
+                    </div>
+
+                    <div class="rules-section">
+                        <h2>基本规则</h2>
+                        <div class="rule-list">
+                            <div class="rule-item">
+                                <h3>禁止作弊</h3>
+                                <p>严禁使用任何形式的作弊客户端、模组或漏洞获取不公平优势。这包括但不限于飞行、透视、自动挖矿等。</p>
+                            </div>
+                            <div class="rule-item">
+                                <h3>尊重他人</h3>
+                                <p>请尊重所有玩家和管理员，禁止辱骂、歧视、骚扰或其他形式的不当行为。</p>
+                            </div>
+                            <div class="rule-item">
+                                <h3>禁止恶意破坏</h3>
+                                <p>严禁故意破坏他人建筑或公共设施。如发现违规行为，请及时向管理员报告。</p>
+                            </div>
+                            <div class="rule-item">
+                                <h3>禁止盗窃</h3>
+                                <p>严禁偷取其他玩家的物品。建议使用领地插件保护你的财产。</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="rules-section">
+                        <h2>建筑规则</h2>
+                        <div class="rule-list">
+                            <div class="rule-item">
+                                <h3>保持美观</h3>
+                                <p>请确保你的建筑美观、合理，避免建造影响他人游戏体验的建筑。</p>
+                            </div>
+                            <div class="rule-item">
+                                <h3>合理用地</h3>
+                                <p>请合理使用土地，避免过度占用公共资源。建议在远离主城的地方建造大型项目。</p>
+                            </div>
+                            <div class="rule-item">
+                                <h3>标记领地</h3>
+                                <p>请使用领地插件标记你的建筑区域，避免他人误入或破坏。</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="rules-section">
+                        <h2>PvP规则</h2>
+                        <div class="rule-list">
+                            <div class="rule-item">
+                                <h3>同意原则</h3>
+                                <p>只有在双方同意的情况下才能进行PvP对战。禁止强迫其他玩家参与PvP。</p>
+                            </div>
+                            <div class="rule-item">
+                                <h3>禁止蹲点</h3>
+                                <p>严禁在其他玩家复活点或家附近蹲点等待击杀。</p>
+                            </div>
+                            <div class="rule-item">
+                                <h3>公平对战</h3>
+                                <p>PvP对战应当公平进行，禁止利用游戏漏洞或作弊手段获取优势。</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="rules-punishment">
+                        <h2>违规处理</h2>
+                        <p>违反服务器规则的玩家将面临以下处罚：</p>
+                        <ul>
+                            <li>初次违规：口头警告</li>
+                            <li>再次违规：临时禁言（24小时）</li>
+                            <li>严重违规：临时封禁（3-7天）</li>
+                            <li>极严重违规：永久封禁</li>
+                        </ul>
+                        <p>管理员有权根据违规情节严重程度决定处罚措施。</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 联系内容 -->
+            <div id="contact-content" class="page-content">
+                <div class="page-header">
+                    <div class="container">
+                        <h1>联系我们</h1>
+                        <p>有任何问题或建议？欢迎与我们联系</p>
+                    </div>
+                </div>
+
+                <div class="container">
+                    <div class="contact-info">
+                        <h2>联系方式</h2>
+                        <div class="contact-methods">
+                            <div class="contact-method">
+                                <h3>QQ群</h3>
+                                <p>加入我们的QQ群，与国内玩家交流，获得游戏帮助</p>
+                                <p>群号: <a href="https://qm.qq.com/q/sgWsIw909q" target="_blank">823557774</a></p>
+                            </div>
+                            <div class="contact-method">
+                                <h3>游戏内</h3>
+                                <p>在游戏中直接联系管理员，使用 /mail 命令发送离线消息</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="contact-team">
+                        <h2>管理团队</h2>
+                        <div class="team-members">
+                            <div class="team-member">
+                                <div class="member-avatar">👑</div>
+                                <h3>服务器主</h3>
+                                <p>负责服务器整体运营和管理</p>
+                            </div>
+                            <div class="team-member">
+                                <div class="member-avatar">🛡️</div>
+                                <h3>管理员</h3>
+                                <p>负责维护服务器秩序和解决玩家问题</p>
+                            </div>
+                            <div class="team-member">
+                                <div class="member-avatar">🔧</div>
+                                <h3>技术员</h3>
+                                <p>负责服务器技术维护和插件开发</p>
+                            </div>
+                            <div class="team-member">
+                                <div class="member-avatar">🎨</div>
+                                <h3>建筑师</h3>
+                                <p>负责服务器建筑设计和城市规划</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="contact-form">
+                        <h2>反馈表单</h2>
+                        <p>如果你有任何建议或问题，请填写下面的表单，我们会尽快回复你。</p>
+                        <form class="feedback-form">
+                            <div class="form-group">
+                                <label for="name">你的游戏名称</label>
+                                <input type="text" id="name" name="name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="email">你的邮箱</label>
+                                <input type="email" id="email" name="email" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="subject">主题</label>
+                                <input type="text" id="subject" name="subject" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="message">你的消息</label>
+                                <textarea id="message" name="message" rows="5" required></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary">提交反馈</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </main>
 
     <!-- 页脚 -->
     <footer>
