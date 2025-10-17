@@ -32,28 +32,25 @@ window.addEventListener('load', () => {
     // 添加loaded类到body，使页面内容显示
     document.body.classList.add('loaded');
     
-    // 创建背景图片容器
+    // 使用HTML中已存在的背景元素
     const heroSection = document.querySelector('.hero');
     if (heroSection) {
-        // 创建背景图片元素
-        const bgImage = document.createElement('div');
-        bgImage.className = 'hero-bg-image';
-        
-        // 创建遮罩层元素
-        const bgOverlay = document.createElement('div');
-        bgOverlay.className = 'hero-bg-overlay';
+        // 获取已存在的背景元素
+        const heroBg = heroSection.querySelector('.hero-bg');
+        const heroBgLayer = heroSection.querySelector('.hero-bg-layer');
         
         // 设置背景图片
-        bgImage.style.backgroundImage = "url('images/EF13DDC8136672FB8AB3C77429A5FE14.jpg')";
-        
-        // 将背景图片和遮罩层添加到hero元素中
-        heroSection.appendChild(bgImage);
-        heroSection.appendChild(bgOverlay);
+        if (heroBg) {
+            heroBg.style.backgroundImage = "url('images/EF13DDC8136672FB8AB3C77429A5FE14.jpg')";
+            heroBg.style.backgroundSize = 'cover';
+            heroBg.style.backgroundPosition = 'center';
+            heroBg.style.backgroundRepeat = 'no-repeat';
+        }
         
         // 延迟一点时间后开始渐显效果
         setTimeout(() => {
-            bgImage.style.opacity = '1';
-            bgOverlay.style.opacity = '1';
+            if (heroBg) heroBg.style.opacity = '1';
+            if (heroBgLayer) heroBgLayer.style.opacity = '1';
         }, 100);
     }
 });
@@ -215,38 +212,13 @@ const backgroundImages = [
 
 function changeBackground() {
     const heroSection = document.querySelector('.hero');
-    const currentBgImage = heroSection.querySelector('.hero-bg-image');
+    const heroBg = heroSection.querySelector('.hero-bg');
     
-    if (heroSection && currentBgImage) {
+    if (heroSection && heroBg) {
         currentBgIndex = (currentBgIndex + 1) % backgroundImages.length;
         
-        // 创建新的背景图片元素
-        const newBgImage = document.createElement('div');
-        newBgImage.className = 'hero-bg-image';
-        newBgImage.style.opacity = '0';
-        
         // 设置新背景图片
-        newBgImage.style.backgroundImage = `url('${backgroundImages[currentBgIndex]}')`;
-        
-        // 将新背景图片添加到hero元素中
-        heroSection.appendChild(newBgImage);
-        
-        // 等待DOM更新后开始渐隐渐显效果
-        setTimeout(() => {
-            // 新背景图片渐显
-            newBgImage.style.opacity = '1';
-            
-            // 旧背景图片渐隐
-            currentBgImage.style.opacity = '0';
-            
-            // 渐隐渐显完成后移除旧背景图片
-            setTimeout(() => {
-                // 安全移除旧背景图片，检查是否仍然是hero的子元素
-                if (currentBgImage.parentNode === heroSection) {
-                    heroSection.removeChild(currentBgImage);
-                }
-            }, 2000);
-        }, 50);
+        heroBg.style.backgroundImage = `url('${backgroundImages[currentBgIndex]}')`;
     }
 }
 
