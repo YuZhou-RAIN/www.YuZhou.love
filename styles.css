@@ -117,7 +117,7 @@ body.loaded {
 /* 主页横幅 */
 .hero {
     height: 100vh;
-    background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.9));
+    background: linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.2));
     display: flex;
     align-items: center;
     justify-content: center;
@@ -662,7 +662,7 @@ footer {
 /* 页面标题 */
 .page-header {
     padding: 150px 0 80px;
-    background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.9)), url('images/EF13DDC8136672FB8AB3C77429A5FE14.jpg') no-repeat center center/cover;
+    background: linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.2)), url('images/EF13DDC8136672FB8AB3C77429A5FE14.jpg') no-repeat center center/cover;
     text-align: center;
 }
 
