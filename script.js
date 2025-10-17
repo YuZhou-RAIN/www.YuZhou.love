@@ -206,14 +206,23 @@ setInterval(changeBackground, 30000);
 // 鼠标移动视差效果
 document.addEventListener('mousemove', (e) => {
     const hero = document.querySelector('.hero');
-    if (hero) {
+    const heroBg = document.querySelector('.hero-bg');
+    const heroBgLayer = document.querySelector('.hero-bg-layer');
+    
+    if (hero && heroBg && heroBgLayer) {
         const x = e.clientX / window.innerWidth;
         const y = e.clientY / window.innerHeight;
         
-        // 微妙的视差效果
-        const moveX = (x - 0.5) * 10;
-        const moveY = (y - 0.5) * 10;
+        // 主背景图移动（较小幅度）
+        const moveX1 = (x - 0.5) * 15;
+        const moveY1 = (y - 0.5) * 15;
         
-        hero.style.backgroundPosition = `center calc(50% + ${moveY}px)`;
+        // 次背景层移动（较大幅度）
+        const moveX2 = (x - 0.5) * 25;
+        const moveY2 = (y - 0.5) * 25;
+        
+        // 应用移动效果
+        heroBg.style.transform = `translate(${moveX1}px, ${moveY1}px)`;
+        heroBgLayer.style.transform = `translate(${moveX2}px, ${moveY2}px)`;
     }
 });
