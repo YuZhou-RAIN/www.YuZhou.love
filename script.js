@@ -215,10 +215,16 @@ function changeBackground() {
     const heroBg = heroSection.querySelector('.hero-bg');
     
     if (heroSection && heroBg) {
-        currentBgIndex = (currentBgIndex + 1) % backgroundImages.length;
+        // 先淡出当前背景
+        heroBg.style.transition = 'opacity 1s ease-in-out';
+        heroBg.style.opacity = '0';
         
-        // 设置新背景图片
-        heroBg.style.backgroundImage = `url('${backgroundImages[currentBgIndex]}')`;
+        // 在淡出完成后切换图片并淡入
+        setTimeout(() => {
+            currentBgIndex = (currentBgIndex + 1) % backgroundImages.length;
+            heroBg.style.backgroundImage = `url('${backgroundImages[currentBgIndex]}')`;
+            heroBg.style.opacity = '1';
+        }, 1000);
     }
 }
 
