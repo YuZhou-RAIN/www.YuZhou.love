@@ -260,46 +260,40 @@ body.loaded {
     flex-direction: column;
     gap: 15px;
     animation: fadeInUp 1s ease 0.9s both;
+    align-items: center;
+    width: 100%;
+    max-width: 800px;
 }
 
 .server-ip,
 .server-qq {
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     gap: 10px;
     font-size: 1.2rem;
-    padding: 15px 25px;
+    padding: 15px 25px 15px 200px;
     background-color: rgba(0, 0, 0, 0.6);
     border-radius: 30px;
     backdrop-filter: blur(5px);
     border: 1px solid rgba(255, 255, 255, 0.15);
     color: #ffffff;
     transition: all 0.3s ease;
-    min-width: 220px;
+    width: 100%;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
-.server-ip:hover,
-.server-qq:hover {
-    background-color: rgba(0, 0, 0, 0.8);
-    border-color: rgba(255, 255, 255, 0.25);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+.server-qq {
+    padding: 15px 25px 15px 205px;
 }
+
+
 
 .server-ip i,
 .server-qq i,
 .server-address i {
     color: #2196f3;
     font-size: 1.3rem;
-}
-
-.server-address:hover {
-    background-color: rgba(0, 0, 0, 0.8);
-    border-color: rgba(255, 255, 255, 0.25);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
 }
 
 /* 区块标题 */
@@ -483,13 +477,36 @@ footer {
 
 .footer-section h3 {
     font-size: 1.3rem;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
     color: #ffffff;
+}
+
+.footer-section:first-child h3 {
+    margin-bottom: 5px;
+}
+
+.footer-section:first-child p {
+    margin-bottom: 0;
 }
 
 .footer-section p {
     color: #b0b0b0;
     margin-bottom: 10px;
+}
+
+.footer-section p:nth-child(3) {
+    padding-left: 3px;
+}
+
+.footer-section a {
+    color: #2196f3;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.footer-section a:hover {
+    color: #42a5f5;
+    text-decoration: underline;
 }
 
 .footer-section ul {
