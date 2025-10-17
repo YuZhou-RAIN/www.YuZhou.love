@@ -29,35 +29,32 @@ window.addEventListener('scroll', () => {
 
 // 页面加载动画
 window.addEventListener('load', () => {
+    // 添加loaded类到body，使页面内容显示
+    document.body.classList.add('loaded');
+    
     // 创建背景图片容器
     const heroSection = document.querySelector('.hero');
     if (heroSection) {
-        // 创建背景图片容器元素
-        const imageContainer = document.createElement('div');
-        imageContainer.className = 'hero-image-container';
+        // 创建背景图片元素
+        const bgImage = document.createElement('div');
+        bgImage.className = 'hero-bg-image';
         
-        // 预加载背景图片
-        const bgImage = new Image();
-        bgImage.src = 'images/EF13DDC8136672FB8AB3C77429A5FE14.jpg';
+        // 创建遮罩层元素
+        const bgOverlay = document.createElement('div');
+        bgOverlay.className = 'hero-bg-overlay';
         
-        bgImage.onload = function() {
-            // 图片加载完成后，设置背景图片容器的样式
-            imageContainer.style.backgroundImage = `url('${bgImage.src}')`;
-            imageContainer.style.backgroundSize = 'cover';
-            imageContainer.style.backgroundPosition = 'center';
-            imageContainer.style.backgroundRepeat = 'no-repeat';
-            
-            // 将背景图片容器添加到hero元素中
-            heroSection.appendChild(imageContainer);
-            
-            // 设置body为loaded状态，触发渐显效果
-            document.body.classList.add('loaded');
-        };
+        // 设置背景图片
+        bgImage.style.backgroundImage = "url('images/EF13DDC8136672FB8AB3C77429A5FE14.jpg')";
         
-        // 如果图片已经缓存，立即执行
-        if (bgImage.complete) {
-            bgImage.onload();
-        }
+        // 将背景图片和遮罩层添加到hero元素中
+        heroSection.appendChild(bgImage);
+        heroSection.appendChild(bgOverlay);
+        
+        // 延迟一点时间后开始渐显效果
+        setTimeout(() => {
+            bgImage.style.opacity = '1';
+            bgOverlay.style.opacity = '1';
+        }, 100);
     }
 });
 
@@ -218,50 +215,38 @@ const backgroundImages = [
 
 function changeBackground() {
     const heroSection = document.querySelector('.hero');
-    const currentImageContainer = heroSection.querySelector('.hero-image-container');
+    const currentBgImage = heroSection.querySelector('.hero-bg-image');
     
-    if (heroSection && currentImageContainer) {
+    if (heroSection && currentBgImage) {
         currentBgIndex = (currentBgIndex + 1) % backgroundImages.length;
         
-        // 预加载新背景图片
-        const newBgImage = new Image();
-        newBgImage.src = backgroundImages[currentBgIndex];
+        // 创建新的背景图片元素
+        const newBgImage = document.createElement('div');
+        newBgImage.className = 'hero-bg-image';
+        newBgImage.style.opacity = '0';
         
-        // 创建新的背景图片容器
-        const newImageContainer = document.createElement('div');
-        newImageContainer.className = 'hero-image-container';
-        newImageContainer.style.opacity = '0';
-        newImageContainer.style.transition = 'opacity 1.5s ease';
+        // 设置新背景图片
+        newBgImage.style.backgroundImage = `url('${backgroundImages[currentBgIndex]}')`;
         
-        newBgImage.onload = function() {
-            // 图片加载完成后设置新背景图片容器的样式
-            newImageContainer.style.backgroundImage = `url('${newBgImage.src}')`;
-            newImageContainer.style.backgroundSize = 'cover';
-            newImageContainer.style.backgroundPosition = 'center';
-            newImageContainer.style.backgroundRepeat = 'no-repeat';
+        // 将新背景图片添加到hero元素中
+        heroSection.appendChild(newBgImage);
+        
+        // 等待DOM更新后开始渐隐渐显效果
+        setTimeout(() => {
+            // 新背景图片渐显
+            newBgImage.style.opacity = '1';
             
-            // 将新背景图片容器添加到hero元素中
-            heroSection.appendChild(newImageContainer);
+            // 旧背景图片渐隐
+            currentBgImage.style.opacity = '0';
             
-            // 等待DOM更新后开始渐隐渐显效果
+            // 渐隐渐显完成后移除旧背景图片
             setTimeout(() => {
-                // 新背景图片渐显
-                newImageContainer.style.opacity = '1';
-                
-                // 旧背景图片渐隐
-                currentImageContainer.style.opacity = '0';
-                
-                // 渐隐渐显完成后移除旧背景图片容器
-                setTimeout(() => {
-                    heroSection.removeChild(currentImageContainer);
-                }, 1500);
-            }, 50);
-        };
-        
-        // 如果图片已经缓存，立即执行
-        if (newBgImage.complete) {
-            newBgImage.onload();
-        }
+                // 安全移除旧背景图片，检查是否仍然是hero的子元素
+                if (currentBgImage.parentNode === heroSection) {
+                    heroSection.removeChild(currentBgImage);
+                }
+            }, 2000);
+        }, 50);
     }
 }
 
