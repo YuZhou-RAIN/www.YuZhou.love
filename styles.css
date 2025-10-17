@@ -326,7 +326,8 @@ body.loaded {
     gap: 30px;
 }
 
-.feature-card {
+/* 服务器特点部分的卡片样式 */
+.features-grid .feature-card {
     background: rgba(255, 255, 255, 0.95);
     border-radius: 12px;
     padding: 30px;
@@ -340,7 +341,7 @@ body.loaded {
     height: 100%;
 }
 
-.feature-card:hover {
+.features-grid .feature-card:hover {
     transform: translateY(-10px);
     box-shadow: 0 20px 30px rgba(0, 0, 0, 0.3);
     border-color: rgba(33, 150, 243, 0.3);
@@ -359,13 +360,13 @@ body.loaded {
     font-size: 2rem;
 }
 
-.feature-card h3 {
+.features-grid .feature-card h3 {
     font-size: 1.5rem;
     margin-bottom: 15px;
     color: #ffffff;
 }
 
-.feature-card p {
+.features-grid .feature-card p {
     color: #b0b0b0;
 }
 
@@ -1954,15 +1955,7 @@ footer {
     margin: 0;
 }
 
-.showcase-content {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 50px;
-    align-items: flex-start;
-    margin-top: 40px;
-}
-
-/* 网格布局 - 按照用户要求调整比例 */
+/* 四象限布局 - 集中管理所有相关样式 */
 .quadrant-layout {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -1973,7 +1966,31 @@ footer {
     height: 600px;
 }
 
-/* 图片尺寸设置 - 确保图片1和图片2尺寸一致 */
+/* 象限内卡片样式 - 统一管理 */
+.quadrant-layout .feature-card {
+    background: rgba(0, 0, 0, 0.7);
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: all 0.3s ease;
+    
+    /* 尺寸控制 - 确保卡片1和卡片2高度一致 */
+    width: 100%;
+    height: 100%;
+    min-height: 120px;
+    max-height: 120px;
+    
+    /* 布局控制 */
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px;
+    box-sizing: border-box;
+    margin: 0;
+}
+
+/* 象限内图片样式 - 确保图片1和图片2尺寸一致 */
 .quadrant-layout .showcase-visual img {
     width: 100%;
     height: 100%;
@@ -1981,55 +1998,68 @@ footer {
     border-radius: 12px;
 }
 
-/* 确保所有feature-card样式统一 */
-.quadrant-layout .feature-card {
-    height: 100%;
-    min-height: 120px;
-    max-height: 120px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 20px;
-    box-sizing: border-box;
-    margin: 0;
-}
-
-/* 明确指定卡片1和卡片2的样式，确保它们上下高度完全一致 */
-.quadrant-layout .top-left.feature-card,
-.quadrant-layout .bottom-right.feature-card {
-    height: 120px;
-    min-height: 120px;
-    max-height: 120px;
-    padding: 20px;
-    box-sizing: border-box;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
-
-/* 确保卡片内图标和内容区域样式一致 */
+/* 卡片内部元素样式 */
 .quadrant-layout .feature-card .card-icon {
     margin-right: 15px;
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(66, 153, 225, 0.3);
+    border-radius: 10px;
+    color: #4299e1;
+    font-size: 18px;
 }
 
 .quadrant-layout .feature-card .card-content {
     flex: 1;
 }
 
-.feature-card {
+.quadrant-layout .feature-card .card-content h4 {
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0 0 3px 0;
+    color: #ffffff;
+    letter-spacing: 0.3px;
+}
+
+.quadrant-layout .feature-card .card-content p {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.8);
+    margin: 0;
+    line-height: 1.4;
+}
+
+/* 平台徽章样式 */
+.platform-badges {
+    position: absolute;
+    bottom: 15px;
+    right: 15px;
+    display: flex;
+    gap: 10px;
+}
+
+.platform-badge {
+    padding: 6px 12px;
     background: rgba(0, 0, 0, 0.7);
-    border-radius: 12px;
-    padding: 20px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    transition: all 0.3s ease;
+    border-radius: 5px;
+    font-size: 0.8rem;
+    font-weight: 500;
     display: flex;
     align-items: center;
-    width: 100%;
-    height: 100%;
-    min-height: 120px;
-    margin: 0;
+    gap: 5px;
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.platform-badge.java {
+    color: #f89820;
+}
+
+.platform-badge.bedrock {
+    color: #71c55d;
 }
 
 .grid-item {
@@ -2203,6 +2233,7 @@ footer {
     }
 }
 
+/* 通用展示视觉元素样式 */
 .showcase-visual {
     position: relative;
     border-radius: 12px;
@@ -2214,8 +2245,9 @@ footer {
 
 .showcase-visual img {
     width: 100%;
-    height: auto;
-    border-radius: 20px;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 12px;
     transition: transform 0.3s ease;
 }
 
@@ -2223,6 +2255,7 @@ footer {
     transform: scale(1.05);
 }
 
+/* 平台徽章样式 */
 .platform-badges {
     position: absolute;
     top: 20px;
@@ -2258,87 +2291,6 @@ footer {
     font-size: 1.1rem;
 }
 
-/* 全平台互通部分的卡片样式最终调整 */
-.feature-card {
-    display: flex;
-    align-items: center;
-    padding: 20px 24px;
-    background: rgba(255, 255, 255, 0.02);
-    border-radius: 16px;
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    transition: all 0.3s ease;
-    margin-bottom: 16px;
-    /* 确保卡片内部元素垂直对齐一致 */
-    gap: 20px;
-}
-
-.feature-card .card-icon {
-    font-size: 40px;
-    color: #ffffff;
-    margin-right: 20px;
-    flex-shrink: 0;
-}
-
-.feature-card .card-content {
-    flex: 1;
-    text-align: left;
-}
-
-.feature-card .card-content h4 {
-    font-size: 18px;
-    font-weight: 600;
-    margin-bottom: 8px;
-    color: #ffffff;
-}
-
-.feature-card .card-content p {
-    font-size: 13px;
-    color: #ffffff;
-    line-height: 1.5;
-    opacity: 0.9;
-}
-
-.feature-card:hover {
-    background: rgba(255, 255, 255, 0.04);
-    transform: translateY(-1px);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-}
-
-.card-icon {
-    width: 52px;
-    height: 52px;
-    min-width: 52px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: rgba(66, 153, 225, 0.3);
-    border-radius: 14px;
-    color: #4299e1;
-    font-size: 24px;
-    /* 确保图标在容器中完美居中 */
-    line-height: 1;
-}
-
-.card-content {
-    flex: 1;
-}
-
-.card-content h4 {
-    font-size: 19px;
-    font-weight: 600;
-    margin: 0 0 5px 0;
-    color: #ffffff;
-    letter-spacing: 0.5px;
-}
-
-.card-content p {
-    font-size: 14px;
-    color: rgba(255, 255, 255, 0.65);
-    margin: 0;
-    line-height: 1.5;
-    letter-spacing: 0.3px;
-}
-
 /* 调整平台特性容器的布局 */
 .platform-features {
     display: flex;
@@ -2350,11 +2302,12 @@ footer {
 
 /* 响应式调整 */
 @media (max-width: 992px) {
-    .feature-card {
+    /* 四象限布局中的卡片响应式调整 */
+    .quadrant-layout .feature-card {
         padding: 18px 20px;
     }
     
-    .card-icon {
+    .quadrant-layout .feature-card .card-icon {
         width: 44px;
         height: 44px;
         min-width: 44px;
@@ -2363,22 +2316,23 @@ footer {
 }
 
 @media (max-width: 768px) {
-    .feature-card {
+    /* 四象限布局中的卡片响应式调整 */
+    .quadrant-layout .feature-card {
         padding: 16px;
     }
     
-    .card-icon {
+    .quadrant-layout .feature-card .card-icon {
         width: 40px;
         height: 40px;
         min-width: 40px;
         font-size: 18px;
     }
     
-    .card-content h4 {
+    .quadrant-layout .feature-card .card-content h4 {
         font-size: 16px;
     }
     
-    .card-content p {
+    .quadrant-layout .feature-card .card-content p {
         font-size: 13px;
     }
 }
@@ -2418,7 +2372,8 @@ footer {
     border: 1px solid rgba(68, 206, 243, 0.2);
 }
 
-.card-icon {
+/* 性能卡片图标样式 - 特定于performance-showcase部分 */
+.performance-card .card-icon {
     width: 60px;
     height: 60px;
     background: linear-gradient(135deg, #44CEF3, #79CBF5);
@@ -2575,7 +2530,8 @@ footer {
         padding: 20px;
     }
     
-    .card-icon {
+    /* 性能卡片图标响应式调整 */
+    .performance-card .card-icon {
         width: 50px;
         height: 50px;
         font-size: 1.2rem;
