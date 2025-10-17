@@ -1958,7 +1958,7 @@ footer {
 /* 四象限布局 - 集中管理所有相关样式 */
 .quadrant-layout {
     display: grid;
-    grid-template-columns: 1fr 4fr;
+    grid-template-columns: 1fr 1fr;
     grid-template-rows: auto 1fr auto;
     row-gap: 10px;
     column-gap: 30px;
