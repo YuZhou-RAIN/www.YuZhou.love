@@ -589,6 +589,13 @@ footer {
     .hero-title {
         font-size: 3.5rem;
     }
+    
+    /* 服务器信息框样式调整 - 左侧直角方形，右侧圆形 */
+    .server-ip, .server-qq {
+        border-radius: 0 30px 30px 0;
+        padding-left: 20px;
+        justify-content: flex-start;
+    }
 }
 
 @media screen and (max-width: 992px) {
@@ -737,6 +744,7 @@ footer {
     padding: 150px 0 80px;
     background: linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.2)), url('images/EF13DDC8136672FB8AB3C77429A5FE14.jpg') no-repeat center center/cover;
     text-align: center;
+    backdrop-filter: blur(5px);
 }
 
 .page-title {
@@ -1081,7 +1089,7 @@ footer {
 .faq-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 20px;
+    gap: 30px;
 }
 
 .faq-item {
@@ -1508,13 +1516,13 @@ footer {
     justify-content: center;
     color: white;
     font-size: 1.5rem;
-    margin: 10px 0;
+    margin: 15px 0;
 }
 
 .hardware-header h3 {
     font-size: 1.4rem;
     color: #ffffff;
-    margin: 10px 0;
+    margin: 15px 0;
     text-align: center;
 }
 
@@ -1682,6 +1690,73 @@ footer {
 
 .copy-btn:hover {
     background: rgba(68, 206, 243, 0.3);
+}
+
+/* 关于我们页面样式 */
+.contact-info-wrapper {
+    display: flex;
+    justify-content: center;
+    margin: 40px 0;
+}
+
+.contact-info-wrapper .contact-card {
+    max-width: 600px;
+    width: 100%;
+    padding: 40px;
+    background: rgba(20, 20, 20, 0.8);
+    border-radius: 20px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.contact-method {
+    display: flex;
+    align-items: center;
+    margin-bottom: 30px;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 15px;
+    transition: all 0.3s ease;
+}
+
+.contact-method:hover {
+    background: rgba(68, 206, 243, 0.1);
+    transform: translateY(-3px);
+}
+
+.contact-method:last-child {
+    margin-bottom: 0;
+}
+
+.method-icon {
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #44CEF3, #79CBF5);
+    border-radius: 15px;
+    color: white;
+    font-size: 1.5rem;
+    margin-right: 20px;
+    flex-shrink: 0;
+}
+
+.method-content {
+    flex: 1;
+    text-align: left;
+}
+
+.method-content h3 {
+    font-size: 1.3rem;
+    margin-bottom: 8px;
+    color: #ffffff;
+}
+
+.method-content p {
+    font-size: 1.2rem;
+    color: rgba(255, 255, 255, 0.8);
+    margin-bottom: 15px;
 }
 
 .team-section {
@@ -2547,7 +2622,7 @@ footer {
     flex-direction: column;
     align-items: center;
     min-width: 120px;
-    padding: 10px 0;
+    padding: 15px 0;
 }
 
 .hardware-header .card-icon {
@@ -2560,13 +2635,13 @@ footer {
     justify-content: center;
     color: white;
     font-size: 1.5rem;
-    margin: 10px 0;
+    margin: 15px 0;
 }
 
 .hardware-header h3 {
     font-size: 1.4rem;
     color: #ffffff;
-    margin: 10px 0;
+    margin: 15px 0;
     text-align: center;
 }
 
@@ -2678,6 +2753,13 @@ footer {
     border-radius: 20px;
     padding: 30px;
     border: 1px solid rgba(68, 206, 243, 0.2);
+    transition: all 0.3s ease;
+    transform-origin: center;
+}
+
+.uptime-banner:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
 }
 
 .uptime-stats {
@@ -2806,19 +2888,11 @@ footer {
         grid-template-columns: 1fr;
         gap: 30px;
     }
-    
-    .team-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
 }
 
 @media (max-width: 768px) {
     .contact-grid {
         grid-template-columns: repeat(2, 1fr);
-    }
-    
-    .team-grid {
-        grid-template-columns: 1fr;
     }
     
     .faq-grid {
@@ -2835,15 +2909,23 @@ footer {
         grid-template-columns: 1fr;
     }
     
-    .team-member {
-        padding: 20px;
-    }
-    
     .feedback-form {
         padding: 20px;
     }
     
     .info-card {
         padding: 20px;
+    }
+    
+    .contact-info-wrapper .contact-card {
+        padding: 25px;
+    }
+    
+    .method-content h3 {
+        font-size: 1.2rem;
+    }
+    
+    .method-content p {
+        font-size: 1.1rem;
     }
 }
