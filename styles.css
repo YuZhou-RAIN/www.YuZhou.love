@@ -2013,14 +2013,26 @@ footer {
 .showcase-features {
     display: flex;
     flex-direction: column;
-    gap: 25px;
+    gap: 20px;
+}
+
+/* 添加图标样式确保精确居中 */
+.feature-icon i {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
 }
 
 .feature-item {
     display: flex;
-    align-items: flex-start;
-    gap: 15px;
-    padding: 20px;
+    align-items: center;
+    gap: 10px;
+    padding: 15px 18px;
     background: rgba(255, 255, 255, 0.05);
     border-radius: 15px;
     border: 1px solid rgba(255, 255, 255, 0.1);
@@ -2034,28 +2046,33 @@ footer {
 }
 
 .feature-icon {
-    width: 50px;
-    height: 50px;
+    width: 40px;
+    height: 40px;
     background: linear-gradient(135deg, #44CEF3, #79CBF5);
     border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
     color: white;
-    font-size: 1.3rem;
+    font-size: 1.2rem;
     flex-shrink: 0;
+    position: relative;
+    overflow: hidden;
 }
 
 .feature-text h4 {
     font-size: 1.1rem;
     color: #ffffff;
     margin-bottom: 5px;
+    margin-top: 0;
+    text-align: left;
 }
 
 .feature-text p {
     color: rgba(255, 255, 255, 0.7);
     margin: 0;
     font-size: 0.95rem;
+    text-align: left;
 }
 
 /* 企业级性能展示区域 */
