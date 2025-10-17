@@ -2010,69 +2010,87 @@ footer {
     font-size: 1.1rem;
 }
 
-.showcase-features {
+/* 替换旧的展示特性样式，使用更现代的卡片式布局 */
+.platform-features {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 16px;
 }
 
-/* 添加图标样式确保精确居中 */
-.feature-icon i {
+.feature-card {
     display: flex;
     align-items: center;
-    justify-content: center;
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-}
-
-.feature-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 15px 18px;
+    padding: 20px;
     background: rgba(255, 255, 255, 0.05);
-    border-radius: 15px;
+    border-radius: 16px;
     border: 1px solid rgba(255, 255, 255, 0.1);
     transition: all 0.3s ease;
+    position: relative;
+    /* 确保卡片内部元素垂直对齐一致 */
+    gap: 16px;
 }
 
-.feature-item:hover {
+.feature-card:hover {
     background: rgba(255, 255, 255, 0.08);
     transform: translateY(-2px);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
 }
 
-.feature-icon {
-    width: 40px;
-    height: 40px;
-    background: linear-gradient(135deg, #44CEF3, #79CBF5);
-    border-radius: 12px;
+.card-icon {
+    width: 48px;
+    height: 48px;
+    min-width: 48px;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: white;
-    font-size: 1.2rem;
-    flex-shrink: 0;
-    position: relative;
-    overflow: hidden;
+    background: rgba(66, 153, 225, 0.2);
+    border-radius: 12px;
+    margin-right: 16px;
+    color: #4299e1;
+    font-size: 20px;
+    /* 确保图标在容器中完美居中，消除视觉上的间距不一致 */
+    line-height: 1;
 }
 
-.feature-text h4 {
-    font-size: 1.1rem;
+.card-content {
+    flex: 1;
+}
+
+.card-content h4 {
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0 0 6px 0;
     color: #ffffff;
-    margin-bottom: 5px;
-    margin-top: 0;
-    text-align: left;
 }
 
-.feature-text p {
+.card-content p {
+    font-size: 14px;
     color: rgba(255, 255, 255, 0.7);
     margin: 0;
-    font-size: 0.95rem;
-    text-align: left;
+    line-height: 1.5;
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+    .feature-card {
+        padding: 16px;
+    }
+    
+    .card-icon {
+        width: 40px;
+        height: 40px;
+        min-width: 40px;
+        font-size: 18px;
+        margin-right: 12px;
+    }
+    
+    .card-content h4 {
+        font-size: 16px;
+    }
+    
+    .card-content p {
+        font-size: 13px;
+    }
 }
 
 /* 企业级性能展示区域 */
