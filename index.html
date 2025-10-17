@@ -233,45 +233,45 @@
                             <div class="plugins-grid">
                                 <div class="plugin-card">
                                     <div class="plugin-icon">
-                                        <i class="fas fa-edit"></i>
-                                    </div>
-                                    <h3>WorldEdit</h3>
-                                    <p>强大的世界编辑工具，帮助玩家更轻松地建造大型项目</p>
-                                </div>
-                                <div class="plugin-card">
-                                    <div class="plugin-icon">
                                         <i class="fas fa-shield-alt"></i>
                                     </div>
-                                    <h3>WorldGuard</h3>
-                                    <p>领地保护插件，让你的建筑免受破坏</p>
+                                    <h3>CoreProtect</h3>
+                                    <p>强大的日志记录和回滚工具，保护服务器和玩家建筑</p>
                                 </div>
                                 <div class="plugin-card">
                                     <div class="plugin-icon">
-                                        <i class="fas fa-cogs"></i>
+                                        <i class="fas fa-map"></i>
+                                    </div>
+                                    <h3>Dynmap</h3>
+                                    <p>实时在线地图，可以在浏览器中查看整个服务器世界</p>
+                                </div>
+                                <div class="plugin-card">
+                                    <div class="plugin-icon">
+                                        <i class="fas fa-users"></i>
+                                    </div>
+                                    <h3>Geyser</h3>
+                                    <p>实现Java版和基岩版互通的核心插件</p>
+                                </div>
+                                <div class="plugin-card">
+                                    <div class="plugin-icon">
+                                        <i class="fas fa-home"></i>
                                     </div>
                                     <h3>EssentialsX</h3>
                                     <p>提供基础游戏命令和功能，增强游戏体验</p>
                                 </div>
                                 <div class="plugin-card">
                                     <div class="plugin-icon">
-                                        <i class="fas fa-store"></i>
+                                        <i class="fas fa-lock"></i>
+                                    </div>
+                                    <h3>WorldGuard</h3>
+                                    <p>领地保护插件，让你的建筑免受破坏</p>
+                                </div>
+                                <div class="plugin-card">
+                                    <div class="plugin-icon">
+                                        <i class="fas fa-coins"></i>
                                     </div>
                                     <h3>ChestShop</h3>
                                     <p>玩家商店系统，创建自己的经济帝国</p>
-                                </div>
-                                <div class="plugin-card">
-                                    <div class="plugin-icon">
-                                        <i class="fas fa-map"></i>
-                                    </div>
-                                    <h3>dynmap</h3>
-                                    <p>在线地图，可以在浏览器中查看整个服务器世界</p>
-                                </div>
-                                <div class="plugin-card">
-                                    <div class="plugin-icon">
-                                        <i class="fab fa-discord"></i>
-                                    </div>
-                                    <h3>DiscordSRV</h3>
-                                    <p>连接游戏和Discord，实现跨平台聊天</p>
                                 </div>
                             </div>
                         </div>
@@ -295,24 +295,34 @@
                     <section class="server-info-section">
                         <div class="container">
                             <div class="server-info-card">
-                                <div class="server-info-header">
-                                    <h2>服务器信息</h2>
-                                    <p>复制以下地址直接添加到你的游戏中</p>
-                                </div>
-                                <div class="server-info-content">
-                                    <div class="server-address">
-                                        <span class="address-label">服务器地址：</span>
-                                        <span class="address-value">mc.yuzhou.love</span>
-                                        <button class="copy-btn" data-copy="mc.yuzhou.love">
-                                            <i class="fas fa-copy"></i> 复制
-                                        </button>
+                                <h2>服务器信息</h2>
+                                <div class="info-grid">
+                                    <div class="info-item">
+                                        <div class="info-icon">
+                                            <i class="fas fa-server"></i>
+                                        </div>
+                                        <div class="info-content">
+                                            <h3>服务器地址</h3>
+                                            <p class="server-address">mc.yuzhou.love</p>
+                                            <button class="copy-btn" onclick="copyServerIP()">
+                                                <i class="fas fa-copy"></i> 复制
+                                            </button>
+                                        </div>
                                     </div>
-                                    <div class="server-qq">
-                                        <span class="qq-label">QQ群：</span>
-                                        <span class="qq-value">823557774</span>
-                                        <button class="copy-btn" data-copy="823557774">
-                                            <i class="fas fa-copy"></i> 复制
-                                        </button>
+                                    <div class="info-item">
+                                        <div class="info-icon">
+                                            <i class="fab fa-qq"></i>
+                                        </div>
+                                        <div class="info-content">
+                                            <h3>QQ群</h3>
+                                            <p class="server-qq">823557774</p>
+                                            <button class="copy-btn" onclick="copyQQGroup()">
+                                                <i class="fas fa-copy"></i> 复制
+                                            </button>
+                                            <a href="https://qm.qq.com/q/sgWsIw909q" class="join-qq-btn" target="_blank">
+                                                <i class="fas fa-user-plus"></i> 加入群聊
+                                            </a>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -320,81 +330,105 @@
                     </section>
 
                     <!-- Java版加入指南 -->
-                    <section class="join-guide-section">
+                    <section class="join-guide alt-bg">
                         <div class="container">
                             <h2 class="section-title">Java版加入指南</h2>
-                            <div class="join-steps">
-                                <div class="step">
-                                    <div class="step-number">1</div>
-                                    <div class="step-content">
-                                        <h3>启动Minecraft</h3>
-                                        <p>打开你的Minecraft Java版启动器，确保你的游戏版本在1.8-1.20之间。</p>
+                            <div class="guide-content">
+                                <div class="guide-steps">
+                                    <div class="step">
+                                        <div class="step-number">1</div>
+                                        <div class="step-content">
+                                            <h3>启动Minecraft Java版</h3>
+                                            <p>确保您已安装Minecraft Java版，并启动游戏客户端。</p>
+                                        </div>
+                                    </div>
+                                    <div class="step">
+                                        <div class="step-number">2</div>
+                                        <div class="step-content">
+                                            <h3>点击"多人游戏"</h3>
+                                            <p>在主菜单中，点击"多人游戏"按钮进入服务器列表。</p>
+                                        </div>
+                                    </div>
+                                    <div class="step">
+                                        <div class="step-number">3</div>
+                                        <div class="step-content">
+                                            <h3>添加服务器</h3>
+                                            <p>点击"添加服务器"按钮，准备填写服务器信息。</p>
+                                        </div>
+                                    </div>
+                                    <div class="step">
+                                        <div class="step-number">4</div>
+                                        <div class="step-content">
+                                            <h3>输入服务器地址</h3>
+                                            <p>在服务器地址栏中输入：<strong>mc.yuzhou.love</strong></p>
+                                        </div>
+                                    </div>
+                                    <div class="step">
+                                        <div class="step-number">5</div>
+                                        <div class="step-content">
+                                            <h3>完成加入</h3>
+                                            <p>点击"完成"按钮，然后选择服务器并点击"加入服务器"即可开始游戏。</p>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="step">
-                                    <div class="step-number">2</div>
-                                    <div class="step-content">
-                                        <h3>进入多人游戏</h3>
-                                        <p>在主菜单点击"多人游戏"，然后点击"添加服务器"。</p>
-                                    </div>
-                                </div>
-                                <div class="step">
-                                    <div class="step-number">3</div>
-                                    <div class="step-content">
-                                        <h3>输入服务器地址</h3>
-                                        <p>在服务器地址栏中输入 <code>mc.yuzhou.love</code>，服务器名称可以自定义。</p>
-                                    </div>
-                                </div>
-                                <div class="step">
-                                    <div class="step-number">4</div>
-                                    <div class="step-content">
-                                        <h3>完成加入</h3>
-                                        <p>点击"完成"，然后选择服务器并点击"加入服务器"即可开始游戏。</p>
-                                    </div>
+                                <div class="guide-image">
+                                    <img src="images/88444BB193BA619ADECB5341CF278E20.jpg" alt="Java版加入指南">
                                 </div>
                             </div>
                         </div>
                     </section>
 
                     <!-- 基岩版加入指南 -->
-                    <section class="join-guide-section alt-bg">
+                    <section class="join-guide">
                         <div class="container">
                             <h2 class="section-title">基岩版加入指南</h2>
-                            <div class="join-steps">
-                                <div class="step">
-                                    <div class="step-number">1</div>
-                                    <div class="step-content">
-                                        <h3>启动Minecraft</h3>
-                                        <p>打开你的Minecraft基岩版游戏，确保你的游戏版本在1.19-1.20之间。</p>
+                            <div class="guide-content">
+                                <div class="guide-steps">
+                                    <div class="step">
+                                        <div class="step-number">1</div>
+                                        <div class="step-content">
+                                            <h3>启动Minecraft基岩版</h3>
+                                            <p>确保您已安装Minecraft基岩版，并启动游戏客户端。</p>
+                                        </div>
+                                    </div>
+                                    <div class="step">
+                                        <div class="step-number">2</div>
+                                        <div class="step-content">
+                                            <h3>点击"游玩"</h3>
+                                            <p>在主菜单中，点击"游玩"按钮进入服务器列表。</p>
+                                        </div>
+                                    </div>
+                                    <div class="step">
+                                        <div class="step-number">3</div>
+                                        <div class="step-content">
+                                            <h3>点击"服务器"</h3>
+                                            <p>在游玩页面中，点击"服务器"选项卡。</p>
+                                        </div>
+                                    </div>
+                                    <div class="step">
+                                        <div class="step-number">4</div>
+                                        <div class="step-content">
+                                            <h3>添加服务器</h3>
+                                            <p>点击"添加服务器"按钮，准备填写服务器信息。</p>
+                                        </div>
+                                    </div>
+                                    <div class="step">
+                                        <div class="step-number">5</div>
+                                        <div class="step-content">
+                                            <h3>输入服务器地址</h3>
+                                            <p>在服务器地址栏中输入：<strong>mc.yuzhou.love</strong>，端口：<strong>19132</strong></p>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="step">
-                                    <div class="step-number">2</div>
-                                    <div class="step-content">
-                                        <h3>进入服务器选项</h3>
-                                        <p>在主菜单点击"游戏"，然后选择"服务器"选项卡。</p>
-                                    </div>
-                                </div>
-                                <div class="step">
-                                    <div class="step-number">3</div>
-                                    <div class="step-content">
-                                        <h3>添加服务器</h3>
-                                        <p>点击"添加服务器"，在服务器地址栏中输入 <code>mc.yuzhou.love</code>，服务器端口保持默认。</p>
-                                    </div>
-                                </div>
-                                <div class="step">
-                                    <div class="step-number">4</div>
-                                    <div class="step-content">
-                                        <h3>完成加入</h3>
-                                        <p>点击"保存"，然后选择服务器并点击"加入服务器"即可开始游戏。</p>
-                                    </div>
+                                <div class="guide-image">
+                                    <img src="images/88444BB193BA619ADECB5341CF278E20.jpg" alt="基岩版加入指南">
                                 </div>
                             </div>
                         </div>
                     </section>
 
                     <!-- 常见问题 -->
-                    <section class="faq-section">
+                    <section class="faq-section alt-bg">
                         <div class="container">
                             <h2 class="section-title">常见问题</h2>
                             <div class="faq-list">
@@ -406,9 +440,9 @@
                                     <div class="faq-answer">
                                         <p>请检查以下几点：</p>
                                         <ul>
-                                            <li>确保你的游戏版本在支持范围内</li>
+                                            <li>确保您的游戏版本在支持范围内</li>
                                             <li>检查服务器地址是否正确输入</li>
-                                            <li>确认你的网络连接正常</li>
+                                            <li>确认您的网络连接正常</li>
                                             <li>服务器可能正在维护，请稍后再试</li>
                                         </ul>
                                     </div>
@@ -419,7 +453,7 @@
                                         <i class="fas fa-chevron-down"></i>
                                     </div>
                                     <div class="faq-answer">
-                                        <p>我们的服务器支持正版和离线玩家同时游戏，无论你是否拥有正版Minecraft账号都可以加入。</p>
+                                        <p>我们的服务器支持正版和离线玩家同时游戏，无论您是否拥有正版Minecraft账号都可以加入。</p>
                                     </div>
                                 </div>
                                 <div class="faq-item">
@@ -437,11 +471,26 @@
                                         <i class="fas fa-chevron-down"></i>
                                     </div>
                                     <div class="faq-answer">
-                                        <p>你可以通过以下方式获得帮助：</p>
+                                        <p>您可以通过以下方式获得帮助：</p>
                                         <ul>
                                             <li>加入我们的QQ群：823557774</li>
                                             <li>在游戏中联系在线管理员</li>
                                             <li>通过"联系我们"页面发送消息</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="faq-item">
+                                    <div class="faq-question">
+                                        <h3>服务器有哪些插件？</h3>
+                                        <i class="fas fa-chevron-down"></i>
+                                    </div>
+                                    <div class="faq-answer">
+                                        <p>我们安装了多种插件以提升游戏体验，包括：</p>
+                                        <ul>
+                                            <li>领地保护插件</li>
+                                            <li>经济系统插件</li>
+                                            <li>传送插件</li>
+                                            <li>多种小游戏插件</li>
                                         </ul>
                                     </div>
                                 </div>
@@ -474,13 +523,6 @@
                                     </div>
                                     <h3>保护领地</h3>
                                     <p>使用木斧选择区域，使用"/claim"命令保护你的建筑，防止被他人破坏。</p>
-                                </div>
-                                <div class="tip-card">
-                                    <div class="tip-icon">
-                                        <i class="fas fa-coins"></i>
-                                    </div>
-                                    <h3>经济系统</h3>
-                                    <p>服务器有完善的经济系统，你可以通过出售资源、开设商店等方式赚取游戏币。</p>
                                 </div>
                             </div>
                         </div>
@@ -834,38 +876,38 @@
                                 </div>
                                 <div class="member-info">
                                     <h3>服务器主</h3>
-                                    <p class="member-role">服务器创始人</p>
-                                    <p class="member-desc">负责服务器整体运营和发展规划</p>
+                                    <p class="member-role">创始人 & 主管理员</p>
+                                    <p class="member-desc">负责服务器整体运营和管理，拥有最终决策权。</p>
                                 </div>
                             </div>
                             <div class="team-member">
                                 <div class="member-avatar">
-                                    <img src="images/avatar2.jpg" alt="管理员">
+                                    <img src="images/avatar2.jpg" alt="技术管理员">
                                 </div>
                                 <div class="member-info">
-                                    <h3>管理员</h3>
-                                    <p class="member-role">服务器管理</p>
-                                    <p class="member-desc">负责维护服务器秩序和解决玩家问题</p>
+                                    <h3>技术管理员</h3>
+                                    <p class="member-role">服务器维护 & 插件开发</p>
+                                    <p class="member-desc">负责服务器技术支持、插件开发和维护工作。</p>
                                 </div>
                             </div>
                             <div class="team-member">
                                 <div class="member-avatar">
-                                    <img src="images/avatar3.jpg" alt="技术员">
+                                    <img src="images/avatar3.jpg" alt="社区管理员">
                                 </div>
                                 <div class="member-info">
-                                    <h3>技术员</h3>
-                                    <p class="member-role">技术支持</p>
-                                    <p class="member-desc">负责服务器技术维护和插件开发</p>
+                                    <h3>社区管理员</h3>
+                                    <p class="member-role">社区管理 & 活动策划</p>
+                                    <p class="member-desc">负责社区管理、活动策划和玩家关系维护。</p>
                                 </div>
                             </div>
                             <div class="team-member">
                                 <div class="member-avatar">
-                                    <img src="images/avatar4.jpg" alt="建筑师">
+                                    <img src="images/avatar4.jpg" alt="建筑管理员">
                                 </div>
                                 <div class="member-info">
-                                    <h3>建筑师</h3>
-                                    <p class="member-role">建筑管理</p>
-                                    <p class="member-desc">负责服务器建筑设计和城市规划</p>
+                                    <h3>建筑管理员</h3>
+                                    <p class="member-role">建筑规划 & 地图设计</p>
+                                    <p class="member-desc">负责服务器建筑规划、地图设计和建筑审核。</p>
                                 </div>
                             </div>
                         </div>
@@ -873,14 +915,14 @@
 
                     <div class="contact-form">
                         <h2>反馈表单</h2>
-                        <p>如果你有任何建议或问题，请填写下面的表单，我们会尽快回复你。</p>
-                        <form class="feedback-form">
+                        <p>如果您有任何建议或问题，请填写下面的表单，我们会尽快回复您。</p>
+                        <form class="feedback-form" id="feedbackForm">
                             <div class="form-group">
-                                <label for="name">你的游戏名称</label>
-                                <input type="text" id="name" name="name" required>
+                                <label for="nickname">您的昵称</label>
+                                <input type="text" id="nickname" name="nickname" required>
                             </div>
                             <div class="form-group">
-                                <label for="email">你的邮箱</label>
+                                <label for="email">您的邮箱</label>
                                 <input type="email" id="email" name="email" required>
                             </div>
                             <div class="form-group">
@@ -894,11 +936,34 @@
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label for="message">你的消息</label>
+                                <label for="message">详细内容</label>
                                 <textarea id="message" name="message" rows="5" required></textarea>
                             </div>
                             <button type="submit" class="btn btn-primary">提交反馈</button>
                         </form>
+                    </div>
+                    <div class="feedback-info">
+                        <div class="info-card">
+                            <div class="info-icon">
+                                <i class="fas fa-info-circle"></i>
+                            </div>
+                            <h3>反馈说明</h3>
+                            <p>我们非常重视每一位玩家的意见和建议，您的反馈将帮助我们不断改进服务器，提供更好的游戏体验。</p>
+                        </div>
+                        <div class="info-card">
+                            <div class="info-icon">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <h3>处理时间</h3>
+                            <p>我们会在收到反馈后的24-48小时内进行处理，并通过邮件或QQ回复您。紧急问题请直接联系管理员。</p>
+                        </div>
+                        <div class="info-card">
+                            <div class="info-icon">
+                                <i class="fas fa-shield-alt"></i>
+                            </div>
+                            <h3>隐私保护</h3>
+                            <p>我们承诺保护您的隐私，您的个人信息仅用于处理反馈，不会泄露给第三方。</p>
+                        </div>
                     </div>
 
                     <div class="faq-section">
@@ -910,7 +975,7 @@
                                     <i class="fas fa-chevron-down"></i>
                                 </div>
                                 <div class="faq-answer">
-                                    <p>请参考"加入指南"页面，其中有详细的Java版和基岩版加入步骤。</p>
+                                    <p>您可以查看我们的<a href="join.html">加入指南</a>页面，其中有详细的Java版和基岩版加入步骤。简单来说，只需在游戏中添加服务器地址 mc.yuzhou.love 即可。</p>
                                 </div>
                             </div>
                             <div class="faq-item">
@@ -919,25 +984,25 @@
                                     <i class="fas fa-chevron-down"></i>
                                 </div>
                                 <div class="faq-answer">
-                                    <p>服务器支持Java版1.8-1.20和基岩版最新版本，使用Geyser插件实现互通。</p>
+                                    <p>我们的服务器支持Java版1.8-1.20版本，基岩版1.19-1.20版本。建议使用最新版本以获得最佳游戏体验。</p>
                                 </div>
                             </div>
                             <div class="faq-item">
                                 <div class="faq-question">
-                                    <h3>如何获得管理员帮助？</h3>
+                                    <h3>如何申请成为管理员？</h3>
                                     <i class="fas fa-chevron-down"></i>
                                 </div>
                                 <div class="faq-answer">
-                                    <p>你可以通过加入QQ群、在游戏中使用/mail命令发送离线消息或填写反馈表单来联系管理员。</p>
+                                    <p>我们定期会从活跃玩家中选拔管理员。首先需要在服务器中积极游戏，帮助其他玩家，维护服务器秩序。当有管理员招募时，我们会在QQ群和服务器内发布公告。</p>
                                 </div>
                             </div>
                             <div class="faq-item">
                                 <div class="faq-question">
-                                    <h3>服务器有备份吗？</h3>
+                                    <h3>服务器是否有赞助？</h3>
                                     <i class="fas fa-chevron-down"></i>
                                 </div>
                                 <div class="faq-answer">
-                                    <p>服务器每天自动备份，确保玩家数据安全。如需恢复数据，请联系管理员。</p>
+                                    <p>我们提供自愿赞助服务，赞助可以获得一些游戏内特权，但不会影响游戏平衡。所有赞助资金将用于服务器维护和升级。详情请联系管理员。</p>
                                 </div>
                             </div>
                             <div class="faq-item">
@@ -946,16 +1011,16 @@
                                     <i class="fas fa-chevron-down"></i>
                                 </div>
                                 <div class="faq-answer">
-                                    <p>你可以通过QQ群、游戏内举报命令或填写反馈表单来举报违规玩家，请提供相关证据。</p>
+                                    <p>如果您发现其他玩家违反服务器规则，可以通过以下方式举报：1）在QQ群中联系管理员；2）使用游戏内的举报命令；3）通过本页面的反馈表单提交。请提供相关证据，如截图或视频。</p>
                                 </div>
                             </div>
                             <div class="faq-item">
                                 <div class="faq-question">
-                                    <h3>服务器是否有经济系统？</h3>
+                                    <h3>服务器是否有备份？</h3>
                                     <i class="fas fa-chevron-down"></i>
                                 </div>
                                 <div class="faq-answer">
-                                    <p>是的，服务器有完整的经济系统，包括商店、拍卖行和玩家交易功能。</p>
+                                    <p>我们有完善的备份机制，每天会自动备份服务器数据。如果因意外情况导致数据丢失，我们可以恢复到最近的备份点。但建议玩家也自行备份重要的建筑和物品。</p>
                                 </div>
                             </div>
                         </div>
@@ -969,7 +1034,7 @@
         <div class="container">
             <div class="footer-content">
                 <div class="footer-section">
-                    <h3>雨州 Minecraft 服务器</h3>
+                    <h3>宇宙 Minecraft 服务器</h3>
                     <p>提供最佳的Minecraft游戏体验，Java与基岩版完全互通</p>
                 </div>
                 <div class="footer-section">
@@ -984,15 +1049,83 @@
                 <div class="footer-section">
                     <h3>联系我们</h3>
                     <p><i class="fas fa-server"></i> 服务器地址: mc.yuzhou.love</p>
-                    <p><i class="fab fa-qq"></i> QQ群: <a href="https://qm.qq.com/q/sgWsIw909q" target="_blank" style="color: #44CEF3;">823557774</a> <button class="copy-btn small" data-copy="823557774">复制</button></p>
+                    <p><i class="fab fa-qq"></i> QQ群: 823557774</p>
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2025 雨州 Minecraft 服务器 保留所有权利.</p>
+                <p>&copy; 2023 宇宙 Minecraft 服务器 保留所有权利.</p>
             </div>
         </div>
     </footer>
 
     <script src="script.js"></script>
+    <script>
+        // 复制按钮功能
+        document.querySelectorAll('.copy-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const textToCopy = this.getAttribute('data-copy');
+                navigator.clipboard.writeText(textToCopy).then(() => {
+                    const originalText = this.innerHTML;
+                    this.innerHTML = '<i class="fas fa-check"></i> 已复制';
+                    setTimeout(() => {
+                        this.innerHTML = originalText;
+                    }, 2000);
+                }).catch(err => {
+                    console.error('复制失败: ', err);
+                });
+            });
+        });
+
+        // FAQ折叠功能
+        document.querySelectorAll('.faq-question').forEach(question => {
+            question.addEventListener('click', function() {
+                const answer = this.nextElementSibling;
+                const icon = this.querySelector('i');
+                
+                // 切换答案显示
+                answer.classList.toggle('active');
+                
+                // 旋转图标
+                icon.classList.toggle('rotate');
+            });
+        });
+
+        // 表单提交处理
+        document.getElementById('feedbackForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // 获取表单数据
+            const formData = new FormData(this);
+            const name = formData.get('nickname');
+            const email = formData.get('email');
+            const type = formData.get('type');
+            const message = formData.get('message');
+            
+            // 这里可以添加实际的表单提交逻辑
+            // 例如发送到服务器或使用第三方服务
+            
+            // 显示成功消息
+            const successMessage = document.createElement('div');
+            successMessage.className = 'success-message';
+            successMessage.innerHTML = `
+                <div class="success-content">
+                    <i class="fas fa-check-circle"></i>
+                    <h3>反馈提交成功！</h3>
+                    <p>感谢您的反馈，我们会尽快处理并回复您。</p>
+                </div>
+            `;
+            
+            // 插入到表单前面
+            this.parentNode.insertBefore(successMessage, this);
+            
+            // 重置表单
+            this.reset();
+            
+            // 3秒后移除成功消息
+            setTimeout(() => {
+                successMessage.remove();
+            }, 3000);
+        });
+    </script>
 </body>
 </html>
