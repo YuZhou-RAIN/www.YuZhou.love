@@ -29,15 +29,8 @@ window.addEventListener('scroll', () => {
 
 // 页面加载动画
 window.addEventListener('load', () => {
-    // 首先设置body为loaded状态，触发背景显示
+    // 设置body为loaded状态，触发渐显效果
     document.body.classList.add('loaded');
-    
-    // 然后添加渐入效果
-    document.body.style.opacity = '0';
-    setTimeout(() => {
-        document.body.style.transition = 'opacity 0.8s ease';
-        document.body.style.opacity = '1';
-    }, 200);
 });
 
 // 服务器状态模拟更新

@@ -12,6 +12,13 @@ body {
     color: #e0e0e0;
     background-color: #0a0a0a;
     overflow-x: hidden;
+    opacity: 0;
+    transition: opacity 0.8s ease;
+}
+
+/* 页面加载后显示 */
+body.loaded {
+    opacity: 1;
 }
 
 /* 容器 */
@@ -117,6 +124,13 @@ body {
     text-align: center;
     position: relative;
     overflow: hidden;
+    opacity: 0;
+    transition: opacity 1s ease;
+}
+
+/* 页面加载后显示hero背景 */
+body.loaded .hero {
+    opacity: 1;
 }
 
 /* 鼠标跟随效果 */
