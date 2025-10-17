@@ -479,6 +479,7 @@ footer {
     font-size: 1.3rem;
     margin-bottom: 10px;
     color: #ffffff;
+    text-align: left;
 }
 
 .footer-section:first-child h3 {
@@ -487,6 +488,11 @@ footer {
 
 .footer-section:first-child p {
     margin-bottom: 0;
+    text-align: left;
+}
+
+.footer-section:first-child {
+    text-align: left;
 }
 
 .footer-section p {
