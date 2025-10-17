@@ -57,6 +57,15 @@ document.addEventListener('DOMContentLoaded', () => {
             switchPage(pageId);
         });
     });
+    
+    // 为页脚链接添加点击事件
+    document.querySelectorAll('footer a[data-page]').forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            const pageId = link.getAttribute('data-page');
+            switchPage(pageId);
+        });
+    });
 });
 
 // 初始化背景图片
