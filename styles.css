@@ -327,12 +327,18 @@ body.loaded {
 }
 
 .feature-card {
-    background-color: rgba(20, 20, 20, 0.8);
-    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 12px;
     padding: 30px;
-    text-align: center;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    max-width: 320px;
+    min-width: 280px;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 .feature-card:hover {
@@ -1957,110 +1963,194 @@ footer {
     margin-top: 40px;
 }
 
-/* 四象限布局 */
+/* 网格布局 - 图片大长方形，卡片小横线 */
 .quadrant-layout {
     display: grid;
     grid-template-columns: 1fr 1fr;
     grid-template-rows: 1fr 1fr;
-    gap: 25px;
-    position: relative;
+    gap: 30px;
+    margin-top: 40px;
     height: 600px;
+}
+
+.grid-item {
+    position: relative;
+}
+
+.image-container {
+    position: relative;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    height: 280px;
+}
+
+.image-container:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
+}
+
+.image-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+}
+
+/* 卡片头部样式 - 附着在图片上方 */
+.card-header {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.4) 70%, transparent 100%);
+    padding: 15px 20px;
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    z-index: 2;
+    display: flex;
     align-items: center;
-    justify-items: center;
+    gap: 15px;
 }
 
-.quadrant-layout .feature-card {
-    max-width: 320px;
-    min-width: 280px;
-    padding: 30px;
-    background: rgba(255, 255, 255, 0.02);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    border-radius: 12px;
-    transition: all 0.3s ease;
+/* 卡片底部样式 - 附着在图片下方 */
+.card-footer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(0deg, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.4) 70%, transparent 100%);
+    padding: 15px 20px;
+    backdrop-filter: blur(10px);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    gap: 15px;
 }
 
-.quadrant-layout .feature-card:hover {
-    background: rgba(255, 255, 255, 0.04);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-    transform: translateY(-3px);
-}
-
-.quadrant-layout .card-icon {
-    width: 48px;
-    height: 48px;
-    border-radius: 12px;
-    background: rgba(66, 153, 225, 0.3);
+/* 卡片图标样式 */
+.card-header .card-icon,
+.card-footer .card-icon {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 15px;
-}
-
-.quadrant-layout .card-icon i {
-    font-size: 20px;
+    background: rgba(66, 153, 225, 0.3);
+    border-radius: 10px;
     color: #4299e1;
+    font-size: 18px;
 }
 
-.quadrant-layout .card-content h4 {
-    font-size: 20px;
-    margin-bottom: 10px;
+/* 卡片内容样式 */
+.card-header .card-content,
+.card-footer .card-content {
+    flex: 1;
+}
+
+.card-header .card-content h4,
+.card-footer .card-content h4 {
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0 0 3px 0;
+    color: #ffffff;
     letter-spacing: 0.3px;
 }
 
-.quadrant-layout .card-content p {
-    color: rgba(255, 255, 255, 0.65);
-    line-height: 1.6;
-    font-size: 16px;
+.card-header .card-content p,
+.card-footer .card-content p {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.8);
+    margin: 0;
+    line-height: 1.4;
 }
 
-.quadrant-layout .top-left {
-    grid-column: 1;
-    grid-row: 1;
-    justify-self: start;
-    align-self: start;
+/* 平台徽章样式调整 */
+.card-footer .platform-badges {
+    position: static;
+    display: flex;
+    gap: 10px;
+    margin-left: auto;
 }
 
-.quadrant-layout .top-right {
-    grid-column: 2;
-    grid-row: 1;
-    justify-self: end;
-    align-self: start;
+.card-footer .platform-badge {
+    padding: 6px 12px;
+    font-size: 0.8rem;
 }
 
-.quadrant-layout .bottom-left {
-    grid-column: 1;
-    grid-row: 2;
-    justify-self: start;
-    align-self: end;
+/* 响应式设计 */
+@media (max-width: 992px) {
+    .grid-layout {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto;
+        gap: 20px;
+    }
+    
+    .image-container {
+        height: 250px;
+    }
+    
+    .card-header,
+    .card-footer {
+        padding: 12px 15px;
+    }
+    
+    .card-header .card-content h4,
+    .card-footer .card-content h4 {
+        font-size: 16px;
+    }
+    
+    .card-header .card-content p,
+    .card-footer .card-content p {
+        font-size: 12px;
+    }
 }
 
-.quadrant-layout .bottom-right {
-    grid-column: 2;
-    grid-row: 2;
-    justify-self: end;
-    align-self: end;
-}
-
-.quadrant-layout .showcase-visual {
-    max-width: 380px;
-    min-width: 280px;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
-}
-
-.quadrant-layout .showcase-visual img {
-    width: 100%;
-    height: 220px;
-    object-fit: cover;
-    object-position: center;
+@media (max-width: 768px) {
+    .image-container {
+        height: 220px;
+    }
+    
+    .card-header,
+    .card-footer {
+        padding: 10px 12px;
+        gap: 10px;
+    }
+    
+    .card-header .card-icon,
+    .card-footer .card-icon {
+        width: 35px;
+        height: 35px;
+        font-size: 16px;
+    }
+    
+    .card-header .card-content h4,
+    .card-footer .card-content h4 {
+        font-size: 15px;
+    }
+    
+    .card-footer .platform-badges {
+        flex-direction: column;
+        gap: 5px;
+    }
+    
+    .card-footer .platform-badge {
+        padding: 4px 8px;
+        font-size: 0.7rem;
+    }
 }
 
 .showcase-visual {
     position: relative;
-    border-radius: 20px;
+    border-radius: 12px;
     overflow: hidden;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    height: 100%;
 }
 
 .showcase-visual img {
