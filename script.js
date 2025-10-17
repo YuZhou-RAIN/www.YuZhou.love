@@ -29,8 +29,28 @@ window.addEventListener('scroll', () => {
 
 // 页面加载动画
 window.addEventListener('load', () => {
-    // 设置body为loaded状态，触发渐显效果
-    document.body.classList.add('loaded');
+    // 预加载背景图片
+    const bgImage = new Image();
+    bgImage.src = 'images/EF13DDC8136672FB8AB3C77429A5FE14.jpg';
+    
+    bgImage.onload = function() {
+        // 图片加载完成后，设置背景并添加loaded类
+        const heroSection = document.querySelector('.hero');
+        if (heroSection) {
+            heroSection.style.backgroundImage = `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.7)), url('${bgImage.src}')`;
+            heroSection.style.backgroundSize = 'cover';
+            heroSection.style.backgroundPosition = 'center';
+            heroSection.style.backgroundRepeat = 'no-repeat';
+        }
+        
+        // 设置body为loaded状态，触发渐显效果
+        document.body.classList.add('loaded');
+    };
+    
+    // 如果图片已经缓存，立即执行
+    if (bgImage.complete) {
+        bgImage.onload();
+    }
 });
 
 // 服务器状态模拟更新
@@ -192,7 +212,19 @@ function changeBackground() {
     currentBgIndex = (currentBgIndex + 1) % backgroundImages.length;
     const heroSection = document.querySelector('.hero');
     if (heroSection) {
-        heroSection.style.backgroundImage = `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.7)), url('${backgroundImages[currentBgIndex]}')`;
+        // 预加载新背景图片
+        const newBgImage = new Image();
+        newBgImage.src = backgroundImages[currentBgIndex];
+        
+        newBgImage.onload = function() {
+            // 图片加载完成后更换背景
+            heroSection.style.backgroundImage = `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.7)), url('${newBgImage.src}')`;
+        };
+        
+        // 如果图片已经缓存，立即执行
+        if (newBgImage.complete) {
+            newBgImage.onload();
+        }
     }
 }
 
