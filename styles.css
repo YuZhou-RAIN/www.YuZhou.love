@@ -72,7 +72,7 @@ body.loaded {
 }
 
 .nav-link {
-    color: #ffffff;
+    color: #e0e0e0;
     text-decoration: none;
     font-weight: 500;
     transition: color 0.3s ease;
