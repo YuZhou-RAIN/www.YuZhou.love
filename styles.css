@@ -47,7 +47,7 @@ body {
     align-items: center;
     font-size: 1.5rem;
     font-weight: bold;
-    color: #4caf50;
+    color: #2196f3;
 }
 
 .logo i {
@@ -74,7 +74,7 @@ body {
 
 .nav-link:hover,
 .nav-link.active {
-    color: #4caf50;
+    color: #2196f3;
 }
 
 .nav-link::after {
@@ -84,7 +84,7 @@ body {
     left: 0;
     width: 0;
     height: 2px;
-    background-color: #4caf50;
+    background-color: #2196f3;
     transition: width 0.3s ease;
 }
 
@@ -110,12 +110,13 @@ body {
 /* 主页横幅 */
 .hero {
     height: 100vh;
-    background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.7)), url('images/EF13DDC8136672FB8AB3C77429A5FE14.jpg') no-repeat center center/cover;
+    background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.9)), url('images/EF13DDC8136672FB8AB3C77429A5FE14.jpg') no-repeat center center/cover;
     display: flex;
     align-items: center;
     justify-content: center;
     text-align: center;
     position: relative;
+    overflow: hidden;
 }
 
 /* 鼠标跟随效果 */
@@ -126,8 +127,9 @@ body {
     width: 100%;
     height: 100%;
     background: url('https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1920&q=80') center/cover no-repeat;
-    z-index: -2;
-    transition: transform 0.3s ease-out;
+    z-index: -3;
+    opacity: 0;
+    transition: opacity 1.5s ease-out, transform 0.3s ease-out;
 }
 
 .hero-bg-layer {
@@ -137,9 +139,15 @@ body {
     width: 110%;
     height: 110%;
     background: url('https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1920&q=80') center/cover no-repeat;
-    z-index: -1;
+    z-index: -2;
+    opacity: 0;
+    transition: opacity 1.8s ease-out, transform 0.5s ease-out;
+}
+
+/* 页面加载后显示背景 */
+body.loaded .hero-bg,
+body.loaded .hero-bg-layer {
     opacity: 0.5;
-    transition: transform 0.5s ease-out;
 }
 
 .hero-content {
@@ -189,24 +197,24 @@ body {
 }
 
 .btn-primary {
-    background-color: #4caf50;
+    background-color: #2196f3;
     color: white;
 }
 
 .btn-primary:hover {
-    background-color: #45a049;
+    background-color: #0d8aee;
     transform: translateY(-3px);
-    box-shadow: 0 10px 20px rgba(76, 175, 80, 0.3);
+    box-shadow: 0 10px 20px rgba(33, 150, 243, 0.3);
 }
 
 .btn-secondary {
     background-color: transparent;
     color: white;
-    border: 2px solid #4caf50;
+    border: 2px solid #2196f3;
 }
 
 .btn-secondary:hover {
-    background-color: rgba(76, 175, 80, 0.1);
+    background-color: rgba(33, 150, 243, 0.1);
     transform: translateY(-3px);
 }
 
@@ -224,16 +232,29 @@ body {
     justify-content: center;
     gap: 10px;
     font-size: 1.2rem;
-    padding: 10px 20px;
-    background-color: rgba(0, 0, 0, 0.5);
+    padding: 15px 25px;
+    background-color: rgba(0, 0, 0, 0.6);
     border-radius: 30px;
     backdrop-filter: blur(5px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #ffffff;
+    transition: all 0.3s ease;
+    min-width: 220px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.server-ip:hover,
+.server-qq:hover {
+    background-color: rgba(0, 0, 0, 0.8);
+    border-color: rgba(255, 255, 255, 0.25);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
 }
 
 .server-ip i,
 .server-qq i {
-    color: #4caf50;
+    color: #2196f3;
+    font-size: 1.3rem;
 }
 
 /* 区块标题 */
@@ -253,7 +274,7 @@ body {
     transform: translateX(-50%);
     width: 80px;
     height: 3px;
-    background-color: #4caf50;
+    background-color: #2196f3;
 }
 
 /* 服务器特点 */
@@ -280,7 +301,7 @@ body {
 .feature-card:hover {
     transform: translateY(-10px);
     box-shadow: 0 20px 30px rgba(0, 0, 0, 0.3);
-    border-color: rgba(76, 175, 80, 0.3);
+    border-color: rgba(33, 150, 243, 0.3);
 }
 
 .feature-icon {
@@ -290,9 +311,9 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: rgba(76, 175, 80, 0.1);
+    background-color: rgba(33, 150, 243, 0.1);
     border-radius: 50%;
-    color: #4caf50;
+    color: #2196f3;
     font-size: 2rem;
 }
 
@@ -335,13 +356,13 @@ body {
 }
 
 .status-indicator.online {
-    background-color: #4caf50;
-    box-shadow: 0 0 10px #4caf50;
+    background-color: #2196f3;
+    box-shadow: 0 0 10px #2196f3;
     animation: pulse 2s infinite;
 }
 
 .status-item i {
-    color: #4caf50;
+    color: #2196f3;
     font-size: 1.2rem;
 }
 
@@ -372,11 +393,11 @@ body {
 .news-card:hover {
     transform: translateY(-5px);
     box-shadow: 0 15px 25px rgba(0, 0, 0, 0.2);
-    border-color: rgba(76, 175, 80, 0.3);
+    border-color: rgba(33, 150, 243, 0.3);
 }
 
 .news-date {
-    color: #4caf50;
+    color: #2196f3;
     font-weight: bold;
     margin-bottom: 10px;
 }
@@ -431,11 +452,11 @@ footer {
 }
 
 .footer-section ul li a:hover {
-    color: #4caf50;
+    color: #2196f3;
 }
 
 .footer-section i {
-    color: #4caf50;
+    color: #2196f3;
     margin-right: 10px;
 }
 
@@ -471,18 +492,63 @@ footer {
 
 @keyframes pulse {
     0% {
-        box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.7);
+        box-shadow: 0 0 0 0 rgba(33, 150, 243, 0.7);
     }
     70% {
-        box-shadow: 0 0 0 10px rgba(76, 175, 80, 0);
+        box-shadow: 0 0 0 10px rgba(33, 150, 243, 0);
     }
     100% {
-        box-shadow: 0 0 0 0 rgba(76, 175, 80, 0);
+        box-shadow: 0 0 0 0 rgba(33, 150, 243, 0);
     }
 }
 
 /* 响应式设计 */
+@media screen and (max-width: 1200px) {
+    .container {
+        max-width: 960px;
+    }
+    
+    .hero-title {
+        font-size: 3.5rem;
+    }
+}
+
+@media screen and (max-width: 992px) {
+    .container {
+        max-width: 720px;
+    }
+    
+    .hero-title {
+        font-size: 3rem;
+    }
+    
+    .feature-detail-content,
+    .feature-detail-content.reverse {
+        flex-direction: column;
+        gap: 30px;
+    }
+    
+    .feature-detail-text {
+        order: 2;
+    }
+    
+    .feature-detail-image {
+        order: 1;
+        max-width: 500px;
+        margin: 0 auto;
+    }
+    
+    .guide-content {
+        flex-direction: column;
+        gap: 30px;
+    }
+}
+
 @media screen and (max-width: 768px) {
+    .container {
+        max-width: 540px;
+    }
+    
     .hamburger {
         display: flex;
     }
@@ -534,6 +600,57 @@ footer {
     .status-grid,
     .news-grid {
         grid-template-columns: 1fr;
+    }
+    
+    .info-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .plugins-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media screen and (max-width: 576px) {
+    .container {
+        max-width: 100%;
+        padding: 0 15px;
+    }
+    
+    .page-title {
+        font-size: 2.5rem;
+    }
+    
+    .page-subtitle {
+        font-size: 1.1rem;
+    }
+    
+    .feature-detail-text h2 {
+        font-size: 1.8rem;
+    }
+    
+    .feature-detail-text p {
+        font-size: 1rem;
+    }
+    
+    .hero-title {
+        font-size: 2rem;
+    }
+    
+    .hero-subtitle {
+        font-size: 1rem;
+    }
+    
+    .section-title {
+        font-size: 1.8rem;
+    }
+    
+    .server-info-card {
+        padding: 20px;
+    }
+    
+    .info-item {
+        margin-bottom: 20px;
     }
 }
 
@@ -606,7 +723,7 @@ footer {
 }
 
 .feature-list li i {
-    color: #4caf50;
+    color: #2196f3;
     margin-right: 15px;
     font-size: 1.2rem;
 }
@@ -680,41 +797,6 @@ footer {
 }
 
 /* 响应式设计 - 特色详情 */
-@media screen and (max-width: 992px) {
-    .feature-detail-content,
-    .feature-detail-content.reverse {
-        flex-direction: column;
-        gap: 30px;
-    }
-    
-    .feature-detail-text {
-        order: 2;
-    }
-    
-    .feature-detail-image {
-        order: 1;
-        max-width: 500px;
-        margin: 0 auto;
-    }
-}
-
-@media screen and (max-width: 576px) {
-    .page-title {
-        font-size: 2.5rem;
-    }
-    
-    .page-subtitle {
-        font-size: 1.1rem;
-    }
-    
-    .feature-detail-text h2 {
-        font-size: 1.8rem;
-    }
-    
-    .feature-detail-text p {
-        font-size: 1rem;
-    }
-}
 
 /* 服务器信息卡片 */
 .server-info-section {
@@ -768,8 +850,7 @@ footer {
     color: #ffffff;
 }
 
-.server-address,
-.server-qq {
+.server-address {
     font-size: 1.5rem;
     font-weight: bold;
     color: #44CEF3;
@@ -850,7 +931,7 @@ footer {
 .step-number {
     width: 40px;
     height: 40px;
-    background-color: #4caf50;
+    background-color: #2196f3;
     color: white;
     border-radius: 50%;
     display: flex;
@@ -878,7 +959,7 @@ footer {
 }
 
 .step-content strong {
-    color: #4caf50;
+    color: #2196f3;
 }
 
 .guide-image {
@@ -927,7 +1008,7 @@ footer {
 }
 
 .faq-question:hover {
-    background-color: rgba(76, 175, 80, 0.1);
+    background-color: rgba(33, 150, 243, 0.1);
 }
 
 .faq-question h3 {
@@ -937,7 +1018,7 @@ footer {
 }
 
 .faq-question i {
-    color: #4caf50;
+    color: #2196f3;
     transition: transform 0.3s ease;
 }
 
@@ -1797,6 +1878,10 @@ footer {
         grid-template-columns: 1fr;
         gap: 30px;
     }
+    
+    .team-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
 }
 
 @media (max-width: 768px) {
@@ -1811,10 +1896,26 @@ footer {
     .faq-grid {
         grid-template-columns: 1fr;
     }
+    
+    .feedback-content {
+        grid-template-columns: 1fr;
+    }
 }
 
 @media (max-width: 576px) {
     .contact-grid {
         grid-template-columns: 1fr;
+    }
+    
+    .team-member {
+        padding: 20px;
+    }
+    
+    .feedback-form {
+        padding: 20px;
+    }
+    
+    .info-card {
+        padding: 20px;
     }
 }

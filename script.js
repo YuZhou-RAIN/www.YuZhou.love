@@ -29,12 +29,15 @@ window.addEventListener('scroll', () => {
 
 // 页面加载动画
 window.addEventListener('load', () => {
-    // 添加渐入效果
+    // 首先设置body为loaded状态，触发背景显示
+    document.body.classList.add('loaded');
+    
+    // 然后添加渐入效果
     document.body.style.opacity = '0';
     setTimeout(() => {
-        document.body.style.transition = 'opacity 0.5s ease';
+        document.body.style.transition = 'opacity 0.8s ease';
         document.body.style.opacity = '1';
-    }, 100);
+    }, 200);
 });
 
 // 服务器状态模拟更新
@@ -100,7 +103,7 @@ function showNotification(message) {
     notification.style.bottom = '20px';
     notification.style.left = '50%';
     notification.style.transform = 'translateX(-50%)';
-    notification.style.backgroundColor = 'rgba(76, 175, 80, 0.9)';
+    notification.style.backgroundColor = 'rgba(33, 150, 243, 0.9)';
     notification.style.color = 'white';
     notification.style.padding = '12px 24px';
     notification.style.borderRadius = '4px';
