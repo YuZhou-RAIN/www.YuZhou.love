@@ -289,9 +289,17 @@ body.loaded {
 }
 
 .server-ip i,
-.server-qq i {
+.server-qq i,
+.server-address i {
     color: #2196f3;
     font-size: 1.3rem;
+}
+
+.server-address:hover {
+    background-color: rgba(0, 0, 0, 0.8);
+    border-color: rgba(255, 255, 255, 0.25);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
 }
 
 /* 区块标题 */
@@ -894,15 +902,20 @@ footer {
 }
 
 .server-address {
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: #44CEF3;
-    margin-bottom: 15px;
-    padding: 10px 15px;
-    border: 2px solid rgba(68, 206, 243, 0.3);
-    border-radius: 8px;
-    background-color: rgba(68, 206, 243, 0.05);
-    display: inline-block;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-size: 1.2rem;
+    padding: 15px 25px;
+    background-color: rgba(0, 0, 0, 0.6);
+    border-radius: 30px;
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #ffffff;
+    transition: all 0.3s ease;
+    min-width: 220px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
 .copy-btn {
@@ -1021,6 +1034,11 @@ footer {
 
 .guide-image:hover img {
     transform: scale(1.03);
+}
+
+/* 反转布局类 - 用于Java版加入指南 */
+.guide-content.reverse {
+    flex-direction: row-reverse;
 }
 
 /* FAQ部分 */
@@ -1428,8 +1446,34 @@ footer {
 
 .level-name {
     font-size: 1.2rem;
-    font-weight: 600;
-    color: #00d4ff;
+}
+
+.hardware-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 120px;
+    padding: 10px 0;
+}
+
+.hardware-header .card-icon {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #44CEF3, #79CBF5);
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.5rem;
+    margin: 10px 0;
+}
+
+.hardware-header h3 {
+    font-size: 1.4rem;
+    color: #ffffff;
+    margin: 10px 0;
+    text-align: center;
 }
 
 .penalty-desc p {
@@ -2488,6 +2532,125 @@ footer {
     font-weight: 600;
     color: #44CEF3;
     font-size: 0.95rem;
+}
+
+/* 硬件配置卡片特殊样式 */
+.hardware-config-card {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 30px;
+}
+
+.hardware-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 120px;
+    padding: 10px 0;
+}
+
+.hardware-header .card-icon {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #44CEF3, #79CBF5);
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.5rem;
+    margin: 10px 0;
+}
+
+.hardware-header h3 {
+    font-size: 1.4rem;
+    color: #ffffff;
+    margin: 10px 0;
+    text-align: center;
+}
+
+/* 硬件规格2x2网格布局 */
+.hardware-specs-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto;
+    gap: 15px;
+    flex: 1;
+}
+
+.hardware-specs-grid .spec-item {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    transition: all 0.3s ease;
+    justify-content: center;
+}
+
+.hardware-specs-grid .spec-item:hover {
+    background: rgba(68, 206, 243, 0.1);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.hardware-specs-grid .spec-label {
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.9rem;
+    margin-bottom: 8px;
+}
+
+.hardware-specs-grid .spec-value {
+    font-weight: 700;
+    color: #44CEF3;
+    font-size: 1.1rem;
+    text-align: left;
+}
+
+/* 响应式设计 - 硬件配置卡片 */
+@media (max-width: 992px) {
+    .hardware-config-card {
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+    }
+    
+    .hardware-header {
+        flex-direction: row;
+        align-items: center;
+        gap: 15px;
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .hardware-header h3 {
+        text-align: left;
+    }
+    
+    .hardware-specs-grid {
+        width: 100%;
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 576px) {
+    .hardware-specs-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .hardware-header {
+        flex-direction: column;
+        text-align: center;
+        gap: 10px;
+    }
+    
+    .hardware-header h3 {
+        text-align: center;
+    }
 }
 
 .feature-list {

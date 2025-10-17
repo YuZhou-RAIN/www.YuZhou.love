@@ -172,6 +172,23 @@ function copyQQGroup() {
     });
 }
 
+// 通用文本复制功能
+function copyText(text) {
+    navigator.clipboard.writeText(text).then(() => {
+        showNotification('已复制到剪贴板！');
+    }).catch(err => {
+        console.error('复制失败:', err);
+        // 降级方案
+        const textArea = document.createElement('textarea');
+        textArea.value = text;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+        showNotification('已复制到剪贴板！');
+    });
+}
+
 // 显示通知
 function showNotification(message) {
     // 创建通知元素

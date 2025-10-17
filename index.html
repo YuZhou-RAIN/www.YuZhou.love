@@ -62,14 +62,20 @@
                             </a>
                         </div>
                         <div class="server-info">
-                            <div class="server-ip">
+                            <p class="server-ip">
                                 <i class="fas fa-server"></i>
-                                <span>服务器地址: <strong>mc.yuzhou.love</strong></span>
-                            </div>
-                            <div class="server-qq">
+                                服务器地址: <strong>mc.yuzhou.love</strong>
+                                <button class="copy-btn small" data-copy="mc.yuzhou.love" style="margin-left: 10px;">
+                                    <i class="fas fa-copy"></i> 复制
+                                </button>
+                            </p>
+                            <p class="server-qq">
                                 <i class="fab fa-qq"></i>
-                                <span>QQ群: <strong>823557774</strong></span>
-                            </div>
+                                QQ群: <strong>823557774</strong>
+                                <button class="copy-btn small" data-copy="823557774" style="margin-left: 10px;">
+                                    <i class="fas fa-copy"></i> 复制
+                                </button>
+                            </p>
                         </div>
                     </div>
                 </section>
@@ -200,12 +206,14 @@
                                     <p class="showcase-subtitle">24小时稳定在线，零延迟游戏体验</p>
                                 </div>
                                 <div class="performance-grid">
-                                    <div class="performance-card primary">
-                                        <div class="card-icon">
-                                            <i class="fas fa-microchip"></i>
+                                    <div class="performance-card primary hardware-config-card">
+                                        <div class="hardware-header">
+                                            <div class="card-icon">
+                                                <i class="fas fa-microchip"></i>
+                                            </div>
+                                            <h3>顶级硬件配置</h3>
                                         </div>
-                                        <h3>顶级硬件配置</h3>
-                                        <div class="specs-list">
+                                        <div class="hardware-specs-grid">
                                             <div class="spec-item">
                                                 <span class="spec-label">CPU</span>
                                                 <span class="spec-value">Intel 20线程 服务器专用高性能处理器</span>
@@ -233,7 +241,7 @@
                                         </div>
                                         <div class="stat-item">
                                             <div class="stat-number">&lt;20ms</div>
-                                            <div class="stat-label">平均延迟</div>
+                                            <div class="stat-label">热点城市平均延迟</div>
                                         </div>
                                         <div class="stat-item">
                                             <div class="stat-number">24/7</div>
@@ -245,57 +253,7 @@
                         </div>
                     </section>
 
-                    <!-- 精选插件 -->
-                    <section class="plugins-section">
-                        <div class="container">
-                            <h2 class="section-title">精选插件</h2>
-                            <p class="section-subtitle">我们精心挑选了一系列实用插件，增强游戏体验的同时保持原版风格</p>
-                            <div class="plugins-grid">
-                                <div class="plugin-card">
-                                    <div class="plugin-icon">
-                                        <i class="fas fa-shield-alt"></i>
-                                    </div>
-                                    <h3>CoreProtect</h3>
-                                    <p>强大的日志记录和回滚工具，保护服务器和玩家建筑</p>
-                                </div>
-                                <div class="plugin-card">
-                                    <div class="plugin-icon">
-                                        <i class="fas fa-map"></i>
-                                    </div>
-                                    <h3>Dynmap</h3>
-                                    <p>实时在线地图，可以在浏览器中查看整个服务器世界</p>
-                                </div>
-                                <div class="plugin-card">
-                                    <div class="plugin-icon">
-                                        <i class="fas fa-users"></i>
-                                    </div>
-                                    <h3>Geyser</h3>
-                                    <p>实现Java版和基岩版互通的核心插件</p>
-                                </div>
-                                <div class="plugin-card">
-                                    <div class="plugin-icon">
-                                        <i class="fas fa-home"></i>
-                                    </div>
-                                    <h3>EssentialsX</h3>
-                                    <p>提供基础游戏命令和功能，增强游戏体验</p>
-                                </div>
-                                <div class="plugin-card">
-                                    <div class="plugin-icon">
-                                        <i class="fas fa-lock"></i>
-                                    </div>
-                                    <h3>WorldGuard</h3>
-                                    <p>领地保护插件，让你的建筑免受破坏</p>
-                                </div>
-                                <div class="plugin-card">
-                                    <div class="plugin-icon">
-                                        <i class="fas fa-coins"></i>
-                                    </div>
-                                    <h3>ChestShop</h3>
-                                    <p>玩家商店系统，创建自己的经济帝国</p>
-                                </div>
-                            </div>
-                        </div>
-                    </section>
+
                 </main>
             </div>
 
@@ -353,7 +311,7 @@
                     <section class="join-guide alt-bg">
                         <div class="container">
                             <h2 class="section-title">Java版加入指南</h2>
-                            <div class="guide-content">
+                            <div class="guide-content reverse">
                                 <div class="guide-steps">
                                     <div class="step">
                                         <div class="step-number">1</div>
@@ -1068,8 +1026,8 @@
                 </div>
                 <div class="footer-section">
                     <h3>联系我们</h3>
-                    <p><i class="fas fa-server"></i> 服务器地址: mc.yuzhou.love</p>
-                    <p><i class="fab fa-qq"></i> QQ群: 823557774</p>
+                    <p><i class="fas fa-server"></i> 服务器地址: mc.yuzhou.love <button class="copy-btn small" data-copy="mc.yuzhou.love" style="margin-left: 10px;"><i class="fas fa-copy"></i> 复制</button></p>
+                    <p><i class="fab fa-qq"></i> QQ群: <a href="https://qm.qq.com/q/sgWsIw909q" target="_blank" style="color: #44CEF3; text-decoration: none;">823557774</a> <button class="copy-btn small" data-copy="823557774" style="margin-left: 10px;"><i class="fas fa-copy"></i> 复制</button></p>
                 </div>
             </div>
             <div class="footer-bottom">
@@ -1087,9 +1045,10 @@
                 navigator.clipboard.writeText(textToCopy).then(() => {
                     const originalText = this.innerHTML;
                     this.innerHTML = '<i class="fas fa-check"></i> 已复制';
+                    // 3秒后恢复原始文本
                     setTimeout(() => {
                         this.innerHTML = originalText;
-                    }, 2000);
+                    }, 3000);
                 }).catch(err => {
                     console.error('复制失败: ', err);
                 });
