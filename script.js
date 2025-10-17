@@ -259,7 +259,7 @@ const observer = new IntersectionObserver((entries) => {
 
 // 为需要动画的元素添加观察
 document.addEventListener('DOMContentLoaded', () => {
-    const animatedElements = document.querySelectorAll('.feature-card, .status-item, .news-card');
+    const animatedElements = document.querySelectorAll('.status-item, .news-card');
     
     animatedElements.forEach(el => {
         el.style.opacity = '0';
