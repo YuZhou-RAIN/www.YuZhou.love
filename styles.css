@@ -919,14 +919,19 @@ footer {
 }
 
 .copy-btn {
+    display: inline-block;
     background-color: #44CEF3;
     color: white;
-    border: none;
-    padding: 8px 16px;
+    padding: 5px 10px;
     border-radius: 4px;
+    text-decoration: none;
+    font-size: 0.8rem;
+    margin-top: 5px;
+    margin-left: 5px;
+    transition: all 0.3s ease;
+    border: none;
     cursor: pointer;
-    font-weight: bold;
-    transition: background-color 0.3s ease, transform 0.3s ease;
+    font-weight: normal;
 }
 
 .copy-btn:hover {
@@ -1098,7 +1103,7 @@ footer {
 }
 
 .faq-answer p {
-    padding: 0 20px 20px;
+    padding: 0 20px 20px 20px;
     color: #b0b0b0;
     line-height: 1.6;
 }
@@ -1107,6 +1112,16 @@ footer {
 .faq-item.active .faq-answer {
     max-height: 200px;
     padding: 20px;
+}
+
+.faq-answer ul {
+    padding: 0 20px 20px 40px;
+    color: #b0b0b0;
+    line-height: 1.6;
+}
+
+.faq-answer li {
+    margin-bottom: 10px;
 }
 
 .faq-item.active .faq-question i {
