@@ -1958,9 +1958,9 @@ footer {
 /* 四象限布局 - 集中管理所有相关样式 */
 .quadrant-layout {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: 1fr 4fr;
-    row-gap: 0px;
+    grid-template-columns: 1fr 4fr;
+    grid-template-rows: 1fr 4fr 1fr;
+    row-gap: 10px;
     column-gap: 30px;
     margin-top: 40px;
     height: 600px;
@@ -1984,21 +1984,24 @@ footer {
     margin: 0;
 }
 
-/* 卡片1和卡片2的特殊样式 - 高度为图片2的四分之一 */
-.quadrant-layout .feature-card.card1,
-.quadrant-layout .feature-card.card2 {
-    height: 100%;
-    max-height: 100%;
-    margin-bottom: 0; /* 确保卡片1和图片1之间没有间隙 */
+/* 卡片1和卡片2的特殊样式 - 高度为图片高度的四分之一 */
+.quadrant-layout .feature-card.card1 {
+    grid-column: 1;
+    grid-row: 1;
 }
 
-/* 象限内图片样式 - 确保图片1和图片2尺寸一致 */
+.quadrant-layout .feature-card.card2 {
+    grid-column: 2;
+    grid-row: 3;
+}
+
+/* 象限内图片样式 */
 .quadrant-layout .showcase-visual {
     position: relative;
     border-radius: 12px;
     overflow: hidden;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-    margin: 0; /* 确保图片周围没有间隙 */
+    margin: 0;
 }
 
 .quadrant-layout .showcase-visual img {
@@ -2006,15 +2009,18 @@ footer {
     height: 100%;
     object-fit: cover;
     border-radius: 12px;
-    display: block; /* 移除图片下方的间隙 */
+    display: block;
 }
 
-/* 图片1和图片2的特殊样式 - 确保尺寸一致 */
-.quadrant-layout .showcase-visual.image1,
+/* 图片1和图片2的特殊样式 */
+.quadrant-layout .showcase-visual.image1 {
+    grid-column: 1;
+    grid-row: 2 / span 2;
+}
+
 .quadrant-layout .showcase-visual.image2 {
-    height: 100%;
-    margin-top: 0; /* 确保图片1紧贴卡片1 */
-    margin-bottom: 0; /* 确保图片2和卡片2之间没有间隙 */
+    grid-column: 2;
+    grid-row: 1 / span 3;
 }
 
 /* 卡片内部元素样式 */

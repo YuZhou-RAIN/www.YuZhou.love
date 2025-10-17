@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>测试布局</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background-color: #0a0a0a;
+            color: #e0e0e0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 20px;
+        }
+        .test-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1 {
+            text-align: center;
+            color: #ffffff;
+            margin-bottom: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>测试全平台互通布局</h1>
+        
+        <section class="feature-section">
+            <div class="container">
+                <div class="feature-showcase">
+                    <div class="showcase-header">
+                        <div class="showcase-icon">
+                            <i class="fas fa-globe-americas"></i>
+                        </div>
+                        <h2>全平台互通</h2>
+                        <p class="showcase-subtitle">打破平台壁垒，让朋友不再分离</p>
+                    </div>
+                    <div class="showcase-content quadrant-layout">
+                        <!-- 卡片1 - 高度为图片高度的四分之一 -->
+                        <div class="feature-card card1">
+                            <div class="card-icon">
+                                <i class="fas fa-mobile-alt"></i>
+                            </div>
+                            <div class="card-content">
+                                <h4>移动端支持</h4>
+                                <p>支持iOS和Android设备</p>
+                            </div>
+                        </div>
+                        
+                        <!-- 图片1 - 紧贴卡片1下方 -->
+                        <div class="showcase-visual image1">
+                            <img src="images/6A7AC902334C0E90B0E5568DF4FBEEB6.jpg" alt="设备示例">
+                        </div>
+                        
+                        <!-- 图片2 - 主体图片，与图片1高度一致 -->
+                        <div class="showcase-visual image2">
+                            <img src="images/EF13DDC8136672FB8AB3C77429A5FE14.jpg" alt="全平台互通">
+                        </div>
+                        
+                        <!-- 卡片2 - 高度为图片高度的四分之一，紧贴图片2下方 -->
+                        <div class="feature-card card2">
+                            <div class="card-icon">
+                                <i class="fas fa-desktop"></i>
+                            </div>
+                            <div class="card-content">
+                                <h4>桌面端支持</h4>
+                                <p>支持Windows、Mac和Linux系统</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</body>
+</html>
