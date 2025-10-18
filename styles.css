@@ -12,6 +12,7 @@ body {
     color: #e0e0e0;
     background-color: #0a0a0a;
     overflow-x: hidden;
+    overflow-y: scroll; /* 始终显示垂直滚动条，防止页面跳动 */
     opacity: 0;
     transition: opacity 0.8s ease;
 }
@@ -519,6 +520,17 @@ footer {
     text-decoration: underline;
 }
 
+/* QQ交流群链接悬停效果 */
+.qq-group-link {
+    color: #2196f3;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.qq-group-link:hover {
+    text-decoration: underline;
+}
+
 .footer-section ul {
     list-style: none;
 }
@@ -1004,6 +1016,28 @@ footer {
     font-size: 0.7rem;
     margin-left: 5px;
     display: inline-block;
+}
+
+/* 页脚复制按钮样式统一 */
+.footer-section .copy-btn {
+    background: rgba(68, 206, 243, 0.2);
+    border: 1px solid #44CEF3;
+    color: #44CEF3;
+    padding: 3px 6px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.7rem;
+    margin-left: 10px;
+}
+
+.footer-section .copy-btn:hover {
+    background: rgba(68, 206, 243, 0.3);
+}
+
+.footer-section .copy-btn i {
+    color: #44CEF3; /* 确保页脚复制按钮图标颜色与文字一致 */
+    margin-right: 5px;
 }
 
 /* QQ群加入按钮样式 */
@@ -1711,6 +1745,10 @@ footer {
 
 .copy-btn:hover {
     background: rgba(68, 206, 243, 0.3);
+}
+
+.copy-btn i {
+    color: #44CEF3;
 }
 
 /* 关于我们页面样式 */

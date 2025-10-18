@@ -403,7 +403,7 @@
                                     <div class="faq-answer">
                                         <p>您可以通过以下方式获得帮助：</p>
                                         <ul>
-                                            <li>加入我们的QQ交流群：823557774</li>
+                                            <li>加入我们的QQ交流群：<a href="https://qm.qq.com/q/sgWsIw909q" target="_blank" class="qq-group-link">823557774</a> <button class="copy-btn small" data-copy="823557774" style="margin-left: 10px;"><i class="fas fa-copy"></i> 复制</button></li>
                                             <li>在游戏中联系在线管理员</li>
                                             <li>通过"关于我们"页面发送消息</li>
                                         </ul>
@@ -497,7 +497,7 @@
                 <div class="footer-section">
                     <h3>关于我们</h3>
                     <p><i class="fas fa-server"></i> 服务器地址: mc.yuzhou.love <button class="copy-btn small" data-copy="mc.yuzhou.love" style="margin-left: 10px;"><i class="fas fa-copy"></i> 复制</button></p>
-                    <p><i class="fab fa-qq"></i> QQ交流群: <a href="https://qm.qq.com/q/sgWsIw909q" target="_blank" style="color: #2196f3; text-decoration: none;">823557774</a> <button class="copy-btn small" data-copy="823557774" style="margin-left: 10px;"><i class="fas fa-copy"></i> 复制</button></p>
+                    <p><i class="fab fa-qq"></i> QQ交流群: <a href="https://qm.qq.com/q/sgWsIw909q" target="_blank" class="qq-group-link">823557774</a> <button class="copy-btn small" data-copy="823557774" style="margin-left: 10px;"><i class="fas fa-copy"></i> 复制</button></p>
                 </div>
             </div>
             <div class="footer-bottom">
@@ -514,7 +514,12 @@
                 const textToCopy = this.getAttribute('data-copy');
                 navigator.clipboard.writeText(textToCopy).then(() => {
                     const originalText = this.innerHTML;
-                    this.innerHTML = '<i class="fas fa-check"></i> 已复制';
+                    // 对于小按钮，只显示图标和文字
+                    if (this.classList.contains('small')) {
+                        this.innerHTML = '<i class="fas fa-check"></i> 已复制';
+                    } else {
+                        this.innerHTML = '<i class="fas fa-check"></i> 已复制';
+                    }
                     // 3秒后恢复原始文本
                     setTimeout(() => {
                         this.innerHTML = originalText;
