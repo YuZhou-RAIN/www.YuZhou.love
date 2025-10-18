@@ -4,19 +4,30 @@
     <meta charset="utf-8">
     <title>雨州Minecraft服务器</title>
     <script>
-        // GitHub Pages SPA路由处理
-        // 保存当前路径并重定向到首页
+        // GitHub Pages SPA路由重定向逻辑
         (function() {
-            // 保存当前路径
-            var path = location.pathname + location.search + location.hash;
-            sessionStorage.redirectPath = path;
+            // 获取当前路径
+            var location = window.location;
+            var pathname = location.pathname;
             
-            // 重定向到首页
-            location.replace('/');
+            // 检查是否为我们的应用路由
+            var isAppRoute = pathname === '/' || 
+                            pathname === '/features' || 
+                            pathname === '/join' || 
+                            pathname === '/about';
+            
+            // 如果是应用路由，则重定向到首页并保存路径
+            if (isAppRoute) {
+                // 保存路径到sessionStorage
+                sessionStorage.setItem('githubPagesRedirectPath', pathname);
+                // 重定向到首页
+                location.replace('/');
+            }
+            // 如果是其他路径（真正的404），则显示404页面
         })();
     </script>
 </head>
 <body>
-    <!-- 正在重定向到首页... -->
+    <!-- 重定向到首页... -->
 </body>
 </html>

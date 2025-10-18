@@ -195,44 +195,85 @@ document.addEventListener('DOMContentLoaded', () => {
 // 页面加载后检查是否有重定向路径需要处理
 window.addEventListener('load', function() {
     // 检查是否有从404页面重定向过来的路径
-    if (sessionStorage.redirectPath) {
-        // 获取重定向路径
-        const redirectPath = sessionStorage.redirectPath;
-        
+    var redirectPath = sessionStorage.getItem('githubPagesRedirectPath');
+    if (redirectPath) {
         // 清除sessionStorage中的重定向路径
-        delete sessionStorage.redirectPath;
+        sessionStorage.removeItem('githubPagesRedirectPath');
         
         // 解析路径获取页面ID
-        const path = redirectPath.replace(location.origin, '');
-        const pageId = getPageIdFromPath(path);
+        var pageId = getPageIdFromPath(redirectPath);
         
-        // 切换到相应页面
+        // 获取当前激活的页面
+        const currentPage = document.querySelector('.page-content.active');
         const targetPage = document.getElementById(`${pageId}-content`);
-        if (targetPage) {
-            // 隐藏所有页面内容
-            document.querySelectorAll('.page-content').forEach(page => {
-                page.classList.remove('active');
-            });
+        
+        // 如果目标页面就是当前页面，直接返回
+        if (currentPage === targetPage) return;
+        
+        // 移除所有导航链接的active类
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.classList.remove('active');
+        });
+        
+        // 添加active类到目标导航链接
+        const targetLink = document.querySelector(`.nav-link[data-page="${pageId}"]`);
+        if (targetLink) {
+            targetLink.classList.add('active');
+        }
+        
+        // 如果没有当前页面，直接显示目标页面
+        if (!currentPage) {
+            if (targetPage) {
+                targetPage.classList.add('active');
+            }
+            // 如果切换到首页，重新初始化背景图片
+            if (pageId === 'home') {
+                initHeroBackground();
+            }
+            return;
+        }
+        
+        // 添加淡出效果
+        currentPage.style.opacity = '0';
+        
+        // 延迟一段时间后隐藏当前页面并显示新页面
+        setTimeout(() => {
+            // 隐藏当前页面
+            currentPage.classList.remove('active');
             
             // 显示目标页面
-            targetPage.classList.add('active');
-            
-            // 更新导航链接的active状态
-            document.querySelectorAll('.nav-link').forEach(link => {
-                link.classList.remove('active');
-            });
-            const targetLink = document.querySelector(`.nav-link[data-page="${pageId}"]`);
-            if (targetLink) {
-                targetLink.classList.add('active');
+            if (targetPage) {
+                targetPage.classList.add('active');
+                
+                // 先设置透明度为0，然后逐渐增加到1
+                targetPage.style.opacity = '0';
+                targetPage.style.transition = 'opacity 0.3s ease';
+                
+                // 触发重排
+                targetPage.offsetHeight;
+                
+                // 淡入效果
+                targetPage.style.opacity = '1';
+                
+                // 清除内联样式
+                setTimeout(() => {
+                    targetPage.style.opacity = '';
+                    targetPage.style.transition = '';
+                }, 300);
             }
             
-            // 更新浏览器历史记录
-            const pageTitle = getPageTitle(pageId);
-            history.replaceState({page: pageId}, pageTitle, redirectPath);
-            
-            // 更新页面标题
-            document.title = pageTitle;
-        }
+            // 如果切换到首页，重新初始化背景图片
+            if (pageId === 'home') {
+                initHeroBackground();
+            }
+        }, 300);
+        
+        // 更新浏览器历史记录
+        const pageTitle = getPageTitle(pageId);
+        history.replaceState({page: pageId}, pageTitle, redirectPath);
+        
+        // 更新页面标题
+        document.title = pageTitle;
         
         // 页面加载后自动跳转到顶部
         window.scrollTo(0, 0);
