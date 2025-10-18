@@ -119,13 +119,32 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 页面加载时检查URL路径并切换到相应页面
     function checkInitialPage() {
-        // 从当前URL路径获取页面ID
+        // 首先检查是否有从404页面重定向过来的路径
+        var redirectPath = sessionStorage.getItem('githubPagesRedirectPath');
+        if (redirectPath) {
+            // 清除sessionStorage中的重定向路径
+            sessionStorage.removeItem('githubPagesRedirectPath');
+            
+            // 解析路径获取页面ID
+            const pageId = getPageIdFromPath(redirectPath);
+            
+            // 切换到相应页面
+            switchPage(pageId);
+            
+            // 更新浏览器历史记录
+            const pageTitle = getPageTitle(pageId);
+            history.replaceState({page: pageId}, pageTitle, redirectPath);
+            
+            // 更新页面标题
+            document.title = pageTitle;
+            
+            return;
+        }
+        
+        // 如果没有重定向路径，则从当前URL路径获取页面ID
         const path = window.location.pathname;
         const pageId = getPageIdFromPath(path);
         switchPage(pageId);
-        
-        // 页面加载后自动跳转到顶部
-        window.scrollTo(0, 0);
     }
     
     // 检查初始页面
@@ -139,8 +158,12 @@ document.addEventListener('DOMContentLoaded', () => {
             switchPage(pageId);
             
             // 关闭移动端菜单
-            hamburger.classList.remove('active');
-            navMenu.classList.remove('active');
+            const hamburger = document.querySelector('.hamburger');
+            const navMenu = document.querySelector('.nav-menu');
+            if (hamburger && navMenu) {
+                hamburger.classList.remove('active');
+                navMenu.classList.remove('active');
+            }
         });
     });
     
@@ -170,8 +193,12 @@ document.addEventListener('DOMContentLoaded', () => {
             switchPage('home');
             
             // 关闭移动端菜单
-            hamburger.classList.remove('active');
-            navMenu.classList.remove('active');
+            const hamburger = document.querySelector('.hamburger');
+            const navMenu = document.querySelector('.nav-menu');
+            if (hamburger && navMenu) {
+                hamburger.classList.remove('active');
+                navMenu.classList.remove('active');
+            }
         });
     }
     
@@ -193,91 +220,16 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // 页面加载后检查是否有重定向路径需要处理
+// 注意：路由处理逻辑已移至DOMContentLoaded事件中，此处仅保留背景图片初始化和页面滚动
 window.addEventListener('load', function() {
-    // 检查是否有从404页面重定向过来的路径
-    var redirectPath = sessionStorage.getItem('githubPagesRedirectPath');
-    if (redirectPath) {
-        // 清除sessionStorage中的重定向路径
-        sessionStorage.removeItem('githubPagesRedirectPath');
-        
-        // 解析路径获取页面ID
-        var pageId = getPageIdFromPath(redirectPath);
-        
-        // 获取当前激活的页面
-        const currentPage = document.querySelector('.page-content.active');
-        const targetPage = document.getElementById(`${pageId}-content`);
-        
-        // 如果目标页面就是当前页面，直接返回
-        if (currentPage === targetPage) return;
-        
-        // 移除所有导航链接的active类
-        document.querySelectorAll('.nav-link').forEach(link => {
-            link.classList.remove('active');
-        });
-        
-        // 添加active类到目标导航链接
-        const targetLink = document.querySelector(`.nav-link[data-page="${pageId}"]`);
-        if (targetLink) {
-            targetLink.classList.add('active');
-        }
-        
-        // 如果没有当前页面，直接显示目标页面
-        if (!currentPage) {
-            if (targetPage) {
-                targetPage.classList.add('active');
-            }
-            // 如果切换到首页，重新初始化背景图片
-            if (pageId === 'home') {
-                initHeroBackground();
-            }
-            return;
-        }
-        
-        // 添加淡出效果
-        currentPage.style.opacity = '0';
-        
-        // 延迟一段时间后隐藏当前页面并显示新页面
-        setTimeout(() => {
-            // 隐藏当前页面
-            currentPage.classList.remove('active');
-            
-            // 显示目标页面
-            if (targetPage) {
-                targetPage.classList.add('active');
-                
-                // 先设置透明度为0，然后逐渐增加到1
-                targetPage.style.opacity = '0';
-                targetPage.style.transition = 'opacity 0.3s ease';
-                
-                // 触发重排
-                targetPage.offsetHeight;
-                
-                // 淡入效果
-                targetPage.style.opacity = '1';
-                
-                // 清除内联样式
-                setTimeout(() => {
-                    targetPage.style.opacity = '';
-                    targetPage.style.transition = '';
-                }, 300);
-            }
-            
-            // 如果切换到首页，重新初始化背景图片
-            if (pageId === 'home') {
-                initHeroBackground();
-            }
-        }, 300);
-        
-        // 更新浏览器历史记录
-        const pageTitle = getPageTitle(pageId);
-        history.replaceState({page: pageId}, pageTitle, redirectPath);
-        
-        // 更新页面标题
-        document.title = pageTitle;
-        
-        // 页面加载后自动跳转到顶部
-        window.scrollTo(0, 0);
-    }
+    // 添加loaded类到body，使页面内容显示
+    document.body.classList.add('loaded');
+    
+    // 初始化背景图片
+    initHeroBackground();
+    
+    // 页面加载后自动跳转到顶部
+    window.scrollTo(0, 0);
 });
 
 // 初始化背景图片
