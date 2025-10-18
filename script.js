@@ -6,28 +6,42 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // 页面切换函数
     function switchPage(pageId) {
-        // 隐藏所有页面内容
-        pageContents.forEach(content => {
-            content.classList.remove('active');
-        });
+        // 获取当前激活的页面
+        const currentPage = document.querySelector('.page-content.active');
+        const targetPage = document.getElementById(`${pageId}-content`);
+        
+        // 如果目标页面就是当前页面，直接返回
+        if (currentPage === targetPage) return;
         
         // 移除所有导航链接的active类
         navLinks.forEach(link => {
             link.classList.remove('active');
         });
         
-        // 显示目标页面
-        const targetPage = document.getElementById(`${pageId}-content`);
-        if (targetPage) {
-            setTimeout(() => {
-                targetPage.classList.add('active');
-            }, 100);
-        }
-        
         // 添加active类到目标导航链接
         const targetLink = document.querySelector(`.nav-link[data-page="${pageId}"]`);
         if (targetLink) {
             targetLink.classList.add('active');
+        }
+        
+        // 如果没有当前页面，直接显示目标页面
+        if (!currentPage) {
+            if (targetPage) {
+                targetPage.classList.add('active');
+            }
+            // 如果切换到首页，重新初始化背景图片
+            if (pageId === 'home') {
+                initHeroBackground();
+            }
+            return;
+        }
+        
+        // 添加淡出效果
+        currentPage.classList.remove('active');
+        
+        // 显示目标页面
+        if (targetPage) {
+            targetPage.classList.add('active');
         }
         
         // 如果切换到首页，重新初始化背景图片

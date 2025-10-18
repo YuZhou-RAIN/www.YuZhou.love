@@ -119,12 +119,9 @@ body.loaded {
 .page-content {
     display: none;
     opacity: 0;
-    transition: opacity 0.5s ease;
-    position: absolute;
-    top: 80px; /* 顶部菜单栏高度 */
-    left: 0;
-    right: 0;
-    bottom: 0;
+    transition: opacity 0.3s ease;
+    flex: 1;
+    position: relative;
     overflow-y: auto;
 }
 
@@ -134,14 +131,18 @@ body.loaded {
 }
 
 /* 页面切换过渡动画 */
-.page-content.fade-out {
-    opacity: 0;
+.page-content {
     transition: opacity 0.3s ease;
 }
 
-.page-content.fade-in {
+.page-content:not(.active) {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.page-content.active {
     opacity: 1;
-    transition: opacity 0.3s ease;
+    pointer-events: auto;
 }
 
 /* 页面标题样式 */
@@ -488,6 +489,9 @@ footer {
     background-color: #0a0a0a;
     padding: 70px 0 20px;
     border-top: 1px solid rgba(255, 255, 255, 0.1);
+    position: relative;
+    z-index: 100;
+    margin-top: auto;
 }
 
 .footer-content {
