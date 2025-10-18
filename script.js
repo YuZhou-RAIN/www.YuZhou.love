@@ -115,6 +115,9 @@ document.addEventListener('DOMContentLoaded', () => {
             navMenu.classList.remove('active');
         });
     }
+    
+    // 页面刷新后自动跳转到顶部
+    window.scrollTo(0, 0);
 });
 
 // 初始化背景图片
