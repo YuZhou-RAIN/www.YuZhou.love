@@ -354,7 +354,7 @@ const backgroundImages = [
     'images/38B32115FF628DB757ECA3562B2178AB.jpg',
     'images/2E0A6A054B80D94AA1FE5A5D45A17F6D.jpg',
     'images/6A7AC902334C0E90B0E5568DF4FBEEB6.jpg',
-    'images/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202025-05-18%20130428.png'
+    'images/202025-05-18 130428.png'
 ];
 
 function changeBackground() {
