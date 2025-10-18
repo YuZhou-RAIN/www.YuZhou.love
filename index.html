@@ -554,20 +554,7 @@
 
         // 处理GitHub Pages SPA重定向
         (function() {
-            // 检查是否有重定向路径
-            var redirectPath = sessionStorage.getItem('redirectPath');
-            if (redirectPath) {
-                // 清除重定向标记
-                sessionStorage.removeItem('redirectPath');
-                
-                // 更新浏览器历史记录
-                history.replaceState(null, null, redirectPath);
-                
-                // 触发popstate事件，让路由处理函数处理页面切换
-                window.dispatchEvent(new PopStateEvent('popstate', {
-                    state: null
-                }));
-            }
+            // 移除了之前的重定向处理逻辑
         })();
 
         // FAQ折叠功能

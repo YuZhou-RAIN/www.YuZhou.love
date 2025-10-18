@@ -100,7 +100,7 @@ document.addEventListener('DOMContentLoaded', () => {
         };
         return paths[pageId] || '';
     }
-    
+
     // 根据路径获取页面ID
     function getPageIdFromPath(path) {
         // 移除开头的斜杠
@@ -116,6 +116,20 @@ document.addEventListener('DOMContentLoaded', () => {
         };
         return paths[path] || 'home';
     }
+
+    // 页面加载时检查URL路径并切换到相应页面
+    function checkInitialPage() {
+        // 从当前URL路径获取页面ID
+        const path = window.location.pathname;
+        const pageId = getPageIdFromPath(path);
+        switchPage(pageId);
+        
+        // 页面加载后自动跳转到顶部
+        window.scrollTo(0, 0);
+    }
+    
+    // 检查初始页面
+    checkInitialPage();
     
     // 为导航链接添加点击事件
     navLinks.forEach(link => {
@@ -176,45 +190,52 @@ document.addEventListener('DOMContentLoaded', () => {
         // 更新页面标题
         document.title = getPageTitle(pageId);
     });
-    
-    // 页面加载时检查URL路径并切换到相应页面
-    function checkInitialPage() {
-        // 从当前URL路径获取页面ID
-        const path = window.location.pathname;
-        const pageId = getPageIdFromPath(path);
-        switchPage(pageId);
+});
+
+// 页面加载后检查是否有重定向路径需要处理
+window.addEventListener('load', function() {
+    // 检查是否有从404页面重定向过来的路径
+    if (sessionStorage.redirectPath) {
+        // 获取重定向路径
+        const redirectPath = sessionStorage.redirectPath;
         
-        // 页面加载后自动跳转到顶部
-        window.scrollTo(0, 0);
+        // 清除sessionStorage中的重定向路径
+        delete sessionStorage.redirectPath;
         
-        // 设置初始历史记录状态
-        const pageTitle = getPageTitle(pageId);
-        history.replaceState({page: pageId}, pageTitle, `/${getPagePath(pageId)}`);
-    }
-    
-    // 检查初始页面
-    checkInitialPage();
-    
-    // 添加一个函数来处理从404重定向过来的路由
-    function handleRedirectRouting() {
-        // 从当前URL路径获取页面ID
-        const path = window.location.pathname;
+        // 解析路径获取页面ID
+        const path = redirectPath.replace(location.origin, '');
         const pageId = getPageIdFromPath(path);
         
         // 切换到相应页面
-        switchPage(pageId);
-        
-        // 更新页面标题
-        document.title = getPageTitle(pageId);
+        const targetPage = document.getElementById(`${pageId}-content`);
+        if (targetPage) {
+            // 隐藏所有页面内容
+            document.querySelectorAll('.page-content').forEach(page => {
+                page.classList.remove('active');
+            });
+            
+            // 显示目标页面
+            targetPage.classList.add('active');
+            
+            // 更新导航链接的active状态
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            const targetLink = document.querySelector(`.nav-link[data-page="${pageId}"]`);
+            if (targetLink) {
+                targetLink.classList.add('active');
+            }
+            
+            // 更新浏览器历史记录
+            const pageTitle = getPageTitle(pageId);
+            history.replaceState({page: pageId}, pageTitle, redirectPath);
+            
+            // 更新页面标题
+            document.title = pageTitle;
+        }
         
         // 页面加载后自动跳转到顶部
         window.scrollTo(0, 0);
-    }
-    
-    // 如果页面是从404重定向过来的，处理路由
-    if (sessionStorage.getItem('redirectPath')) {
-        handleRedirectRouting();
-        sessionStorage.removeItem('redirectPath');
     }
 });
 

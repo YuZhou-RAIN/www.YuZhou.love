@@ -7,9 +7,9 @@
         // GitHub Pages SPA路由处理
         // 保存当前路径并重定向到首页
         (function() {
-            // 保存当前路径（不包括域名）
+            // 保存当前路径
             var path = location.pathname + location.search + location.hash;
-            sessionStorage.setItem('redirectPath', path);
+            sessionStorage.redirectPath = path;
             
             // 重定向到首页
             location.replace('/');
