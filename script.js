@@ -92,6 +92,19 @@ document.addEventListener('DOMContentLoaded', () => {
             switchPage(pageId);
         });
     });
+    
+    // 为logo区域添加点击事件，切换到首页
+    const logoArea = document.querySelector('.logo');
+    if (logoArea) {
+        logoArea.addEventListener('click', (e) => {
+            e.preventDefault();
+            switchPage('home');
+            
+            // 关闭移动端菜单
+            hamburger.classList.remove('active');
+            navMenu.classList.remove('active');
+        });
+    }
 });
 
 // 初始化背景图片
