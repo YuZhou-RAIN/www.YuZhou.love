@@ -228,8 +228,6 @@ window.addEventListener('load', function() {
     // 初始化背景图片
     initHeroBackground();
     
-    // 页面加载后自动跳转到顶部
-    window.scrollTo(0, 0);
 });
 
 // 初始化背景图片
@@ -293,8 +291,6 @@ window.addEventListener('load', () => {
     // 初始化背景图片
     initHeroBackground();
     
-    // 页面加载后自动跳转到顶部
-    window.scrollTo(0, 0);
 });
 
 // 服务器状态模拟更新
