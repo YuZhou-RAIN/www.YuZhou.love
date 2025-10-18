@@ -115,33 +115,6 @@ document.addEventListener('DOMContentLoaded', () => {
             navMenu.classList.remove('active');
         });
     }
-    
-    // 页面状态管理函数
-    function savePageState(pageId) {
-        // 保存当前页面状态到URL哈希
-        window.location.hash = pageId;
-    }
-    
-    function loadPageState() {
-        // 从URL哈希加载页面状态
-        const hash = window.location.hash.substring(1);
-        if (hash) {
-            // 延迟执行以确保DOM完全加载
-            setTimeout(() => {
-                switchPage(hash);
-            }, 100);
-        }
-    }
-    
-    // 加载保存的页面状态
-    loadPageState();
-    
-    // 为页面切换函数添加状态保存
-    const originalSwitchPage = switchPage;
-    window.switchPage = function(pageId) {
-        originalSwitchPage(pageId);
-        savePageState(pageId);
-    };
 });
 
 // 初始化背景图片
@@ -204,6 +177,9 @@ window.addEventListener('load', () => {
     
     // 初始化背景图片
     initHeroBackground();
+    
+    // 页面刷新后自动跳转到顶部
+    window.scrollTo(0, 0);
 });
 
 // 服务器状态模拟更新
@@ -410,15 +386,15 @@ document.addEventListener('mousemove', (e) => {
         const y = e.clientY / window.innerHeight;
         
         // 主背景图移动（较小幅度）
-        const moveX1 = (x - 0.5) * 10;
-        const moveY1 = (y - 0.5) * 10;
+        const moveX1 = (x - 0.5) * 40;  // 增加移动范围
+        const moveY1 = (y - 0.5) * 40;  // 增加移动范围
         
         // 次背景层移动（较大幅度）
-        const moveX2 = (x - 0.5) * 20;
-        const moveY2 = (y - 0.5) * 20;
+        const moveX2 = (x - 0.5) * 80;  // 增加移动范围
+        const moveY2 = (y - 0.5) * 80;  // 增加移动范围
         
-        // 应用移动效果（使用背景位置而不是变换）
-        heroBg.style.backgroundPosition = `${50 + moveX1}% ${50 + moveY1}%`;
-        heroBgLayer.style.backgroundPosition = `${50 + moveX2}% ${50 + moveY2}%`;
+        // 应用移动效果（使用transform而不是backgroundPosition）
+        heroBg.style.transform = `translate(${moveX1}px, ${moveY1}px)`;
+        heroBgLayer.style.transform = `translate(${moveX2}px, ${moveY2}px)`;
     }
 });

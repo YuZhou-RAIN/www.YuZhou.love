@@ -412,7 +412,6 @@
                                         <ul>
                                             <li>加入我们的QQ交流群：<a href="https://qm.qq.com/q/sgWsIw909q" target="_blank" class="qq-group-link">823557774</a> <button class="copy-btn small" data-copy="823557774" style="margin-left: 10px;"><i class="fas fa-copy"></i> 复制</button></li>
                                             <li>在游戏中联系在线管理员</li>
-                                            <li>通过"关于我们"页面发送消息</li>
                                         </ul>
                                     </div>
                                 </div>
@@ -558,11 +557,31 @@
                 const answer = this.nextElementSibling;
                 const icon = this.querySelector('i');
                 
-                // 切换答案显示
-                answer.classList.toggle('active');
+                // 如果答案已经展开，则收起
+                if (answer.classList.contains('active')) {
+                    // 先设置为具体的高度
+                    answer.style.maxHeight = answer.scrollHeight + 'px';
+                    // 强制重排
+                    answer.offsetHeight;
+                    // 然后设置为0，触发动画
+                    answer.style.maxHeight = '0';
+                    answer.classList.remove('active');
+                } else {
+                    // 展开答案
+                    answer.classList.add('active');
+                    // 设置为具体的高度
+                    answer.style.maxHeight = answer.scrollHeight + 'px';
+                }
                 
                 // 旋转图标
                 icon.classList.toggle('rotate');
+                
+                // 动画结束后清理样式
+                setTimeout(() => {
+                    if (!answer.classList.contains('active')) {
+                        answer.style.maxHeight = '';
+                    }
+                }, 300);
             });
         });
 
