@@ -37,21 +37,31 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         
         // 添加淡出效果
-        currentPage.classList.add('fade-out');
+        currentPage.style.opacity = '0';
         
         // 延迟一段时间后隐藏当前页面并显示新页面
         setTimeout(() => {
             // 隐藏当前页面
-            currentPage.classList.remove('active', 'fade-out');
+            currentPage.classList.remove('active');
             
             // 显示目标页面
             if (targetPage) {
-                targetPage.classList.add('fade-in');
                 targetPage.classList.add('active');
                 
-                // 移除淡入效果类
+                // 先设置透明度为0，然后逐渐增加到1
+                targetPage.style.opacity = '0';
+                targetPage.style.transition = 'opacity 0.3s ease';
+                
+                // 触发重排
+                targetPage.offsetHeight;
+                
+                // 淡入效果
+                targetPage.style.opacity = '1';
+                
+                // 清除内联样式
                 setTimeout(() => {
-                    targetPage.classList.remove('fade-in');
+                    targetPage.style.opacity = '';
+                    targetPage.style.transition = '';
                 }, 300);
             }
             
@@ -105,6 +115,33 @@ document.addEventListener('DOMContentLoaded', () => {
             navMenu.classList.remove('active');
         });
     }
+    
+    // 页面状态管理函数
+    function savePageState(pageId) {
+        // 保存当前页面状态到URL哈希
+        window.location.hash = pageId;
+    }
+    
+    function loadPageState() {
+        // 从URL哈希加载页面状态
+        const hash = window.location.hash.substring(1);
+        if (hash) {
+            // 延迟执行以确保DOM完全加载
+            setTimeout(() => {
+                switchPage(hash);
+            }, 100);
+        }
+    }
+    
+    // 加载保存的页面状态
+    loadPageState();
+    
+    // 为页面切换函数添加状态保存
+    const originalSwitchPage = switchPage;
+    window.switchPage = function(pageId) {
+        originalSwitchPage(pageId);
+        savePageState(pageId);
+    };
 });
 
 // 初始化背景图片
