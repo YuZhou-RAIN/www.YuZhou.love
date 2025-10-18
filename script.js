@@ -334,15 +334,15 @@ document.addEventListener('mousemove', (e) => {
         const y = e.clientY / window.innerHeight;
         
         // 主背景图移动（较小幅度）
-        const moveX1 = (x - 0.5) * 15;
-        const moveY1 = (y - 0.5) * 15;
+        const moveX1 = (x - 0.5) * 10;
+        const moveY1 = (y - 0.5) * 10;
         
         // 次背景层移动（较大幅度）
-        const moveX2 = (x - 0.5) * 25;
-        const moveY2 = (y - 0.5) * 25;
+        const moveX2 = (x - 0.5) * 20;
+        const moveY2 = (y - 0.5) * 20;
         
-        // 应用移动效果
-        heroBg.style.transform = `translate(${moveX1}px, ${moveY1}px)`;
-        heroBgLayer.style.transform = `translate(${moveX2}px, ${moveY2}px)`;
+        // 应用移动效果（使用背景位置而不是变换）
+        heroBg.style.backgroundPosition = `${50 + moveX1}% ${50 + moveY1}%`;
+        heroBgLayer.style.backgroundPosition = `${50 + moveX2}% ${50 + moveY2}%`;
     }
 });
