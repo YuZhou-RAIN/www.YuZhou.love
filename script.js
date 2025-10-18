@@ -194,6 +194,28 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // 检查初始页面
     checkInitialPage();
+    
+    // 添加一个函数来处理从404重定向过来的路由
+    function handleRedirectRouting() {
+        // 从当前URL路径获取页面ID
+        const path = window.location.pathname;
+        const pageId = getPageIdFromPath(path);
+        
+        // 切换到相应页面
+        switchPage(pageId);
+        
+        // 更新页面标题
+        document.title = getPageTitle(pageId);
+        
+        // 页面加载后自动跳转到顶部
+        window.scrollTo(0, 0);
+    }
+    
+    // 如果页面是从404重定向过来的，处理路由
+    if (sessionStorage.getItem('redirectPath')) {
+        handleRedirectRouting();
+        sessionStorage.removeItem('redirectPath');
+    }
 });
 
 // 初始化背景图片

@@ -1,16 +1,22 @@
 <!DOCTYPE html>
 <html>
-  <head>
+<head>
     <meta charset="utf-8">
     <title>雨州Minecraft服务器</title>
     <script>
-      // GitHub Pages SPA路由重定向
-      // 保存当前URL并重定向到首页
-      sessionStorage.setItem('redirect', location.href);
+        // GitHub Pages SPA路由处理
+        // 保存当前路径并重定向到首页
+        (function() {
+            // 保存当前路径（不包括域名）
+            var path = location.pathname + location.search + location.hash;
+            sessionStorage.setItem('redirectPath', path);
+            
+            // 重定向到首页
+            location.replace('/');
+        })();
     </script>
-    <meta http-equiv="refresh" content="0;URL='/'">
-  </head>
-  <body>
-    <!-- 重定向到首页 -->
-  </body>
+</head>
+<body>
+    <!-- 正在重定向到首页... -->
+</body>
 </html>

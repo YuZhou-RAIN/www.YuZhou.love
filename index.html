@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>雨州Minecraft服务器</title>
+    <title>雨州-Minecraft</title>
     <link rel="icon" href="images/logo.png" type="image/png">
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="fonts/fontawesome-free-6.4.0-web/css/all.min.css">
@@ -554,13 +554,19 @@
 
         // 处理GitHub Pages SPA重定向
         (function() {
-            // 检查是否有重定向URL
-            var redirect = sessionStorage.getItem('redirect');
-            if (redirect) {
+            // 检查是否有重定向路径
+            var redirectPath = sessionStorage.getItem('redirectPath');
+            if (redirectPath) {
                 // 清除重定向标记
-                sessionStorage.removeItem('redirect');
+                sessionStorage.removeItem('redirectPath');
+                
                 // 更新浏览器历史记录
-                history.replaceState(null, null, redirect);
+                history.replaceState(null, null, redirectPath);
+                
+                // 触发popstate事件，让路由处理函数处理页面切换
+                window.dispatchEvent(new PopStateEvent('popstate', {
+                    state: null
+                }));
             }
         })();
 
