@@ -37,17 +37,29 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         
         // 添加淡出效果
-        currentPage.classList.remove('active');
+        currentPage.classList.add('fade-out');
         
-        // 显示目标页面
-        if (targetPage) {
-            targetPage.classList.add('active');
-        }
-        
-        // 如果切换到首页，重新初始化背景图片
-        if (pageId === 'home') {
-            initHeroBackground();
-        }
+        // 延迟一段时间后隐藏当前页面并显示新页面
+        setTimeout(() => {
+            // 隐藏当前页面
+            currentPage.classList.remove('active', 'fade-out');
+            
+            // 显示目标页面
+            if (targetPage) {
+                targetPage.classList.add('fade-in');
+                targetPage.classList.add('active');
+                
+                // 移除淡入效果类
+                setTimeout(() => {
+                    targetPage.classList.remove('fade-in');
+                }, 300);
+            }
+            
+            // 如果切换到首页，重新初始化背景图片
+            if (pageId === 'home') {
+                initHeroBackground();
+            }
+        }, 300);
     }
     
     // 为导航链接添加点击事件

@@ -119,7 +119,6 @@ body.loaded {
 .page-content {
     display: none;
     opacity: 0;
-    transition: opacity 0.3s ease;
     flex: 1;
     position: relative;
     overflow-y: auto;
@@ -131,18 +130,14 @@ body.loaded {
 }
 
 /* 页面切换过渡动画 */
-.page-content {
+.page-content.fade-out {
+    opacity: 0;
     transition: opacity 0.3s ease;
 }
 
-.page-content:not(.active) {
-    opacity: 0;
-    pointer-events: none;
-}
-
-.page-content.active {
+.page-content.fade-in {
     opacity: 1;
-    pointer-events: auto;
+    transition: opacity 0.3s ease;
 }
 
 /* 页面标题样式 */
