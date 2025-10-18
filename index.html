@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>雨州 Minecraft</title>
+    <title>雨州Minecraft服务器</title>
     <link rel="icon" href="images/logo.png" type="image/png">
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="fonts/fontawesome-free-6.4.0-web/css/all.min.css">
@@ -19,17 +19,17 @@
                 </div>
                 <ul class="nav-menu">
                     <li class="nav-item">
-                        <a href="#home" class="nav-link active" data-page="home">首页</a>
+                        <a href="/" class="nav-link active" data-page="home">首页</a>
                     </li>
                     <li class="nav-item">
-                        <a href="#features" class="nav-link" data-page="features">服务器特色</a>
+                        <a href="/features" class="nav-link" data-page="features">服务器特色</a>
                     </li>
                     <li class="nav-item">
-                        <a href="#join" class="nav-link" data-page="join">加入指南</a>
+                        <a href="/join" class="nav-link" data-page="join">加入指南</a>
                     </li>
 
                     <li class="nav-item">
-                        <a href="#contact" class="nav-link" data-page="about">关于我们</a>
+                        <a href="/about" class="nav-link" data-page="about">关于我们</a>
                     </li>
                 </ul>
                 <div class="hamburger">
@@ -53,10 +53,10 @@
                         <h1 class="hero-title">雨州 Minecraft 服务器</h1>
                         <p class="hero-subtitle">Java与基岩版互通，打造最佳游戏体验</p>
                         <div class="hero-buttons">
-                            <a href="#join" class="btn btn-primary" data-page="join">
+                            <a href="/join" class="btn btn-primary" data-page="join">
                                 <i class="fas fa-play"></i> 立即加入
                             </a>
-                            <a href="#features" class="btn btn-secondary" data-page="features">
+                            <a href="/features" class="btn btn-secondary" data-page="features">
                                 <i class="fas fa-info-circle"></i> 了解更多
                             </a>
                         </div>
@@ -551,6 +551,18 @@
                 });
             });
         });
+
+        // 处理GitHub Pages SPA重定向
+        (function() {
+            // 检查是否有重定向URL
+            var redirect = sessionStorage.getItem('redirect');
+            if (redirect) {
+                // 清除重定向标记
+                sessionStorage.removeItem('redirect');
+                // 更新浏览器历史记录
+                history.replaceState(null, null, redirect);
+            }
+        })();
 
         // FAQ折叠功能
         document.querySelectorAll('.faq-question').forEach(question => {

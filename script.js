@@ -70,6 +70,51 @@ document.addEventListener('DOMContentLoaded', () => {
                 initHeroBackground();
             }
         }, 300);
+        
+        // 更新浏览器历史记录
+        const pageTitle = getPageTitle(pageId);
+        history.pushState({page: pageId}, pageTitle, `/${getPagePath(pageId)}`);
+        
+        // 更新页面标题
+        document.title = pageTitle;
+    }
+    
+    // 获取页面标题
+    function getPageTitle(pageId) {
+        const titles = {
+            'home': '雨州Minecraft服务器',
+            'features': '服务器特色 - 雨州Minecraft服务器',
+            'join': '加入指南 - 雨州Minecraft服务器',
+            'about': '关于我们 - 雨州Minecraft服务器'
+        };
+        return titles[pageId] || '雨州Minecraft服务器';
+    }
+    
+    // 获取页面路径
+    function getPagePath(pageId) {
+        const paths = {
+            'home': '',
+            'features': 'features',
+            'join': 'join',
+            'about': 'about'
+        };
+        return paths[pageId] || '';
+    }
+    
+    // 根据路径获取页面ID
+    function getPageIdFromPath(path) {
+        // 移除开头的斜杠
+        if (path.startsWith('/')) {
+            path = path.substring(1);
+        }
+        
+        const paths = {
+            '': 'home',
+            'features': 'features',
+            'join': 'join',
+            'about': 'about'
+        };
+        return paths[path] || 'home';
     }
     
     // 为导航链接添加点击事件
@@ -116,8 +161,39 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
     
-    // 页面刷新后自动跳转到顶部
-    window.scrollTo(0, 0);
+    // 监听浏览器的后退/前进按钮
+    window.addEventListener('popstate', function(event) {
+        let pageId = 'home';
+        if (event.state && event.state.page) {
+            pageId = event.state.page;
+        } else {
+            // 从当前URL路径获取页面ID
+            const path = window.location.pathname;
+            pageId = getPageIdFromPath(path);
+        }
+        switchPage(pageId);
+        
+        // 更新页面标题
+        document.title = getPageTitle(pageId);
+    });
+    
+    // 页面加载时检查URL路径并切换到相应页面
+    function checkInitialPage() {
+        // 从当前URL路径获取页面ID
+        const path = window.location.pathname;
+        const pageId = getPageIdFromPath(path);
+        switchPage(pageId);
+        
+        // 页面加载后自动跳转到顶部
+        window.scrollTo(0, 0);
+        
+        // 设置初始历史记录状态
+        const pageTitle = getPageTitle(pageId);
+        history.replaceState({page: pageId}, pageTitle, `/${getPagePath(pageId)}`);
+    }
+    
+    // 检查初始页面
+    checkInitialPage();
 });
 
 // 初始化背景图片
@@ -181,7 +257,7 @@ window.addEventListener('load', () => {
     // 初始化背景图片
     initHeroBackground();
     
-    // 页面刷新后自动跳转到顶部
+    // 页面加载后自动跳转到顶部
     window.scrollTo(0, 0);
 });
 
@@ -357,7 +433,7 @@ const backgroundImages = [
     'images/38B32115FF628DB757ECA3562B2178AB.jpg',
     'images/2E0A6A054B80D94AA1FE5A5D45A17F6D.jpg',
     'images/6A7AC902334C0E90B0E5568DF4FBEEB6.jpg',
-    'images/202025-05-18 130428.png'
+    '%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202025-05-18%20130428.png'
 ];
 
 function changeBackground() {
