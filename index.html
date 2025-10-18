@@ -510,7 +510,15 @@
     <script>
         // 复制按钮功能
         document.querySelectorAll('.copy-btn').forEach(button => {
+            // 为每个按钮添加状态标志
+            button.isCopying = false;
+            
             button.addEventListener('click', function() {
+                // 如果按钮正在显示"已复制"状态，则不处理重复点击
+                if (this.isCopying) {
+                    return;
+                }
+                
                 const textToCopy = this.getAttribute('data-copy');
                 navigator.clipboard.writeText(textToCopy).then(() => {
                     const originalText = this.innerHTML;
@@ -520,12 +528,19 @@
                     } else {
                         this.innerHTML = '<i class="fas fa-check"></i> 已复制';
                     }
+                    
+                    // 设置状态标志
+                    this.isCopying = true;
+                    
                     // 3秒后恢复原始文本
                     setTimeout(() => {
                         this.innerHTML = originalText;
+                        this.isCopying = false;
                     }, 3000);
                 }).catch(err => {
                     console.error('复制失败: ', err);
+                    // 即使复制失败也要重置状态
+                    this.isCopying = false;
                 });
             });
         });

@@ -120,11 +120,28 @@ body.loaded {
     display: none;
     opacity: 0;
     transition: opacity 0.5s ease;
+    position: absolute;
+    top: 80px; /* 顶部菜单栏高度 */
+    left: 0;
+    right: 0;
+    bottom: 0;
+    overflow-y: auto;
 }
 
 .page-content.active {
     display: block;
     opacity: 1;
+}
+
+/* 页面切换过渡动画 */
+.page-content.fade-out {
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.page-content.fade-in {
+    opacity: 1;
+    transition: opacity 0.3s ease;
 }
 
 /* 页面标题样式 */
