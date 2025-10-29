@@ -955,11 +955,12 @@ footer {
         text-align: center;
     }
     
-    /* 修复页脚在536px以下屏幕的布局问题 */
+    /* 修复页脚在536px以下屏幕的布局问题，确保服务器地址信息在一行显示 */
     .footer-section p {
         display: flex;
         align-items: center;
-        flex-wrap: wrap;
+        flex-wrap: nowrap; /* 防止换行 */
+        white-space: nowrap; /* 防止文本换行 */
     }
     
     .footer-section p .copy-btn.small {
