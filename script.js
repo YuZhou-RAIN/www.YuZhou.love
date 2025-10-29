@@ -25,11 +25,6 @@ document.addEventListener('DOMContentLoaded', () => {
             targetLink.classList.add('active');
         }
         
-        // 为页脚添加淡出效果
-        if (footer) {
-            footer.style.opacity = '0';
-        }
-        
         // 如果没有当前页面，直接显示目标页面
         if (!currentPage) {
             if (targetPage) {
@@ -41,20 +36,14 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             // 重置滚动位置到顶部
             window.scrollTo(0, 0);
-            
-            // 为页脚添加淡入效果
-            if (footer) {
-                // 触发重排
-                footer.offsetHeight;
-                
-                // 淡入效果
-                footer.style.opacity = '1';
-            }
             return;
         }
         
-        // 添加淡出效果
+        // 同时为页面内容和页脚添加淡出效果
         currentPage.style.opacity = '0';
+        if (footer) {
+            footer.style.opacity = '0';
+        }
         
         // 延迟一段时间后隐藏当前页面并显示新页面
         setTimeout(() => {
@@ -67,7 +56,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 // 先设置透明度为0，然后逐渐增加到1
                 targetPage.style.opacity = '0';
-                targetPage.style.transition = 'opacity 0.3s ease';
                 
                 // 触发重排
                 targetPage.offsetHeight;
@@ -78,7 +66,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 // 清除内联样式
                 setTimeout(() => {
                     targetPage.style.opacity = '';
-                    targetPage.style.transition = '';
                 }, 300);
             }
             
