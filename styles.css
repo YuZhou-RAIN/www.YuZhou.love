@@ -954,6 +954,18 @@ footer {
     .hardware-header h3 {
         text-align: center;
     }
+    
+    /* 修复页脚在536px以下屏幕的布局问题 */
+    .footer-section p {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+    
+    .footer-section p .copy-btn.small {
+        margin-left: 10px;
+        flex-shrink: 0;
+    }
 }
 
 /* 页面标题 */
@@ -1085,8 +1097,9 @@ footer {
 
 .copy-btn {
     display: inline-block;
-    background-color: #44CEF3;
-    color: white;
+    /* 改为空心按钮样式 */
+    background-color: transparent;
+    color: #2196f3; /* 改为与页脚QQ群号一致的颜色 */
     padding: 5px 10px;
     border-radius: 4px;
     text-decoration: none;
@@ -1094,18 +1107,19 @@ footer {
     margin-top: 5px;
     margin-left: 5px;
     transition: all 0.3s ease;
-    border: none;
+    border: 1px solid #2196f3; /* 添加边框，颜色与文字一致 */
     cursor: pointer;
     font-weight: normal;
 }
 
 .copy-btn:hover {
-    background-color: #3ab8e0;
+    background-color: rgba(33, 150, 243, 0.1); /* 悬停时添加浅色背景 */
     transform: translateY(-2px);
 }
 
 .copy-btn i {
     margin-right: 5px;
+    color: #2196f3; /* 确保图标颜色与文字一致 */
 }
 
 .copy-btn.small {
