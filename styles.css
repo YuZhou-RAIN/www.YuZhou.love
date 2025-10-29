@@ -533,6 +533,16 @@ footer {
 .footer-section p {
     color: #b0b0b0;
     margin-bottom: 10px;
+    /* 确保页脚中的服务器地址和QQ群信息不换行 */
+    display: flex;
+    align-items: center;
+    flex-wrap: nowrap;
+    white-space: nowrap;
+}
+
+.footer-section p .copy-btn.small {
+    margin-left: 10px;
+    flex-shrink: 0;
 }
 
 .footer-section p:nth-child(3) {
