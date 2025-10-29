@@ -645,6 +645,11 @@ footer {
     .features-grid {
         grid-template-columns: repeat(3, 1fr);
     }
+    
+    /* 确保在1200px以下时新闻卡片水平排列 */
+    .news-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
 }
 
 @media screen and (max-width: 992px) {
@@ -857,8 +862,9 @@ footer {
         font-size: 1rem;
     }
     
+    /* 保持与768px断点下相同的字体大小 */
     .section-title {
-        font-size: 1.8rem;
+        font-size: 2rem;
     }
     
     .server-info-card {
