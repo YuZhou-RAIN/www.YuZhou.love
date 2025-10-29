@@ -12,12 +12,11 @@ body {
     color: #e0e0e0;
     background-color: #0a0a0a;
     overflow-x: hidden;
-    overflow-y: scroll; /* 始终显示垂直滚动条，防止页面跳动 */
+    overflow-y: scroll;
     opacity: 0;
     transition: opacity 0.8s ease;
 }
 
-/* 页面加载后显示 */
 body.loaded {
     opacity: 1;
 }
@@ -43,81 +42,6 @@ body.loaded {
 
 .showcase-content {
     padding: 0;
-}
-
-/* 响应式设计 */
-@media (max-width: 992px) {
-    .showcase-content {
-        grid-template-columns: 1fr 1fr;
-        grid-template-rows: auto 1fr auto;
-        column-gap: 20px;
-        row-gap: 10px;
-        margin-top: 40px;
-        height: auto;
-        padding: 0;
-    }
-    
-    .quadrant-layout {
-        padding: 0 20px;
-    }
-    
-    .performance-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .specs-list {
-        grid-template-columns: 1fr;
-    }
-    
-    .uptime-stats {
-        flex-direction: column;
-        gap: 30px;
-    }
-    
-    .stat-item {
-        padding: 0;
-    }
-}
-
-@media (max-width: 576px) {
-    .container {
-        max-width: 100%;
-        padding: 0 15px;
-    }
-    
-    .showcase-content {
-        grid-template-columns: 1fr 1fr;
-        grid-template-rows: auto 1fr auto;
-        column-gap: 15px;
-        row-gap: 8px;
-        margin-top: 30px;
-        height: auto;
-        padding: 0;
-    }
-    
-    .quadrant-layout {
-        padding: 0 15px;
-    }
-    
-    .quadrant-layout .showcase-visual.image1 {
-        grid-column: 1;
-        grid-row: 2 / span 2;
-    }
-    
-    .quadrant-layout .showcase-visual.image2 {
-        grid-column: 2;
-        grid-row: 1 / span 2;
-    }
-    
-    .quadrant-layout .feature-card.card1 {
-        grid-column: 1;
-        grid-row: 1;
-    }
-    
-    .quadrant-layout .feature-card.card2 {
-        grid-column: 2;
-        grid-row: 3;
-    }
 }
 
 /* 导航栏 */
@@ -221,9 +145,6 @@ body.loaded {
     opacity: 1;
 }
 
-/* 页面切换过渡动画 */
-/* 移除淡入淡出类，使用JavaScript控制过渡效果 */
-
 /* 页面标题样式 */
 .page-header {
     padding: 120px 0 60px;
@@ -261,7 +182,6 @@ body.loaded {
 }
 
 /* 背景图片容器 */
-/* 鼠标跟随效果 */
 .hero-bg {
     position: absolute;
     top: -15%;
@@ -394,7 +314,6 @@ body.loaded {
     padding: 15px 25px 15px 205px;
 }
 
-/* 添加悬停效果 */
 .server-ip:hover,
 .server-qq:hover {
     transform: translateY(-5px);
@@ -440,7 +359,6 @@ body.loaded {
     gap: 30px;
 }
 
-/* 服务器特点部分的卡片样式 */
 .features-grid .feature-card {
     background: rgba(20, 20, 20, 0.8);
     border-radius: 12px;
@@ -632,7 +550,6 @@ footer {
     text-decoration: underline;
 }
 
-/* QQ交流群链接悬停效果 */
 .qq-group-link {
     color: #2196f3;
     text-decoration: none;
@@ -718,7 +635,6 @@ footer {
         font-size: 3.5rem;
     }
     
-    /* 服务器信息框样式调整 - 左侧直角方形，右侧圆形 */
     .server-ip, .server-qq {
         border-radius: 0 30px 30px 0;
         padding-left: 20px;
@@ -754,6 +670,37 @@ footer {
     .guide-content {
         flex-direction: column;
         gap: 30px;
+    }
+    
+    .showcase-content {
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: auto 1fr auto;
+        column-gap: 20px;
+        row-gap: 10px;
+        margin-top: 40px;
+        height: auto;
+        padding: 0;
+    }
+    
+    .quadrant-layout {
+        padding: 0 20px;
+    }
+    
+    .performance-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .specs-list {
+        grid-template-columns: 1fr;
+    }
+    
+    .uptime-stats {
+        flex-direction: column;
+        gap: 30px;
+    }
+    
+    .stat-item {
+        padding: 0;
     }
 }
 
@@ -822,9 +769,39 @@ footer {
     .plugins-grid {
         grid-template-columns: 1fr;
     }
+    
+    .guide-content,
+    .guide-content.reverse {
+        flex-direction: column;
+        gap: 30px;
+    }
+    
+    .guide-steps {
+        order: 2;
+    }
+    
+    .guide-image {
+        order: 1;
+        max-width: 500px;
+        margin: 0 auto;
+    }
+    
+    .step {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .step:first-child {
+        margin-top: 20px;
+    }
+    
+    .step-number {
+        margin-right: 0;
+        margin-bottom: 15px;
+    }
 }
 
-@media screen and (max-width: 576px) {
+@media screen and (max-width: 536px) {
     .container {
         max-width: 100%;
         padding: 0 15px;
@@ -864,6 +841,86 @@ footer {
     
     .info-item {
         margin-bottom: 20px;
+    }
+    
+    .showcase-content {
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: auto 1fr auto;
+        column-gap: 15px;
+        row-gap: 8px;
+        margin-top: 30px;
+        height: auto;
+        padding: 0;
+    }
+    
+    .quadrant-layout {
+        padding: 0 15px;
+    }
+    
+    .quadrant-layout .showcase-visual.image1 {
+        grid-column: 1;
+        grid-row: 2 / span 2;
+    }
+    
+    .quadrant-layout .showcase-visual.image2 {
+        grid-column: 2;
+        grid-row: 1 / span 2;
+    }
+    
+    .quadrant-layout .feature-card.card1 {
+        grid-column: 1;
+        grid-row: 1;
+    }
+    
+    .quadrant-layout .feature-card.card2 {
+        grid-column: 2;
+        grid-row: 3;
+    }
+    
+    .contact-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .faq-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .feedback-content {
+        grid-template-columns: 1fr;
+    }
+    
+    .feedback-form {
+        padding: 20px;
+    }
+    
+    .info-card {
+        padding: 20px;
+    }
+    
+    .contact-info-wrapper .contact-card {
+        padding: 25px;
+    }
+    
+    .method-content h3 {
+        font-size: 1.2rem;
+    }
+    
+    .method-content p {
+        font-size: 1.1rem;
+    }
+    
+    .hardware-specs-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .hardware-header {
+        flex-direction: column;
+        text-align: center;
+        gap: 10px;
+    }
+    
+    .hardware-header h3 {
+        text-align: center;
     }
 }
 
@@ -1025,8 +1082,6 @@ footer {
     margin-left: 5px;
     display: inline-block;
 }
-
-
 
 /* 加入指南 */
 .join-guide {
@@ -1243,42 +1298,6 @@ footer {
     line-height: 1.6;
 }
 
-/* 响应式设计 - 加入指南 */
-@media screen and (max-width: 992px) {
-    .guide-content,
-    .guide-content.reverse {
-        flex-direction: column;
-        gap: 30px;
-    }
-    
-    .guide-steps {
-        order: 2;
-    }
-    
-    .guide-image {
-        order: 1;
-        max-width: 500px;
-        margin: 0 auto;
-    }
-}
-
-@media screen and (max-width: 768px) {
-    .step {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-    
-    .step:first-child {
-        margin-top: 20px;
-    }
-    
-    .step-number {
-        margin-right: 0;
-        margin-bottom: 15px;
-    }
-}
-
-
 /* 联系页面样式 */
 .contact-section {
     padding: 80px 0;
@@ -1330,25 +1349,6 @@ footer {
     font-size: 1.2rem;
     margin-bottom: 20px;
     color: rgba(255, 255, 255, 0.8);
-}
-
-.copy-btn {
-    background: rgba(68, 206, 243, 0.2);
-    border: 1px solid #44CEF3;
-    color: #44CEF3;
-    padding: 8px 15px;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    font-size: 0.9rem;
-}
-
-.copy-btn:hover {
-    background: rgba(68, 206, 243, 0.3);
-}
-
-.copy-btn i {
-    color: #44CEF3;
 }
 
 /* 关于我们页面样式 */
@@ -1597,92 +1597,6 @@ footer {
     line-height: 1.5;
 }
 
-.faq-contact-section {
-    padding: 80px 0;
-}
-
-/* FAQ部分 */
-.faq-section {
-    padding: 100px 0;
-}
-
-.faq-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 30px;
-}
-
-.faq-item {
-    background-color: rgba(20, 20, 20, 0.8);
-    border-radius: 10px;
-    overflow: hidden;
-    border: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-.faq-question {
-    padding: 20px;
-    cursor: pointer;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    transition: background-color 0.3s ease;
-}
-
-.faq-question:hover {
-    background-color: rgba(33, 150, 243, 0.1);
-}
-
-.faq-question h3 {
-    font-size: 1.2rem;
-    color: #ffffff;
-    margin: 0;
-}
-
-.faq-question i {
-    color: #2196f3;
-    transition: transform 0.5s ease; /* 增加过渡时间 */
-}
-
-.faq-question i.rotate {
-    transform: rotate(180deg);
-}
-
-.faq-answer {
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.8s ease; /* 增加过渡时间和调整缓动函数 */
-}
-
-.faq-answer.active {
-    max-height: 500px; /* 增加最大高度 */
-}
-
-.faq-answer p {
-    padding: 0 20px 20px 20px;
-    color: #b0b0b0;
-    line-height: 1.6;
-}
-
-/* FAQ默认展开状态 */
-.faq-item.active .faq-answer {
-    max-height: 500px; /* 增加最大高度 */
-    padding: 20px;
-}
-
-.faq-answer ul {
-    padding: 0 20px 20px 40px;
-    color: #b0b0b0;
-    line-height: 1.6;
-}
-
-.faq-answer li {
-    margin-bottom: 10px;
-}
-
-.faq-item.active .faq-question i {
-    transform: rotate(180deg);
-}
-
 .success-message {
     background: rgba(68, 206, 243, 0.2);
     border: 1px solid #44CEF3;
@@ -1745,97 +1659,6 @@ footer {
     font-size: 1.2rem;
     color: rgba(255, 255, 255, 0.7);
     margin: 0;
-}
-
-/* 四象限布局 - 集中管理所有相关样式 */
-.quadrant-layout {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: auto 1fr auto;
-    row-gap: 10px;
-    column-gap: 30px;
-    margin-top: 40px;
-    height: 600px;
-    padding: 0 20px;
-}
-
-.showcase-content {
-    padding: 0;
-}
-
-/* 响应式设计 */
-@media (max-width: 992px) {
-    .showcase-content {
-        grid-template-columns: 1fr 1fr;
-        grid-template-rows: auto 1fr auto;
-        column-gap: 20px;
-        row-gap: 10px;
-        margin-top: 40px;
-        height: auto;
-        padding: 0;
-    }
-    
-    .quadrant-layout {
-        padding: 0 20px;
-    }
-    
-    .performance-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .specs-list {
-        grid-template-columns: 1fr;
-    }
-    
-    .uptime-stats {
-        flex-direction: column;
-        gap: 30px;
-    }
-    
-    .stat-item {
-        padding: 0;
-    }
-}
-
-@media (max-width: 576px) {
-    .container {
-        max-width: 100%;
-        padding: 0 15px;
-    }
-    
-    .showcase-content {
-        grid-template-columns: 1fr 1fr;
-        grid-template-rows: auto 1fr auto;
-        column-gap: 15px;
-        row-gap: 8px;
-        margin-top: 30px;
-        height: auto;
-        padding: 0;
-    }
-    
-    .quadrant-layout {
-        padding: 0 15px;
-    }
-    
-    .quadrant-layout .showcase-visual.image1 {
-        grid-column: 1;
-        grid-row: 2 / span 2;
-    }
-    
-    .quadrant-layout .showcase-visual.image2 {
-        grid-column: 2;
-        grid-row: 1 / span 2;
-    }
-    
-    .quadrant-layout .feature-card.card1 {
-        grid-column: 1;
-        grid-row: 1;
-    }
-    
-    .quadrant-layout .feature-card.card2 {
-        grid-column: 2;
-        grid-row: 3;
-    }
 }
 
 /* 象限内卡片样式 - 统一管理 */
@@ -2077,68 +1900,6 @@ footer {
     font-size: 0.8rem;
 }
 
-/* 响应式设计 */
-@media (max-width: 992px) {
-    .showcase-content {
-        grid-template-columns: 1fr 1fr;
-        grid-template-rows: auto 1fr auto;
-        column-gap: 20px;
-        row-gap: 10px;
-        margin-top: 40px;
-        height: auto;
-        padding: 0 20px;
-    }
-    
-    .performance-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .specs-list {
-        grid-template-columns: 1fr;
-    }
-    
-    .uptime-stats {
-        flex-direction: column;
-        gap: 30px;
-    }
-    
-    .stat-item {
-        padding: 0;
-    }
-}
-
-@media (max-width: 576px) {
-    .showcase-content {
-        grid-template-columns: 1fr 1fr;
-        grid-template-rows: auto 1fr auto;
-        column-gap: 15px;
-        row-gap: 8px;
-        margin-top: 30px;
-        height: auto;
-        padding: 0 15px;
-    }
-    
-    .quadrant-layout .showcase-visual.image1 {
-        grid-column: 1;
-        grid-row: 2 / span 2;
-    }
-    
-    .quadrant-layout .showcase-visual.image2 {
-        grid-column: 2;
-        grid-row: 1 / span 2;
-    }
-    
-    .quadrant-layout .feature-card.card1 {
-        grid-column: 1;
-        grid-row: 1;
-    }
-    
-    .quadrant-layout .feature-card.card2 {
-        grid-column: 2;
-        grid-row: 3;
-    }
-}
-
 /* 通用展示视觉元素样式 */
 .showcase-visual {
     position: relative;
@@ -2204,81 +1965,6 @@ footer {
     gap: 0;
     margin-top: 0;
     width: 100%;
-}
-
-/* 响应式调整 */
-@media (max-width: 992px) {
-    /* 四象限布局响应式调整 */
-    .quadrant-layout {
-        grid-template-columns: 1fr;
-        grid-template-rows: auto;
-        height: auto;
-        gap: 20px;
-    }
-    
-    .quadrant-layout .feature-card.card1,
-    .quadrant-layout .feature-card.card2,
-    .quadrant-layout .showcase-visual.image1,
-    .quadrant-layout .showcase-visual.image2 {
-        height: auto;
-        min-height: 120px;
-    }
-    
-    .quadrant-layout .showcase-visual img {
-        height: 250px;
-    }
-    
-    .quadrant-layout .feature-card {
-        padding: 18px 20px;
-    }
-    
-    .quadrant-layout .feature-card .card-icon {
-        width: 44px;
-        height: 44px;
-        min-width: 44px;
-        font-size: 20px;
-    }
-}
-
-@media (max-width: 768px) {
-    /* 四象限布局响应式调整 */
-    .quadrant-layout {
-        grid-template-columns: 1fr;
-        grid-template-rows: auto;
-        height: auto;
-        gap: 15px;
-    }
-    
-    .quadrant-layout .feature-card.card1,
-    .quadrant-layout .feature-card.card2,
-    .quadrant-layout .showcase-visual.image1,
-    .quadrant-layout .showcase-visual.image2 {
-        height: auto;
-        min-height: 100px;
-    }
-    
-    .quadrant-layout .showcase-visual img {
-        height: 200px;
-    }
-    
-    .quadrant-layout .feature-card {
-        padding: 16px;
-    }
-    
-    .quadrant-layout .feature-card .card-icon {
-        width: 40px;
-        height: 40px;
-        min-width: 40px;
-        font-size: 18px;
-    }
-    
-    .quadrant-layout .feature-card .card-content h4 {
-        font-size: 16px;
-    }
-    
-    .quadrant-layout .feature-card .card-content p {
-        font-size: 13px;
-    }
 }
 
 /* 企业级性能展示区域 */
@@ -2441,48 +2127,6 @@ footer {
     text-align: left;
 }
 
-/* 响应式设计 - 硬件配置卡片 */
-@media (max-width: 992px) {
-    .hardware-config-card {
-        flex-direction: column;
-        align-items: center;
-        gap: 20px;
-    }
-    
-    .hardware-header {
-        flex-direction: row;
-        align-items: center;
-        gap: 15px;
-        width: 100%;
-        justify-content: center;
-    }
-    
-    .hardware-header h3 {
-        text-align: left;
-    }
-    
-    .hardware-specs-grid {
-        width: 100%;
-        grid-template-columns: 1fr 1fr;
-    }
-}
-
-@media (max-width: 576px) {
-    .hardware-specs-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .hardware-header {
-        flex-direction: column;
-        text-align: center;
-        gap: 10px;
-    }
-    
-    .hardware-header h3 {
-        text-align: center;
-    }
-}
-
 .feature-list {
     list-style: none;
     padding: 0;
@@ -2544,147 +2188,4 @@ footer {
     color: rgba(255, 255, 255, 0.7);
     text-transform: uppercase;
     letter-spacing: 1px;
-}
-
-/* 响应式设计 */
-@media (max-width: 992px) {
-    .showcase-content {
-        grid-template-columns: 1fr 1fr;
-        grid-template-rows: auto 1fr auto;
-        column-gap: 20px;
-        row-gap: 10px;
-        margin-top: 40px;
-        height: auto;
-    }
-    
-    .performance-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .specs-list {
-        grid-template-columns: 1fr;
-    }
-    
-    .uptime-stats {
-        flex-direction: column;
-        gap: 30px;
-    }
-    
-    .stat-item {
-        padding: 0;
-    }
-}
-
-@media (max-width: 768px) {
-    .showcase-header h2 {
-        font-size: 2rem;
-    }
-    
-    .showcase-subtitle {
-        font-size: 1rem;
-    }
-    
-    .platform-badges {
-        position: static;
-        flex-direction: row;
-        justify-content: center;
-        margin-top: 15px;
-    }
-    
-    .feature-item {
-        flex-direction: column;
-        text-align: center;
-    }
-    
-    .feature-icon {
-        margin: 0 auto;
-    }
-    
-    .performance-card {
-        padding: 20px;
-    }
-    
-    /* 性能卡片图标响应式调整 */
-    .performance-card .card-icon {
-        width: 50px;
-        height: 50px;
-        font-size: 1.2rem;
-    }
-    
-    .stat-number {
-        font-size: 2rem;
-    }
-}
-
-@media (max-width: 576px) {
-    .showcase-visual {
-        border-radius: 15px;
-    }
-    
-    .platform-badge {
-        font-size: 0.8rem;
-        padding: 6px 12px;
-    }
-    
-    .feature-item {
-        padding: 15px;
-    }
-    
-    .spec-item {
-        flex-direction: column;
-        gap: 5px;
-        text-align: center;
-    }
-    
-    .uptime-banner {
-        padding: 20px;
-    }
-}
-
-/* 联系页面响应式设计 */
-@media (max-width: 992px) {
-    .feedback-content {
-        grid-template-columns: 1fr;
-        gap: 30px;
-    }
-}
-
-@media (max-width: 768px) {
-    .contact-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-    
-    .faq-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .feedback-content {
-        grid-template-columns: 1fr;
-    }
-}
-
-@media (max-width: 576px) {
-    .contact-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .feedback-form {
-        padding: 20px;
-    }
-    
-    .info-card {
-        padding: 20px;
-    }
-    
-    .contact-info-wrapper .contact-card {
-        padding: 25px;
-    }
-    
-    .method-content h3 {
-        font-size: 1.2rem;
-    }
-    
-    .method-content p {
-        font-size: 1.1rem;
-    }
 }
