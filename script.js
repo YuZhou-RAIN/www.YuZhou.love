@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // 获取所有导航链接和页面内容
     const navLinks = document.querySelectorAll('.nav-link[data-page]');
     const pageContents = document.querySelectorAll('.page-content');
+    const footer = document.querySelector('footer');
     
     // 页面切换函数
     function switchPage(pageId) {
@@ -24,6 +25,11 @@ document.addEventListener('DOMContentLoaded', () => {
             targetLink.classList.add('active');
         }
         
+        // 为页脚添加淡出效果
+        if (footer) {
+            footer.style.opacity = '0';
+        }
+        
         // 如果没有当前页面，直接显示目标页面
         if (!currentPage) {
             if (targetPage) {
@@ -32,6 +38,17 @@ document.addEventListener('DOMContentLoaded', () => {
             // 如果切换到首页，重新初始化背景图片
             if (pageId === 'home') {
                 initHeroBackground();
+            }
+            // 重置滚动位置到顶部
+            window.scrollTo(0, 0);
+            
+            // 为页脚添加淡入效果
+            if (footer) {
+                // 触发重排
+                footer.offsetHeight;
+                
+                // 淡入效果
+                footer.style.opacity = '1';
             }
             return;
         }
@@ -68,6 +85,18 @@ document.addEventListener('DOMContentLoaded', () => {
             // 如果切换到首页，重新初始化背景图片
             if (pageId === 'home') {
                 initHeroBackground();
+            }
+            
+            // 重置滚动位置到顶部
+            window.scrollTo(0, 0);
+            
+            // 为页脚添加淡入效果
+            if (footer) {
+                // 触发重排
+                footer.offsetHeight;
+                
+                // 淡入效果
+                footer.style.opacity = '1';
             }
         }, 300);
         
