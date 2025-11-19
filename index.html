@@ -41,447 +41,18 @@
         </nav>
     </header>
 
-    <!-- 主要内容 -->
+    <!-- 主要内容区域 - 动态内容加载容器 -->
     <main style="display: flex; flex-direction: column; min-height: calc(100vh - 60px); margin-top: 60px;">
-            <!-- 首页内容 -->
-            <div id="home-content" class="page-content active">
-                <!-- 主页横幅 -->
-                <section class="hero" id="hero">
-                    <div class="hero-bg"></div>
-                    <div class="hero-bg-layer"></div>
-                    <div class="hero-content">
-                        <h1 class="hero-title">雨州 Minecraft 服务器</h1>
-                        <p class="hero-subtitle">Java与基岩版互通，打造最佳游戏体验</p>
-                        <div class="hero-buttons">
-                            <a href="/join" class="btn btn-primary" data-page="join">
-                                <i class="fas fa-play"></i> 立即加入
-                            </a>
-                            <a href="/features" class="btn btn-secondary" data-page="features">
-                                <i class="fas fa-info-circle"></i> 了解更多
-                            </a>
-                        </div>
-                        <div class="server-info">
-                            <p class="server-ip">
-                                <i class="fas fa-server"></i>
-                                服务器地址: <strong>mc.yuzhou.love</strong>
-                            </p>
-                            <p class="server-qq">
-                                <i class="fab fa-qq"></i>
-                                QQ交流群: <strong>823557774</strong>
-                            </p>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- 服务器特点 -->
-                <section class="features" id="features">
-                    <div class="container">
-                        <h2 class="section-title">服务器特点</h2>
-                        <div class="features-grid">
-                            <div class="feature-card">
-                                <div class="feature-icon">
-                                    <i class="fas fa-globe"></i>
-                                </div>
-                                <h3>跨平台支持</h3>
-                                <p>Java版与基岩版完全互通，无论使用什么设备都能一起游戏</p>
-                            </div>
-                            <div class="feature-card">
-                                <div class="feature-icon">
-                                    <i class="fas fa-shield-alt"></i>
-                                </div>
-                                <h3>安全稳定</h3>
-                                <p>24小时不间断运行，定期更新系统确保游戏数据安全</p>
-                            </div>
-                            <div class="feature-card">
-                                <div class="feature-icon">
-                                    <i class="fas fa-users"></i>
-                                </div>
-                                <h3>活跃社区</h3>
-                                <p>友好的玩家社区，定期举办活动，让游戏更有趣</p>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- 最新动态 -->
-                <section class="news">
-                    <div class="container">
-                        <h2 class="section-title">最新动态</h2>
-                        <div class="news-grid">
-                            <div class="news-card">
-                                <div class="news-date">2025-09-21</div>
-                                <h3>服务器开始测试</h3>
-                                <p>雨州服务器正式开启测试阶段，欢迎各位玩家加入体验！Java版和基岩版玩家均可加入。</p>
-                            </div>
-                            <div class="news-card">
-                                <div class="news-date">2025-10-17</div>
-                                <h3>主城正在建设</h3>
-                                <p>主城建设计划已启动，期待与各位玩家共同打造美丽家园！欢迎参与建设活动。</p>
-                            </div>
-                            <div class="news-card">
-                                <div class="news-date">????-??-??</div>
-                                <h3>敬请期待</h3>
-                                <p></p>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-            </div>
-
-            <!-- 特色内容 -->
-            <div id="features-content" class="page-content">
-                <!-- 页面标题 -->
-                <section class="page-header">
-                    <div class="container">
-                        <h1 class="page-title">服务器特色</h1>
-                    </div>
-                </section>
-
-                <!-- 主要内容 -->
-                <main>
-                    <!-- 跨平台支持 -->
-                    <section class="feature-section">
-                        <div class="container">
-                            <div class="feature-showcase">
-                                <div class="showcase-header">
-                                    <div class="showcase-icon">
-                                        <i class="fas fa-globe-americas"></i>
-                                    </div>
-                                    <h2>全平台互通</h2>
-                                    <p class="showcase-subtitle">打破平台壁垒，让朋友不再分离</p>
-                                </div>
-                                <div class="showcase-content quadrant-layout">
-                                    <!-- 卡片1 - 高度为图片高度的四分之一 -->
-                                    <div class="feature-card card1">
-                                        <div class="card-icon">
-                                            <i class="fas fa-mobile-alt"></i>
-                                        </div>
-                                        <div class="card-content">
-                                            <h4>基岩版支持</h4>
-                                            <p>支持iOS和Android设备</p>
-                                        </div>
-                                    </div>
-                                    
-                                    <!-- 图片1 - 紧贴卡片1下方 -->
-                                    <div class="showcase-visual image1">
-                                        <img src="images/6A7AC902334C0E90B0E5568DF4FBEEB6.jpg" alt="设备示例">
-                                    </div>
-                                    
-                                    <!-- 图片2 - 主体图片，与图片1高度一致 -->
-                                    <div class="showcase-visual image2">
-                                        <img src="images/EF13DDC8136672FB8AB3C77429A5FE14.jpg" alt="全平台互通">
-                                    </div>
-                                    
-                                    <!-- 卡片2 - 高度为图片高度的四分之一，紧贴图片2下方 -->
-                                    <div class="feature-card card2">
-                                        <div class="card-icon">
-                                            <i class="fas fa-desktop"></i>
-                                        </div>
-                                        <div class="card-content">
-                                            <h4>Java版支持</h4>
-                                            <p>支持Windows、Mac和Linux系统</p>
-                                        </div>
-                                    </div>
-                            </div>
-                        </div>
-                    </section>
-
-                    <!-- 高性能服务器 -->
-                    <section class="feature-section alt-bg">
-                        <div class="container">
-                            <div class="performance-showcase">
-                                <div class="showcase-header">
-                                    <div class="showcase-icon">
-                                        <i class="fas fa-server"></i>
-                                    </div>
-                                    <h2>企业级性能</h2>
-                                    <p class="showcase-subtitle">24小时稳定在线，零延迟游戏体验</p>
-                                </div>
-                                <div class="performance-grid">
-                                    <div class="performance-card primary hardware-config-card">
-                                        <div class="hardware-header">
-                                            <div class="card-icon">
-                                                <i class="fas fa-microchip"></i>
-                                            </div>
-                                            <h3>顶级硬件配置</h3>
-                                        </div>
-                                        <div class="hardware-specs-grid">
-                                            <div class="spec-item">
-                                                <span class="spec-label">CPU</span>
-                                                <span class="spec-value">Intel 20线程 服务器专用高性能处理器</span>
-                                            </div>
-                                            <div class="spec-item">
-                                                <span class="spec-label">内存</span>
-                                                <span class="spec-value">32GB DDR4 高频内存</span>
-                                            </div>
-                                            <div class="spec-item">
-                                                <span class="spec-label">存储</span>
-                                                <span class="spec-value">1TB SSD 硬盘组</span>
-                                            </div>
-                                            <div class="spec-item">
-                                                <span class="spec-label">延迟</span>
-                                                <span class="spec-value">全国平均39ms</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="uptime-banner">
-                                    <div class="uptime-stats">
-                                        <div class="stat-item">
-                                            <div class="stat-number">99.9%</div>
-                                            <div class="stat-label">在线率</div>
-                                        </div>
-                                        <div class="stat-item">
-                                            <div class="stat-number">&lt;20ms</div>
-                                            <div class="stat-label">热点城市平均延迟</div>
-                                        </div>
-                                        <div class="stat-item">
-                                            <div class="stat-number">24/7</div>
-                                            <div class="stat-label">全天候运行</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </section>
-
-
-                </main>
-            </div>
-
-            <!-- 加入指南内容 -->
-            <div id="join-content" class="page-content">
-                <!-- 页面标题 -->
-                <section class="page-header">
-                    <div class="container">
-                        <h1 class="page-title">加入指南</h1>
-                    </div>
-                </section>
-
-                <!-- 主要内容 -->
-                <main>
-                    <!-- Java版加入指南 -->
-                    <section class="join-guide alt-bg">
-                        <div class="container">
-                            <h2 class="section-title">Java版加入指南</h2>
-                            <div class="guide-content reverse">
-                                <div class="guide-steps">
-                                    <div class="step">
-                                        <div class="step-number">1</div>
-                                        <div class="step-content">
-                                            <h3>启动Minecraft Java版</h3>
-                                            <p>确保您已安装Minecraft Java版，并启动游戏客户端。</p>
-                                        </div>
-                                    </div>
-                                    <div class="step">
-                                        <div class="step-number">2</div>
-                                        <div class="step-content">
-                                            <h3>点击"多人游戏"</h3>
-                                            <p>在主菜单中，点击"多人游戏"按钮进入服务器列表。</p>
-                                        </div>
-                                    </div>
-                                    <div class="step">
-                                        <div class="step-number">3</div>
-                                        <div class="step-content">
-                                            <h3>添加服务器</h3>
-                                            <p>点击"添加服务器"按钮，准备填写服务器信息。</p>
-                                        </div>
-                                    </div>
-                                    <div class="step">
-                                        <div class="step-number">4</div>
-                                        <div class="step-content">
-                                            <h3>输入服务器地址</h3>
-                                            <p>在服务器地址栏中输入：<strong>mc.yuzhou.love</strong></p>
-                                        </div>
-                                    </div>
-                                    <div class="step">
-                                        <div class="step-number">5</div>
-                                        <div class="step-content">
-                                            <h3>完成加入</h3>
-                                            <p>点击"完成"按钮，然后选择服务器并点击"加入服务器"即可开始游戏。</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="guide-image">
-                                    <img src="images/Java版加入指南.png" alt="Java版加入指南">
-                                </div>
-                            </div>
-                        </div>
-                    </section>
-
-                    <!-- 基岩版加入指南 -->
-                    <section class="join-guide">
-                        <div class="container">
-                            <h2 class="section-title">基岩版加入指南</h2>
-                            <div class="guide-content">
-                                <div class="guide-steps">
-                                    <div class="step">
-                                        <div class="step-number">1</div>
-                                        <div class="step-content">
-                                            <h3>启动Minecraft基岩版</h3>
-                                            <p>确保您已安装Minecraft基岩版，并启动游戏客户端。</p>
-                                        </div>
-                                    </div>
-                                    <div class="step">
-                                        <div class="step-number">2</div>
-                                        <div class="step-content">
-                                            <h3>点击"游玩"</h3>
-                                            <p>在主菜单中，点击"游玩"按钮进入服务器列表。</p>
-                                        </div>
-                                    </div>
-                                    <div class="step">
-                                        <div class="step-number">3</div>
-                                        <div class="step-content">
-                                            <h3>点击"服务器"</h3>
-                                            <p>在游玩页面中，点击"服务器"选项卡。</p>
-                                        </div>
-                                    </div>
-                                    <div class="step">
-                                        <div class="step-number">4</div>
-                                        <div class="step-content">
-                                            <h3>添加服务器</h3>
-                                            <p>点击"添加服务器"按钮，准备填写服务器信息。</p>
-                                        </div>
-                                    </div>
-                                    <div class="step">
-                                        <div class="step-number">5</div>
-                                        <div class="step-content">
-                                            <h3>输入服务器地址</h3>
-                                            <p>在服务器地址栏中输入：<strong>mc.yuzhou.love</strong>，端口：<strong>19132</strong></p>
-                                        </div>
-                                    </div>
-                                    <div class="step">
-                                        <div class="step-number">6</div>
-                                        <div class="step-content">
-                                            <h3>点击 添加并开始 进入游戏</h3>
-                                            <p>点击"添加并开始"按钮，游戏将自动连接到服务器并进入游戏。</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="guide-image">
-                                    <img src="images/基岩版加入指南.png" alt="基岩版加入指南">
-                                </div>
-                            </div>
-                        </div>
-                    </section>
-
-                    <!-- 常见问题 -->
-                    <section class="faq-section alt-bg">
-                        <div class="container">
-                            <h2 class="section-title">常见问题</h2>
-                            <div class="faq-list">
-                                <div class="faq-item">
-                                    <div class="faq-question">
-                                        <h3>为什么我无法连接服务器？</h3>
-                                        <i class="fas fa-chevron-down"></i>
-                                    </div>
-                                    <div class="faq-answer">
-                                        <p>请检查以下几点：</p>
-                                        <ul>
-                                            <li>确保您的游戏版本在支持范围内</li>
-                                            <li>检查服务器地址是否正确输入</li>
-                                            <li>确认您的网络连接正常</li>
-                                            <li>服务器可能正在维护，请稍后再试</li>
-                                        </ul>
-                                    </div>
-                                </div>
-                                <div class="faq-item">
-                                    <div class="faq-question">
-                                        <h3>没有正版账号是否能进入？</h3>
-                                        <i class="fas fa-chevron-down"></i>
-                                    </div>
-                                    <div class="faq-answer">
-                                        <p>我们的服务器支持正版和离线玩家同时游戏，无论您是否拥有正版Minecraft账号都可以加入。</p>
-                                    </div>
-                                </div>
-                                <div class="faq-item">
-                                    <div class="faq-question">
-                                        <h3>服务器有哪些基本规则？</h3>
-                                        <i class="fas fa-chevron-down"></i>
-                                    </div>
-                                    <div class="faq-answer">
-                                        <p>我们要求所有玩家遵守基本规则，包括禁止作弊、尊重他人建筑、文明交流等。</p>
-                                    </div>
-                                </div>
-                                <div class="faq-item">
-                                    <div class="faq-question">
-                                        <h3>如何获得帮助？</h3>
-                                        <i class="fas fa-chevron-down"></i>
-                                    </div>
-                                    <div class="faq-answer">
-                                        <p>您可以通过以下方式获得帮助：</p>
-                                        <ul>
-                                            <li>加入我们的QQ交流群：<a href="https://qm.qq.com/q/sgWsIw909q" target="_blank" class="qq-group-link">823557774</a> <button class="copy-btn small" data-copy="823557774" style="margin-left: 10px;"><i class="fas fa-copy"></i> 复制</button></li>
-                                            <li>在游戏中联系在线管理员</li>
-                                        </ul>
-                                    </div>
-                                </div>
-
-                            </div>
-                        </div>
-                    </section>
-
-                    <!-- 新手提示 -->
-                    <section class="tips-section">
-                        <div class="container">
-                            <h2 class="section-title">新手提示</h2>
-                            <div class="tips-grid">
-                                <div class="tip-card">
-                                    <div class="tip-icon">
-                                        <i class="fas fa-home"></i>
-                                    </div>
-                                    <h3>返回大厅</h3>
-                                    <p>使用/hub命令可以快速回到主大厅，随时返回安全区域。</p>
-                                </div>
-                                <div class="tip-card">
-                                    <div class="tip-icon">
-                                        <i class="fas fa-users"></i>
-                                    </div>
-                                    <h3>加入社区</h3>
-                                    <p>加入我们的QQ交流群，与其他玩家交流，获取最新服务器动态。</p>
-                                </div>
-                            </div>
-                        </div>
-                    </section>
-                </main>
-            </div>
-
-            <!-- 关于内容 -->
-            <div id="about-content" class="page-content">
-                <div class="page-header">
-                    <div class="container">
-                        <h1>关于我们</h1>
-                    </div>
-                </div>
-
-                <div class="container">
-                    <div class="contact-info-wrapper">
-                        <div class="contact-card">
-                            <div class="contact-method">
-                                <div class="method-icon">
-                                    <i class="fas fa-server"></i>
-                                </div>
-                                <div class="method-content">
-                                    <h3>服务器地址</h3>
-                                    <p>mc.yuzhou.love</p>
-                                    <button class="copy-btn" data-copy="mc.yuzhou.love">复制地址</button>
-                                </div>
-                            </div>
-                            <div class="contact-method">
-                                <div class="method-icon">
-                                    <i class="fab fa-qq"></i>
-                                </div>
-                                <div class="method-content">
-                                    <h3>QQ交流群</h3>
-                                    <p>823557774</p>
-                                    <button class="copy-btn" data-copy="823557774">复制群号</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+        <div id="content-wrapper">
+            <div id="main-content">
+                <!-- 内容将通过JavaScript动态加载 -->
+                <div class="loading-placeholder">
+                    <div class="spinner"></div>
+                    <p>正在加载页面内容...</p>
                 </div>
             </div>
-        </main>
+        </div>
+    </main>
 
     <!-- 页脚 -->
     <footer>
@@ -558,74 +129,88 @@
         })();
 
         // FAQ折叠功能
-        document.querySelectorAll('.faq-question').forEach(question => {
-            question.addEventListener('click', function() {
-                const answer = this.nextElementSibling;
-                const icon = this.querySelector('i');
-                
-                // 如果答案已经展开，则收起
-                if (answer.classList.contains('active')) {
-                    // 先设置为具体的高度
-                    answer.style.maxHeight = answer.scrollHeight + 'px';
-                    // 强制重排
-                    answer.offsetHeight;
-                    // 然后设置为0，触发动画
-                    answer.style.maxHeight = '0';
-                    answer.classList.remove('active');
-                } else {
-                    // 展开答案
-                    answer.classList.add('active');
-                    // 设置为具体的高度
-                    answer.style.maxHeight = answer.scrollHeight + 'px';
-                }
-                
-                // 旋转图标
-                icon.classList.toggle('rotate');
-                
-                // 动画结束后清理样式
-                setTimeout(() => {
-                    if (!answer.classList.contains('active')) {
-                        answer.style.maxHeight = '';
+        document.addEventListener('DOMContentLoaded', function() {
+            const faqQuestions = document.querySelectorAll('.faq-question');
+            faqQuestions.forEach(question => {
+                question.addEventListener('click', function() {
+                    const answer = this.nextElementSibling;
+                    const icon = this.querySelector('i');
+                    
+                    if (answer) {
+                        // 如果答案已经展开，则收起
+                        if (answer.classList.contains('active')) {
+                            // 先设置为具体的高度
+                            answer.style.maxHeight = answer.scrollHeight + 'px';
+                            // 强制重排
+                            answer.offsetHeight;
+                            // 然后设置为0，触发动画
+                            answer.style.maxHeight = '0';
+                            answer.classList.remove('active');
+                        } else {
+                            // 展开答案
+                            answer.classList.add('active');
+                            // 设置为具体的高度
+                            answer.style.maxHeight = answer.scrollHeight + 'px';
+                        }
+                        
+                        // 旋转图标
+                        if (icon) {
+                            icon.classList.toggle('rotate');
+                        }
+                        
+                        // 动画结束后清理样式
+                        setTimeout(() => {
+                            if (!answer.classList.contains('active')) {
+                                answer.style.maxHeight = '';
+                            }
+                        }, 300);
                     }
-                }, 300);
+                });
             });
         });
 
         // 表单提交处理
-        document.getElementById('feedbackForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            // 获取表单数据
-            const formData = new FormData(this);
-            const name = formData.get('nickname');
-            const email = formData.get('email');
-            const type = formData.get('type');
-            const message = formData.get('message');
-            
-            // 这里可以添加实际的表单提交逻辑
-            // 例如发送到服务器或使用第三方服务
-            
-            // 显示成功消息
-            const successMessage = document.createElement('div');
-            successMessage.className = 'success-message';
-            successMessage.innerHTML = `
-                <div class="success-content">
-                    <i class="fas fa-check-circle"></i>
-                    <h3>反馈提交成功！</h3>
-                    <p>感谢您的反馈，我们会尽快处理并回复您。</p>
-                </div>
-            `;
-            
-            // 插入到表单前面
-            this.parentNode.insertBefore(successMessage, this);
-            
-            // 重置表单
-            this.reset();
-            
-            // 3秒后移除成功消息
-            setTimeout(() => {
-                successMessage.remove();
-            }, 3000);
+        document.addEventListener('DOMContentLoaded', function() {
+            const feedbackForm = document.getElementById('feedbackForm');
+            if (feedbackForm) {
+                feedbackForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    // 获取表单数据
+                    const formData = new FormData(this);
+                    const name = formData.get('nickname');
+                    const email = formData.get('email');
+                    const type = formData.get('type');
+                    const message = formData.get('message');
+                    
+                    // 这里可以添加实际的表单提交逻辑
+                    // 例如发送到服务器或使用第三方服务
+                    
+                    // 显示成功消息
+                    const successMessage = document.createElement('div');
+                    successMessage.className = 'success-message';
+                    successMessage.innerHTML = `
+                        <div class="success-content">
+                            <i class="fas fa-check-circle"></i>
+                            <h3>反馈提交成功！</h3>
+                            <p>感谢您的反馈，我们会尽快处理并回复您。</p>
+                        </div>
+                    `;
+                    
+                    // 插入到表单前面
+                    this.parentNode.insertBefore(successMessage, this);
+                    
+                    // 重置表单
+                    this.reset();
+                    
+                    // 3秒后移除成功消息
+                    setTimeout(() => {
+                        if (successMessage.parentNode) {
+                            successMessage.remove();
+                        }
+                    }, 3000);
+                });
+            }
         });
     </script>
 </body>

@@ -1,20 +1,156 @@
+// 动态页面加载器
+class PageLoader {
+    constructor() {
+        this.loadedPages = new Set(); // 跟踪已加载的页面
+        this.loadingPromises = new Map(); // 跟踪正在进行的加载请求
+    }
+    
+    // 加载页面内容
+    async loadPage(pageId) {
+        // 如果页面已经加载，直接返回
+        if (this.loadedPages.has(pageId)) {
+            return document.getElementById(`${pageId}-content`);
+        }
+        
+        // 如果页面正在加载中，返回加载Promise
+        if (this.loadingPromises.has(pageId)) {
+            return this.loadingPromises.get(pageId);
+        }
+        
+        // 页面不存在于缓存中，需要加载
+        const pagePath = `pages/${pageId}.html`;
+        
+        // 创建加载Promise
+        const loadPromise = fetch(pagePath)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`加载页面失败: ${response.status} ${response.statusText}`);
+                }
+                return response.text();
+            })
+            .then(html => {
+                // 解析HTML内容
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                
+                // 提取页面内容部分
+                let pageContent = doc.querySelector('.page-content');
+                if (!pageContent) {
+                    // 如果没有.page-content，直接使用body内容
+                    pageContent = doc.body.firstElementChild;
+                    if (!pageContent) {
+                        pageContent = document.createElement('div');
+                        pageContent.innerHTML = html;
+                    }
+                }
+                
+                // 获取主内容区域
+                const mainContent = document.querySelector('#main-content');
+                
+                if (mainContent) {
+                    // 清空主内容区域（移除加载占位符）
+                    mainContent.innerHTML = '';
+                    // 添加页面内容
+                    mainContent.appendChild(pageContent);
+                }
+                
+                // 标记页面为已加载
+                this.loadedPages.add(pageId);
+                
+                return pageContent;
+            })
+            .catch(error => {
+                console.error('页面加载错误:', error);
+                // 创建错误提示页面
+                const errorPage = document.createElement('div');
+                errorPage.id = `${pageId}-content`;
+                errorPage.className = 'page-content';
+                errorPage.innerHTML = `
+                    <div class="page-header">
+                        <div class="container">
+                            <h1>页面加载失败</h1>
+                        </div>
+                    </div>
+                    <div class="container">
+                        <div class="error-message">
+                            <p>抱歉，无法加载此页面内容。请稍后重试。</p>
+                            <button class="btn" onclick="location.reload()">刷新页面</button>
+                        </div>
+                    </div>
+                `;
+                
+                // 添加到主内容区域
+                const mainContent = document.querySelector('#main-content');
+                if (mainContent) {
+                    mainContent.appendChild(errorPage);
+                }
+                
+                return errorPage;
+            })
+            .finally(() => {
+                // 清除加载Promise
+                this.loadingPromises.delete(pageId);
+            });
+        
+        // 保存加载Promise
+        this.loadingPromises.set(pageId, loadPromise);
+        
+        return loadPromise;
+    }
+    
+    // 检查页面是否已加载
+    isPageLoaded(pageId) {
+        return this.loadedPages.has(pageId);
+    }
+    
+    // 预加载页面
+    preloadPage(pageId) {
+        if (!this.isPageLoaded(pageId) && pageId !== 'home') {
+            this.loadPage(pageId);
+        }
+    }
+}
+
+// 创建全局页面加载器实例
+const pageLoader = new PageLoader();
+
 // 单页应用页面切换功能
 document.addEventListener('DOMContentLoaded', () => {
-    // 获取所有导航链接和页面内容
+    // 获取所有导航链接
     const navLinks = document.querySelectorAll('.nav-link[data-page]');
-    const pageContents = document.querySelectorAll('.page-content');
     const footer = document.querySelector('footer');
     
-    // 页面切换函数
-    function switchPage(pageId) {
-        // 获取当前激活的页面
+    // 预加载所有其他页面
+    ['features', 'join', 'about'].forEach(pageId => {
+        // 在首页加载完成后延迟预加载其他页面，避免阻塞首页渲染
+        setTimeout(() => {
+            pageLoader.preloadPage(pageId);
+        }, 1000);
+    });
+    
+    // 页面切换函数 - 使用异步加载
+    async function switchPage(pageId) {
+        // 检查目标页面是否已加载
+        let targetPage = document.getElementById(`${pageId}-content`);
+        
+        // 如果页面未加载，先加载
+        if (!targetPage && pageId !== 'home') { // 首页始终存在，不需要加载
+            try {
+                targetPage = await pageLoader.loadPage(pageId);
+            } catch (error) {
+                console.error('页面加载失败:', error);
+                showNotification(`页面加载失败: ${error.message}`);
+                return; // 如果加载失败，终止切换
+            }
+        }
+        
+        // 获取当前页面
         const currentPage = document.querySelector('.page-content.active');
-        const targetPage = document.getElementById(`${pageId}-content`);
         
         // 如果目标页面就是当前页面，直接返回
         if (currentPage === targetPage) return;
         
-        // 移除所有导航链接的active类
+        // 更新导航链接
         navLinks.forEach(link => {
             link.classList.remove('active');
         });
@@ -25,27 +161,36 @@ document.addEventListener('DOMContentLoaded', () => {
             targetLink.classList.add('active');
         }
         
-        // 如果没有当前页面，直接显示目标页面
+        // 执行页面切换动画
         if (!currentPage) {
+            // 没有当前页面，直接显示目标页面
             if (targetPage) {
                 targetPage.classList.add('active');
+                targetPage.style.opacity = '0';
+                targetPage.offsetHeight; // 触发重排
+                targetPage.style.opacity = '1';
+                
+                // 清除样式
+                setTimeout(() => {
+                    targetPage.style.opacity = '';
+                }, 300);
             }
-            // 如果切换到首页，重新初始化背景图片
+            
+            // 如果是首页，重新初始化背景
             if (pageId === 'home') {
                 initHeroBackground();
             }
-            // 重置滚动位置到顶部
+            
             window.scrollTo(0, 0);
             return;
         }
         
-        // 同时为页面内容和页脚添加淡出效果
+        // 执行切换动画
         currentPage.style.opacity = '0';
         if (footer) {
             footer.style.opacity = '0';
         }
         
-        // 延迟一段时间后隐藏当前页面并显示新页面
         setTimeout(() => {
             // 隐藏当前页面
             currentPage.classList.remove('active');
@@ -54,35 +199,25 @@ document.addEventListener('DOMContentLoaded', () => {
             if (targetPage) {
                 targetPage.classList.add('active');
                 
-                // 先设置透明度为0，然后逐渐增加到1
                 targetPage.style.opacity = '0';
-                
-                // 触发重排
-                targetPage.offsetHeight;
-                
-                // 淡入效果
+                targetPage.offsetHeight; // 触发重排
                 targetPage.style.opacity = '1';
                 
-                // 清除内联样式
                 setTimeout(() => {
                     targetPage.style.opacity = '';
                 }, 300);
             }
             
-            // 如果切换到首页，重新初始化背景图片
+            // 如果是首页，重新初始化背景
             if (pageId === 'home') {
                 initHeroBackground();
             }
             
-            // 重置滚动位置到顶部
             window.scrollTo(0, 0);
             
-            // 为页脚添加淡入效果
+            // 页脚淡入
             if (footer) {
-                // 触发重排
-                footer.offsetHeight;
-                
-                // 淡入效果
+                footer.offsetHeight; // 触发重排
                 footer.style.opacity = '1';
             }
         }, 300);
@@ -132,9 +267,9 @@ document.addEventListener('DOMContentLoaded', () => {
         };
         return paths[path] || 'home';
     }
-
+    
     // 页面加载时检查URL路径并切换到相应页面
-    function checkInitialPage() {
+    async function checkInitialPage() {
         // 首先检查是否有从404页面重定向过来的路径
         var redirectPath = sessionStorage.getItem('githubPagesRedirectPath');
         if (redirectPath) {
@@ -145,7 +280,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const pageId = getPageIdFromPath(redirectPath);
             
             // 切换到相应页面
-            switchPage(pageId);
+            await switchPage(pageId);
             
             // 更新浏览器历史记录
             const pageTitle = getPageTitle(pageId);
@@ -160,18 +295,19 @@ document.addEventListener('DOMContentLoaded', () => {
         // 如果没有重定向路径，则从当前URL路径获取页面ID
         const path = window.location.pathname;
         const pageId = getPageIdFromPath(path);
-        switchPage(pageId);
+        await switchPage(pageId);
     }
     
     // 检查初始页面
     checkInitialPage();
     
+    // 事件监听器
     // 为导航链接添加点击事件
     navLinks.forEach(link => {
-        link.addEventListener('click', (e) => {
+        link.addEventListener('click', async (e) => {
             e.preventDefault();
             const pageId = link.getAttribute('data-page');
-            switchPage(pageId);
+            await switchPage(pageId);
             
             // 关闭移动端菜单
             const hamburger = document.querySelector('.hamburger');
@@ -185,28 +321,28 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // 为带有data-page属性的按钮添加点击事件
     document.querySelectorAll('.btn[data-page]').forEach(button => {
-        button.addEventListener('click', (e) => {
+        button.addEventListener('click', async (e) => {
             e.preventDefault();
             const pageId = button.getAttribute('data-page');
-            switchPage(pageId);
+            await switchPage(pageId);
         });
     });
     
     // 为页脚链接添加点击事件
     document.querySelectorAll('footer a[data-page]').forEach(link => {
-        link.addEventListener('click', (e) => {
+        link.addEventListener('click', async (e) => {
             e.preventDefault();
             const pageId = link.getAttribute('data-page');
-            switchPage(pageId);
+            await switchPage(pageId);
         });
     });
     
     // 为logo区域添加点击事件，切换到首页
     const logoArea = document.querySelector('.logo');
     if (logoArea) {
-        logoArea.addEventListener('click', (e) => {
+        logoArea.addEventListener('click', async (e) => {
             e.preventDefault();
-            switchPage('home');
+            await switchPage('home');
             
             // 关闭移动端菜单
             const hamburger = document.querySelector('.hamburger');
@@ -219,7 +355,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     // 监听浏览器的后退/前进按钮
-    window.addEventListener('popstate', function(event) {
+    window.addEventListener('popstate', async function(event) {
         let pageId = 'home';
         if (event.state && event.state.page) {
             pageId = event.state.page;
@@ -228,7 +364,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const path = window.location.pathname;
             pageId = getPageIdFromPath(path);
         }
-        switchPage(pageId);
+        await switchPage(pageId);
         
         // 更新页面标题
         document.title = getPageTitle(pageId);
@@ -486,7 +622,7 @@ const backgroundImages = [
 
 function changeBackground() {
     const heroSection = document.querySelector('.hero');
-    const heroBg = heroSection.querySelector('.hero-bg');
+    const heroBg = heroSection ? heroSection.querySelector('.hero-bg') : null;
     
     if (heroSection && heroBg) {
         // 先淡出当前背景
