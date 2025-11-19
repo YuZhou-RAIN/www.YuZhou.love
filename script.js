@@ -225,17 +225,13 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
         
-        // 检查是否已经在目标页面
-        const currentActivePage = document.querySelector('.page-content.active');
+        // 获取目标页面ID
         const targetPageId = `${pageId}-content`;
         
-        if (currentActivePage && currentActivePage.id === targetPageId) {
-            console.log(`[路由] 已经在目标页面: ${pageId}，跳过切换`);
-            return;
-        }
-        
-        // 无论页面是否已加载，都使用pageLoader.loadPage确保内容正确显示
+        // 首先确保加载页面内容，无论当前是否已在目标页面
         try {
+            // 强制重新加载页面内容，确保最新内容显示
+            pageLoader.loadedPages.delete(pageId);
             await pageLoader.loadPage(pageId);
             console.log(`[路由] 页面 ${pageId} 加载成功`);
         } catch (error) {
@@ -251,6 +247,9 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
         
+        // 获取当前活跃页面
+        const currentActivePage = document.querySelector('.page-content.active');
+        
         // 更新导航链接
         navLinks.forEach(link => {
             link.classList.remove('active');
@@ -262,47 +261,55 @@ document.addEventListener('DOMContentLoaded', () => {
             targetLink.classList.add('active');
         }
         
-        // 执行页面切换动画
-        if (!currentActivePage) {
-            // 没有当前页面，直接显示目标页面
-            // 确保目标页面可见
-            targetPage.classList.remove('hidden');
-            targetPage.classList.add('active'); // 确保添加active类
-            targetPage.style.display = 'block';
-            
-            console.log(`[路由] 直接显示页面: ${pageId}`);
-        } else {
-            // 执行切换动画
+        // 执行页面切换动画 - 无论是否已在目标页面都执行切换逻辑
+        // 确保过渡层激活
+        const transitionLayer = document.querySelector('.page-transition');
+        if (transitionLayer) {
+            transitionLayer.classList.add('active');
+        }
+        
+        // 隐藏当前页面（如果存在）
+        if (currentActivePage) {
             currentActivePage.style.opacity = '0';
             if (footer) {
                 footer.style.opacity = '0';
             }
-            
-            setTimeout(() => {
-                // 隐藏当前页面
+        }
+        
+        // 使用统一的切换逻辑，确保无论从哪个页面切换都能正常工作
+        setTimeout(() => {
+            // 隐藏当前页面
+            if (currentActivePage) {
                 currentActivePage.style.display = 'none';
                 currentActivePage.classList.remove('active'); // 移除当前页面的active类
-                
-                // 显示目标页面
-                targetPage.style.display = 'block';
-                targetPage.classList.add('active'); // 确保添加active类
-                targetPage.style.opacity = '0';
-                targetPage.offsetHeight; // 触发重排
-                targetPage.style.opacity = '1';
-                
-                setTimeout(() => {
-                    targetPage.style.opacity = '';
-                }, 300);
-                
-                console.log(`[路由] 切换到页面: ${pageId}`);
+            }
             
+            // 显示目标页面
+            targetPage.style.display = 'block';
+            targetPage.classList.add('active'); // 确保添加active类
+            targetPage.style.opacity = '0';
+            targetPage.offsetHeight; // 触发重排
+            targetPage.style.opacity = '1';
+            
+            setTimeout(() => {
+                targetPage.style.opacity = '';
+            }, 300);
+            
+            console.log(`[路由] 切换到页面: ${pageId}`);
+        
             // 页脚淡入
             if (footer) {
                 footer.offsetHeight; // 触发重排
                 footer.style.opacity = '1';
             }
-            }, 300);
-        }
+            
+            // 隐藏过渡效果
+            if (transitionLayer) {
+                setTimeout(() => {
+                    transitionLayer.classList.remove('active');
+                }, 50);
+            }
+        }, 300);
         
         // 如果是首页，重置并重新初始化背景
         if (pageId === 'home') {
@@ -368,35 +375,54 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log('[路由] 开始检查初始页面');
         
         // 首先检查是否有从404页面重定向过来的路径
-        var redirectPath = sessionStorage.getItem('githubPagesRedirectPath');
+        let redirectPath = sessionStorage.getItem('githubPagesRedirectPath');
         if (redirectPath) {
             // 清除sessionStorage中的重定向路径
             sessionStorage.removeItem('githubPagesRedirectPath');
             
-            // 解析路径获取页面ID
-            const pageId = getPageIdFromPath(redirectPath);
-            console.log('[路由] 检测到重定向路径:', redirectPath, '页面ID:', pageId);
-            
-            // 确保是有效的页面ID
-            const validPages = ['home', 'features', 'join', 'about'];
-            const finalPageId = validPages.includes(pageId) ? pageId : 'home';
-            
-            // 切换到相应页面
-            await switchPage(finalPageId);
-            
-            // 更新浏览器历史记录
-            const pageTitle = getPageTitle(finalPageId);
-            history.replaceState({page: finalPageId}, pageTitle, redirectPath);
-            
-            // 更新页面标题
-            document.title = pageTitle;
-            
-            return;
+            try {
+                console.log('[路由] 检测到重定向路径:', redirectPath);
+                
+                // 处理重定向路径，去除可能的查询参数
+                let cleanRedirectPath = redirectPath.split('?')[0];
+                console.log('[路由] 清理后的重定向路径:', cleanRedirectPath);
+                
+                // 解析路径获取页面ID
+                const pageId = getPageIdFromPath(cleanRedirectPath);
+                console.log('[路由] 解析后页面ID:', pageId);
+                
+                // 确保是有效的页面ID
+                const validPages = ['home', 'features', 'join', 'about'];
+                const finalPageId = validPages.includes(pageId) ? pageId : 'home';
+                
+                // 切换到相应页面
+                await switchPage(finalPageId);
+                
+                // 更新浏览器历史记录，使用replaceState避免在历史记录中留下404页面的记录
+                const pageTitle = getPageTitle(finalPageId);
+                
+                // 计算正确的目标路径，不包含任何查询参数
+                const targetPath = `/${getPagePath(finalPageId)}`;
+                history.replaceState({page: finalPageId}, pageTitle, targetPath);
+                
+                // 更新页面标题
+                document.title = pageTitle;
+                
+                console.log('[路由] 重定向路径处理完成，页面已正确加载');
+                return;
+            } catch (error) {
+                console.error('[路由] 处理重定向路径时出错:', error);
+                // 如果处理重定向路径出错，继续处理当前URL路径
+            }
         }
         
-        // 如果没有重定向路径，则从当前URL路径获取页面ID
+        // 如果没有重定向路径或处理失败，则从当前URL路径获取页面ID
         const path = window.location.pathname;
-        console.log('[路由] 当前路径:', path);
+        const search = window.location.search;
+        console.log('[路由] 当前路径:', path, '查询参数:', search);
+        
+        // 处理当前URL中的重定向标记，移除它以清理URL
+        const hasRedirectedParam = search.includes('redirected=true');
         
         // 定义有效的页面路径映射
         const validPaths = {
@@ -407,16 +433,37 @@ document.addEventListener('DOMContentLoaded', () => {
             'about': 'about'
         };
         
-        // 清理路径并获取第一部分
-        const cleanPath = path === '/' ? '' : path.substring(1).split('/')[0];
-        console.log('[路由] 清理后的路径:', cleanPath);
+        // 清理路径并获取第一部分，处理各种可能的路径格式
+        let cleanPath = path.trim();
+        if (cleanPath.startsWith('/')) {
+            cleanPath = cleanPath.substring(1);
+        }
+        if (cleanPath.endsWith('/')) {
+            cleanPath = cleanPath.substring(0, cleanPath.length - 1);
+        }
+        // 获取第一部分路径
+        const pathPart = cleanPath.split('/')[0];
+        
+        console.log('[路由] 清理后的路径部分:', pathPart);
         
         // 获取对应的页面ID
-        const pageId = validPaths[cleanPath] || 'home';
-        console.log('[路由] 从URL路径获取页面ID:', pageId);
+        const pageId = validPaths[pathPart] || 'home';
+        console.log('[路由] 确定的页面ID:', pageId);
         
         // 切换到最终确定的页面
         await switchPage(pageId);
+        
+        // 更新浏览器历史记录
+        const pageTitle = getPageTitle(pageId);
+        const targetPath = `/${getPagePath(pageId)}`;
+        
+        // 只有当当前路径与目标路径不同，或者URL中包含重定向标记时，才更新历史记录
+        if (path !== targetPath || hasRedirectedParam) {
+            history.replaceState({page: pageId}, pageTitle, targetPath);
+            console.log('[路由] 已清理URL中的重定向标记');
+        }
+        
+        console.log('[路由] 初始页面检查完成');
     }
     
     // 检查初始页面
@@ -705,7 +752,7 @@ const BackgroundImageManager = {
     setBackgroundStyles(heroBg, heroBgLayer) {
         console.log('设置背景样式');
         
-        // 设置第一层背景
+        // 只在heroBg上设置主背景图片
         heroBg.style.backgroundImage = `url('images/EF13DDC8136672FB8AB3C77429A5FE14.jpg')`;
         heroBg.style.backgroundSize = 'cover';
         heroBg.style.backgroundPosition = 'center';
@@ -713,18 +760,15 @@ const BackgroundImageManager = {
         heroBg.style.opacity = '0';
         heroBg.style.transform = 'translate(0, 0)';
         
-        // 设置第二层背景
-        heroBgLayer.style.backgroundImage = `url('images/EF13DDC8136672FB8AB3C77429A5FE14.jpg')`;
-        heroBgLayer.style.backgroundSize = 'cover';
-        heroBgLayer.style.backgroundPosition = 'center';
-        heroBgLayer.style.backgroundRepeat = 'no-repeat';
+        // heroBgLayer改为使用半透明渐变，不使用重复的背景图片
+        heroBgLayer.style.background = 'linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.3))';
         heroBgLayer.style.opacity = '0';
         heroBgLayer.style.transform = 'translate(0, 0)';
         
-        // 延迟显示背景图片
+        // 延迟显示背景
         setTimeout(() => {
-            heroBg.style.opacity = '0.3';
-            heroBgLayer.style.opacity = '0.3';
+            heroBg.style.opacity = '1'; // 增加主背景的不透明度
+            heroBgLayer.style.opacity = '1'; // 渐变层保持较高透明度
         }, 100);
     },
     

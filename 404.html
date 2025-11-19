@@ -4,30 +4,59 @@
     <meta charset="utf-8">
     <title>雨州Minecraft服务器</title>
     <script>
-        // GitHub Pages SPA路由重定向逻辑
+        // SPA路由重定向逻辑，处理所有刷新页面的情况
         (function() {
-            // 获取当前路径
-            var location = window.location;
-            var pathname = location.pathname;
+            // 确保能在各种环境下正确工作
+            var win = window || {};
+            var loc = win.location || {};
             
-            // 检查是否为我们的应用路由
-            var isAppRoute = pathname === '/' || 
-                            pathname === '/features' || 
-                            pathname === '/join' || 
-                            pathname === '/about';
-            
-            // 如果是应用路由，则重定向到首页并保存路径
-            if (isAppRoute) {
-                // 保存路径到sessionStorage
-                sessionStorage.setItem('githubPagesRedirectPath', pathname);
-                // 重定向到首页
-                location.replace('/');
+            // 获取完整URL路径，包括查询参数
+            var fullPath = loc.pathname || '';
+            if (loc.search) {
+                fullPath += loc.search;
             }
-            // 如果是其他路径（真正的404），则显示404页面
+            
+            console.log('404处理: 捕获路径', fullPath);
+            
+            // 保存原始完整路径到sessionStorage，以便前端路由能够处理
+            try {
+                if (sessionStorage) {
+                    sessionStorage.setItem('githubPagesRedirectPath', fullPath);
+                    console.log('404处理: 路径已保存到sessionStorage');
+                } else {
+                    console.warn('404处理: sessionStorage不可用');
+                }
+            } catch (e) {
+                console.error('404处理: 保存路径到sessionStorage失败:', e);
+            }
+            
+            // 为了更好地支持开发环境和生产环境，使用相对路径重定向
+            // 这样即使在不同的路径下也能正确工作
+            var baseUrl = '';
+            
+            // 为了防止重定向循环，添加安全检查
+            if (!fullPath.includes('?redirected=true')) {
+                // 使用replace避免在历史记录中添加404页面
+                loc.replace(baseUrl + '/?redirected=true');
+                
+                // 确保重定向执行，防止可能的脚本执行中断
+                setTimeout(function() {
+                    if (win.location && win.location.pathname !== '/') {
+                        win.location.href = baseUrl + '/';
+                    }
+                }, 100);
+            } else {
+                console.warn('404处理: 检测到重定向循环');
+                loc.replace(baseUrl + '/');
+            }
         })();
     </script>
 </head>
 <body>
-    <!-- 重定向到首页... -->
+    <div style="display: flex; justify-content: center; align-items: center; height: 100vh; flex-direction: column; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+        <h2 style="color: #333; margin-bottom: 16px;">正在处理您的请求...</h2>
+        <p style="color: #666; text-align: center; max-width: 400px;">您正在访问的页面将被重定向到正确的位置。此过程是自动的，通常只需要几秒钟。</p>
+        <p style="color: #666; margin-top: 16px;">如果您没有被自动重定向，请点击<a href="/" style="color: #0066cc; text-decoration: none;">这里</a>返回首页</p>
+    </div>
 </body>
 </html>
