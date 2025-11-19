@@ -8,7 +8,15 @@
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="fonts/fontawesome-free-6.4.0-web/css/all.min.css">
 </head>
-<body>
+<body class="loading">
+        <!-- 加载指示器 -->
+        <div class="loading-indicator">
+            <div class="loading-spinner"></div>
+            <div class="loading-text">正在加载</div>
+        </div>
+        
+        <!-- 页面切换过渡层 -->
+        <div class="page-transition"></div>
     <!-- 导航栏 -->
     <header>
         <nav class="navbar">
@@ -66,10 +74,10 @@
                 <div class="footer-section">
                     <h3>快速链接</h3>
                     <ul>
-                        <li><a href="#home" data-page="home">首页</a></li>
-                        <li><a href="#features" data-page="features">服务器特色</a></li>
-                        <li><a href="#join" data-page="join">加入指南</a></li>
-                        <li><a href="#contact" data-page="about">关于我们</a></li>
+                        <li><a href="/" class="footer-nav-link" data-page="home">首页</a></li>
+                        <li><a href="/features" class="footer-nav-link" data-page="features">服务器特色</a></li>
+                        <li><a href="/join" class="footer-nav-link" data-page="join">加入指南</a></li>
+                        <li><a href="/about" class="footer-nav-link" data-page="about">关于我们</a></li>
                     </ul>
                 </div>
                 <div class="footer-section">

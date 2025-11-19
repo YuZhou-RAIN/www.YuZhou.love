@@ -3,17 +3,49 @@ class PageLoader {
     constructor() {
         this.loadedPages = new Set(); // 跟踪已加载的页面
         this.loadingPromises = new Map(); // 跟踪正在进行的加载请求
+        this.transitionDuration = 300; // 过渡动画持续时间
     }
     
     // 加载页面内容
     async loadPage(pageId) {
-        // 如果页面已经加载，直接返回
+        // 显示页面过渡效果
+        const transitionLayer = document.querySelector('.page-transition');
+        if (transitionLayer) {
+            transitionLayer.classList.add('active');
+        }
+        
+        // 如果页面已经加载，等待过渡效果后返回
         if (this.loadedPages.has(pageId)) {
-            return document.getElementById(`${pageId}-content`);
+            // 获取页面内容元素
+            const pageContent = document.getElementById(`${pageId}-content`);
+            
+            // 确保主内容区域显示页面内容
+            const mainContent = document.querySelector('#main-content');
+            if (mainContent && pageContent && !mainContent.contains(pageContent)) {
+                // 清空主内容区域
+                mainContent.innerHTML = '';
+                // 添加页面内容
+                mainContent.appendChild(pageContent);
+            }
+            
+            await new Promise(resolve => setTimeout(resolve, this.transitionDuration));
+            
+            // 隐藏过渡效果
+            if (transitionLayer) {
+                setTimeout(() => {
+                    transitionLayer.classList.remove('active');
+                }, 50);
+            }
+            
+            return pageContent;
         }
         
         // 如果页面正在加载中，返回加载Promise
         if (this.loadingPromises.has(pageId)) {
+            // 确保显示过渡效果
+            if (transitionLayer && !transitionLayer.classList.contains('active')) {
+                transitionLayer.classList.add('active');
+            }
             return this.loadingPromises.get(pageId);
         }
         
@@ -27,6 +59,14 @@ class PageLoader {
                     throw new Error(`加载页面失败: ${response.status} ${response.statusText}`);
                 }
                 return response.text();
+            })
+            .then(html => {
+                // 等待过渡效果开始
+                return new Promise(resolve => {
+                    setTimeout(() => {
+                        resolve(html);
+                    }, this.transitionDuration);
+                });
             })
             .then(html => {
                 // 解析HTML内容
@@ -50,12 +90,38 @@ class PageLoader {
                 if (mainContent) {
                     // 清空主内容区域（移除加载占位符）
                     mainContent.innerHTML = '';
+                    
+                    // 为页面内容添加ID，以便后续可以找到它
+                    pageContent.id = `${pageId}-content`;
+                    pageContent.className = 'page-content';
+                    
                     // 添加页面内容
                     mainContent.appendChild(pageContent);
+                    console.log(`页面 ${pageId} 内容已添加到主内容区域`);
                 }
+                
+                // 对于首页，重置并重新初始化背景
+                if (pageId === 'home') {
+                    resetBackgroundInitialization();
+                    setTimeout(() => {
+                        initHeroBackground();
+                    }, 100);
+                }
+                
+                // 为页面内容添加active类，确保它可见
+                pageContent.classList.add('active');
+                
+                // 注意：AppInitializer.init()不再在这里调用，而是在首次页面加载时统一初始化
                 
                 // 标记页面为已加载
                 this.loadedPages.add(pageId);
+                
+                // 隐藏过渡效果
+                if (transitionLayer) {
+                    setTimeout(() => {
+                        transitionLayer.classList.remove('active');
+                    }, 50);
+                }
                 
                 return pageContent;
             })
@@ -85,6 +151,13 @@ class PageLoader {
                     mainContent.appendChild(errorPage);
                 }
                 
+                // 即使出错也要隐藏过渡效果
+                if (transitionLayer) {
+                    setTimeout(() => {
+                        transitionLayer.classList.remove('active');
+                    }, 50);
+                }
+                
                 return errorPage;
             })
             .finally(() => {
@@ -103,10 +176,23 @@ class PageLoader {
         return this.loadedPages.has(pageId);
     }
     
-    // 预加载页面
+    // 预加载页面 - 只加载但不添加到DOM
     preloadPage(pageId) {
         if (!this.isPageLoaded(pageId) && pageId !== 'home') {
-            this.loadPage(pageId);
+            // 直接使用fetch预加载，不调用loadPage以避免DOM操作和页面切换
+            const pagePath = `pages/${pageId}.html`;
+            
+            fetch(pagePath)
+                .then(response => {
+                    if (response.ok) {
+                        console.log(`页面 ${pageId} 已预加载`);
+                        // 标记为已加载但不添加到DOM
+                        this.loadedPages.add(pageId);
+                    }
+                })
+                .catch(error => {
+                    console.error(`预加载页面 ${pageId} 失败:`, error);
+                });
         }
     }
 }
@@ -120,35 +206,50 @@ document.addEventListener('DOMContentLoaded', () => {
     const navLinks = document.querySelectorAll('.nav-link[data-page]');
     const footer = document.querySelector('footer');
     
-    // 预加载所有其他页面
-    ['features', 'join', 'about'].forEach(pageId => {
-        // 在首页加载完成后延迟预加载其他页面，避免阻塞首页渲染
-        setTimeout(() => {
-            pageLoader.preloadPage(pageId);
-        }, 1000);
-    });
+    // 选择性预加载 - 只预加载可能会快速访问的页面
+    // 延迟预加载以避免影响首页加载性能
+    setTimeout(() => {
+        // 只预加载'features'页面，其他页面在需要时再加载
+        pageLoader.preloadPage('features');
+        console.log('已预加载主要页面');
+    }, 3000);
     
     // 页面切换函数 - 使用异步加载
     async function switchPage(pageId) {
-        // 检查目标页面是否已加载
-        let targetPage = document.getElementById(`${pageId}-content`);
+        console.log(`[路由] 尝试切换到页面: ${pageId}`);
         
-        // 如果页面未加载，先加载
-        if (!targetPage && pageId !== 'home') { // 首页始终存在，不需要加载
-            try {
-                targetPage = await pageLoader.loadPage(pageId);
-            } catch (error) {
-                console.error('页面加载失败:', error);
-                showNotification(`页面加载失败: ${error.message}`);
-                return; // 如果加载失败，终止切换
-            }
+        // 验证页面ID是否有效
+        const validPages = ['home', 'features', 'join', 'about'];
+        if (!validPages.includes(pageId)) {
+            console.error(`[路由] 无效的页面ID: ${pageId}`);
+            return;
         }
         
-        // 获取当前页面
-        const currentPage = document.querySelector('.page-content.active');
+        // 检查是否已经在目标页面
+        const currentActivePage = document.querySelector('.page-content.active');
+        const targetPageId = `${pageId}-content`;
         
-        // 如果目标页面就是当前页面，直接返回
-        if (currentPage === targetPage) return;
+        if (currentActivePage && currentActivePage.id === targetPageId) {
+            console.log(`[路由] 已经在目标页面: ${pageId}，跳过切换`);
+            return;
+        }
+        
+        // 无论页面是否已加载，都使用pageLoader.loadPage确保内容正确显示
+        try {
+            await pageLoader.loadPage(pageId);
+            console.log(`[路由] 页面 ${pageId} 加载成功`);
+        } catch (error) {
+            console.error('[路由] 页面加载失败:', error);
+            showNotification(`页面加载失败: ${error.message}`);
+            return; // 如果加载失败，终止切换
+        }
+        
+        // 获取目标页面（此时应该已存在）
+        const targetPage = document.getElementById(targetPageId);
+        if (!targetPage) {
+            console.error(`[路由] 无法找到页面元素: ${targetPageId}`);
+            return;
+        }
         
         // 更新导航链接
         navLinks.forEach(link => {
@@ -162,43 +263,29 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         
         // 执行页面切换动画
-        if (!currentPage) {
+        if (!currentActivePage) {
             // 没有当前页面，直接显示目标页面
-            if (targetPage) {
-                targetPage.classList.add('active');
-                targetPage.style.opacity = '0';
-                targetPage.offsetHeight; // 触发重排
-                targetPage.style.opacity = '1';
-                
-                // 清除样式
-                setTimeout(() => {
-                    targetPage.style.opacity = '';
-                }, 300);
+            // 确保目标页面可见
+            targetPage.classList.remove('hidden');
+            targetPage.classList.add('active'); // 确保添加active类
+            targetPage.style.display = 'block';
+            
+            console.log(`[路由] 直接显示页面: ${pageId}`);
+        } else {
+            // 执行切换动画
+            currentActivePage.style.opacity = '0';
+            if (footer) {
+                footer.style.opacity = '0';
             }
             
-            // 如果是首页，重新初始化背景
-            if (pageId === 'home') {
-                initHeroBackground();
-            }
-            
-            window.scrollTo(0, 0);
-            return;
-        }
-        
-        // 执行切换动画
-        currentPage.style.opacity = '0';
-        if (footer) {
-            footer.style.opacity = '0';
-        }
-        
-        setTimeout(() => {
-            // 隐藏当前页面
-            currentPage.classList.remove('active');
-            
-            // 显示目标页面
-            if (targetPage) {
-                targetPage.classList.add('active');
+            setTimeout(() => {
+                // 隐藏当前页面
+                currentActivePage.style.display = 'none';
+                currentActivePage.classList.remove('active'); // 移除当前页面的active类
                 
+                // 显示目标页面
+                targetPage.style.display = 'block';
+                targetPage.classList.add('active'); // 确保添加active类
                 targetPage.style.opacity = '0';
                 targetPage.offsetHeight; // 触发重排
                 targetPage.style.opacity = '1';
@@ -206,21 +293,27 @@ document.addEventListener('DOMContentLoaded', () => {
                 setTimeout(() => {
                     targetPage.style.opacity = '';
                 }, 300);
-            }
-            
-            // 如果是首页，重新初始化背景
-            if (pageId === 'home') {
-                initHeroBackground();
-            }
-            
-            window.scrollTo(0, 0);
+                
+                console.log(`[路由] 切换到页面: ${pageId}`);
             
             // 页脚淡入
             if (footer) {
                 footer.offsetHeight; // 触发重排
                 footer.style.opacity = '1';
             }
-        }, 300);
+            }, 300);
+        }
+        
+        // 如果是首页，重置并重新初始化背景
+        if (pageId === 'home') {
+            resetBackgroundInitialization();
+            // 延迟确保DOM更新完成
+            setTimeout(() => {
+                initHeroBackground();
+            }, 100);
+        }
+        
+        window.scrollTo(0, 0);
         
         // 更新浏览器历史记录
         const pageTitle = getPageTitle(pageId);
@@ -228,6 +321,8 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // 更新页面标题
         document.title = pageTitle;
+        
+        console.log(`[路由] 页面切换完成: ${pageId}`);
     }
     
     // 获取页面标题
@@ -270,6 +365,8 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // 页面加载时检查URL路径并切换到相应页面
     async function checkInitialPage() {
+        console.log('[路由] 开始检查初始页面');
+        
         // 首先检查是否有从404页面重定向过来的路径
         var redirectPath = sessionStorage.getItem('githubPagesRedirectPath');
         if (redirectPath) {
@@ -278,13 +375,18 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // 解析路径获取页面ID
             const pageId = getPageIdFromPath(redirectPath);
+            console.log('[路由] 检测到重定向路径:', redirectPath, '页面ID:', pageId);
+            
+            // 确保是有效的页面ID
+            const validPages = ['home', 'features', 'join', 'about'];
+            const finalPageId = validPages.includes(pageId) ? pageId : 'home';
             
             // 切换到相应页面
-            await switchPage(pageId);
+            await switchPage(finalPageId);
             
             // 更新浏览器历史记录
-            const pageTitle = getPageTitle(pageId);
-            history.replaceState({page: pageId}, pageTitle, redirectPath);
+            const pageTitle = getPageTitle(finalPageId);
+            history.replaceState({page: finalPageId}, pageTitle, redirectPath);
             
             // 更新页面标题
             document.title = pageTitle;
@@ -294,12 +396,34 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // 如果没有重定向路径，则从当前URL路径获取页面ID
         const path = window.location.pathname;
-        const pageId = getPageIdFromPath(path);
+        console.log('[路由] 当前路径:', path);
+        
+        // 定义有效的页面路径映射
+        const validPaths = {
+            '': 'home',
+            'home': 'home',
+            'features': 'features', 
+            'join': 'join',
+            'about': 'about'
+        };
+        
+        // 清理路径并获取第一部分
+        const cleanPath = path === '/' ? '' : path.substring(1).split('/')[0];
+        console.log('[路由] 清理后的路径:', cleanPath);
+        
+        // 获取对应的页面ID
+        const pageId = validPaths[cleanPath] || 'home';
+        console.log('[路由] 从URL路径获取页面ID:', pageId);
+        
+        // 切换到最终确定的页面
         await switchPage(pageId);
     }
     
     // 检查初始页面
     checkInitialPage();
+    
+    // 初始化应用程序组件
+    AppInitializer.init();
     
     // 事件监听器
     // 为导航链接添加点击事件
@@ -329,7 +453,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     
     // 为页脚链接添加点击事件
-    document.querySelectorAll('footer a[data-page]').forEach(link => {
+    document.querySelectorAll('.footer-nav-link').forEach(link => {
         link.addEventListener('click', async (e) => {
             e.preventDefault();
             const pageId = link.getAttribute('data-page');
@@ -371,57 +495,283 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
+// 统一的应用程序初始化器 - 防止重复初始化
+const AppInitializer = {
+    initialized: false,
+    init() {
+        if (this.initialized) {
+            console.log('应用已初始化，跳过重复初始化');
+            return;
+        }
+        
+        console.log('开始应用程序初始化');
+        this.initialized = true;
+        
+        // 初始化页面组件
+        this.initPageComponents();
+        this.initCopyFeatures();
+        this.initAnimations();
+        this.initBackgroundEffects();
+    },
+    
+    initPageComponents() {
+        // 复制按钮功能
+        document.querySelectorAll('.copy-btn').forEach(button => {
+            button.isCopying = false;
+            
+            button.addEventListener('click', function() {
+                if (this.isCopying) {
+                    return;
+                }
+                
+                const textToCopy = this.getAttribute('data-copy');
+                navigator.clipboard.writeText(textToCopy).then(() => {
+                    const originalText = this.innerHTML;
+                    this.innerHTML = '<i class="fas fa-check"></i> 已复制';
+                    this.isCopying = true;
+                    
+                    setTimeout(() => {
+                        this.innerHTML = originalText;
+                        this.isCopying = false;
+                    }, 3000);
+                }).catch(err => {
+                    console.error('复制失败: ', err);
+                    this.isCopying = false;
+                });
+            });
+        });
+        
+        // 平滑滚动效果 - 仅用于页面内锚点
+        document.querySelectorAll('a[href^="#"]:not([data-page])').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    },
+    
+    initCopyFeatures() {
+        const serverIPElement = document.querySelector('.server-ip');
+        const qqGroupElement = document.querySelector('.server-qq');
+        
+        if (serverIPElement) {
+            serverIPElement.style.cursor = 'pointer';
+            serverIPElement.addEventListener('click', copyServerIP);
+            serverIPElement.title = '点击复制服务器IP';
+        }
+        
+        if (qqGroupElement) {
+            qqGroupElement.style.cursor = 'pointer';
+            qqGroupElement.addEventListener('click', copyQQGroup);
+            qqGroupElement.title = '点击复制QQ群号';
+        }
+    },
+    
+    initAnimations() {
+        // 滚动显示动画
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+        
+        // 为需要动画的元素添加观察
+        const animatedElements = document.querySelectorAll('.status-item, .news-card');
+        animatedElements.forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(20px)';
+            el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(el);
+        });
+    },
+    
+    initBackgroundEffects() {
+        // 鼠标移动视差效果
+        document.addEventListener('mousemove', (e) => {
+            const hero = document.querySelector('.hero');
+            const heroBg = document.querySelector('.hero-bg');
+            const heroBgLayer = document.querySelector('.hero-bg-layer');
+            
+            if (hero && heroBg && heroBgLayer) {
+                const x = e.clientX / window.innerWidth;
+                const y = e.clientY / window.innerHeight;
+                
+                // 主背景图移动（较小幅度）
+                const moveX1 = (x - 0.5) * 40;
+                const moveY1 = (y - 0.5) * 40;
+                
+                // 次背景层移动（较大幅度）
+                const moveX2 = (x - 0.5) * 80;
+                const moveY2 = (y - 0.5) * 80;
+                
+                // 应用移动效果
+                heroBg.style.transform = `translate(${moveX1}px, ${moveY1}px)`;
+                heroBgLayer.style.transform = `translate(${moveX2}px, ${moveY2}px)`;
+            }
+        });
+    }
+};
+
 // 页面加载后检查是否有重定向路径需要处理
 // 注意：路由处理逻辑已移至DOMContentLoaded事件中，此处仅保留背景图片初始化和页面滚动
-window.addEventListener('load', function() {
+// 此监听器已被下方统一的加载监听器取代，保留作为备份注释
+/* window.addEventListener('load', function() {
+    console.log('页面资源加载完成');
     // 添加loaded类到body，使页面内容显示
     document.body.classList.add('loaded');
     
-    // 初始化背景图片
-    initHeroBackground();
-    
-});
+    // 只在页面完全加载后才初始化背景
+    setTimeout(() => {
+        initHeroBackground();
+    }, 200);
+}); */
 
-// 初始化背景图片
-function initHeroBackground() {
-    const heroSection = document.querySelector('.hero');
-    if (heroSection) {
-        // 获取已存在的背景元素
+// 背景图片加载管理器 - 防止重复初始化
+const BackgroundImageManager = {
+    initialized: false,
+    loading: false,
+    
+    init() {
+        if (this.initialized || this.loading) {
+            console.log('背景图片管理器: 已初始化或正在初始化，跳过');
+            return;
+        }
+        
+        this.loading = true;
+        console.log('开始初始化背景图片');
+        
+        const heroSection = document.querySelector('.hero');
+        if (!heroSection) {
+            console.log('背景图片管理器: 未找到hero元素');
+            this.loading = false;
+            return;
+        }
+        
         const heroBg = heroSection.querySelector('.hero-bg');
         const heroBgLayer = heroSection.querySelector('.hero-bg-layer');
         
-        // 设置背景图片
-        if (heroBg) {
-            heroBg.style.backgroundImage = "url('images/EF13DDC8136672FB8AB3C77429A5FE14.jpg')";
-            heroBg.style.backgroundSize = 'cover';
-            heroBg.style.backgroundPosition = 'center';
-            heroBg.style.backgroundRepeat = 'no-repeat';
+        if (!heroBg || !heroBgLayer) {
+            console.log('背景图片管理器: 未找到背景元素');
+            this.loading = false;
+            return;
         }
         
-        // 延迟一点时间后开始渐显效果
+        // 预加载背景图片
+        const imageUrl = 'images/EF13DDC8136672FB8AB3C77429A5FE14.jpg';
+        this.preloadImage(imageUrl).then(() => {
+            console.log('背景图片预加载成功');
+            this.setBackgroundStyles(heroBg, heroBgLayer);
+            this.initialized = true;
+            this.loading = false;
+            document.body.dataset.backgroundInitialized = 'true';
+        }).catch(error => {
+            console.error('背景图片加载失败:', error);
+            this.loading = false;
+            // 即使失败也设置基本样式
+            this.setFallbackBackground(heroBg, heroBgLayer);
+        });
+    },
+    
+    preloadImage(src) {
+        return new Promise((resolve, reject) => {
+            const img = new Image();
+            img.onload = () => resolve(img);
+            img.onerror = reject;
+            img.src = src;
+            
+            // 设置超时防止无限等待
+            setTimeout(() => {
+                if (!img.complete) {
+                    reject(new Error('图片加载超时'));
+                }
+            }, 5000);
+        });
+    },
+    
+    setBackgroundStyles(heroBg, heroBgLayer) {
+        console.log('设置背景样式');
+        
+        // 设置第一层背景
+        heroBg.style.backgroundImage = `url('images/EF13DDC8136672FB8AB3C77429A5FE14.jpg')`;
+        heroBg.style.backgroundSize = 'cover';
+        heroBg.style.backgroundPosition = 'center';
+        heroBg.style.backgroundRepeat = 'no-repeat';
+        heroBg.style.opacity = '0';
+        heroBg.style.transform = 'translate(0, 0)';
+        
+        // 设置第二层背景
+        heroBgLayer.style.backgroundImage = `url('images/EF13DDC8136672FB8AB3C77429A5FE14.jpg')`;
+        heroBgLayer.style.backgroundSize = 'cover';
+        heroBgLayer.style.backgroundPosition = 'center';
+        heroBgLayer.style.backgroundRepeat = 'no-repeat';
+        heroBgLayer.style.opacity = '0';
+        heroBgLayer.style.transform = 'translate(0, 0)';
+        
+        // 延迟显示背景图片
         setTimeout(() => {
-            if (heroBg) heroBg.style.opacity = '1';
-            if (heroBgLayer) heroBgLayer.style.opacity = '1';
+            heroBg.style.opacity = '0.3';
+            heroBgLayer.style.opacity = '0.3';
         }, 100);
+    },
+    
+    setFallbackBackground(heroBg, heroBgLayer) {
+        console.log('设置备用背景样式');
+        heroBg.style.backgroundColor = 'linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.3))';
+        heroBgLayer.style.backgroundColor = 'linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.3))';
+        heroBg.style.opacity = '1';
+        heroBgLayer.style.opacity = '1';
+    },
+    
+    reset() {
+        this.initialized = false;
+        this.loading = false;
+        delete document.body.dataset.backgroundInitialized;
+    }
+};
+
+// 初始化背景图片 - 统一调用点
+function initHeroBackground() {
+    console.log('调用initHeroBackground');
+    BackgroundImageManager.init();
+}
+
+// 重置背景初始化状态（用于页面切换时）
+function resetBackgroundInitialization() {
+    console.log('重置背景初始化状态');
+    BackgroundImageManager.reset();
+}
+
+// 导航菜单点击事件 - 统一管理
+function initNavigation() {
+    // 导航功能已在DOMContentLoaded中实现，此函数保持简洁，避免事件重复绑定
+    // 只保留移动端菜单切换的逻辑
+    const hamburger = document.querySelector('.hamburger');
+    const navMenu = document.querySelector('.nav-menu');
+    
+    if (hamburger && navMenu) {
+        hamburger.addEventListener('click', () => {
+            hamburger.classList.toggle('active');
+            navMenu.classList.toggle('active');
+        });
     }
 }
 
-// 移动端导航菜单切换
-const hamburger = document.querySelector('.hamburger');
-const navMenu = document.querySelector('.nav-menu');
-
-hamburger.addEventListener('click', () => {
-    hamburger.classList.toggle('active');
-    navMenu.classList.toggle('active');
-});
-
-// 点击导航链接时关闭移动端菜单
-document.querySelectorAll('.nav-link').forEach(link => {
-    link.addEventListener('click', () => {
-        hamburger.classList.remove('active');
-        navMenu.classList.remove('active');
-    });
-});
+// 确保在DOMContentLoaded之后调用initNavigation
+// 注意：导航链接的点击事件已在DOMContentLoaded事件监听器中统一处理
 
 // 滚动时导航栏效果
 window.addEventListener('scroll', () => {
@@ -435,14 +785,33 @@ window.addEventListener('scroll', () => {
     }
 });
 
-// 页面加载动画
+// 页面加载动画 - 统一的加载事件监听器
 window.addEventListener('load', () => {
-    // 添加loaded类到body，使页面内容显示
-    document.body.classList.add('loaded');
+    console.log('资源加载完成');
     
-    // 初始化背景图片
-    initHeroBackground();
+    // 隐藏加载指示器（添加透明度过渡动画）
+    const loadingIndicator = document.querySelector('.loading-indicator');
+    if (loadingIndicator) {
+        // 添加平滑的淡出动画
+        loadingIndicator.style.transition = 'opacity 0.8s ease, transform 0.6s ease';
+        loadingIndicator.style.opacity = '0';
+        loadingIndicator.style.transform = 'translate(-50%, -50%) scale(0.9)';
+        
+        // 等待过渡动画完成后移除元素
+        setTimeout(() => {
+            loadingIndicator.style.display = 'none';
+            console.log('加载指示器已隐藏');
+        }, 800);
+    }
     
+    // 不要在window.load中重复加载页面，避免与DOMContentLoaded中的checkInitialPage冲突
+    // 页面内容加载完成后再更新body状态
+    setTimeout(() => {
+        document.body.classList.remove('loading');
+        // 添加loaded类，标记页面已加载完成
+        document.body.classList.add('loaded');
+        console.log('页面加载状态已更新');
+    }, 200);
 });
 
 // 服务器状态模拟更新
@@ -551,37 +920,8 @@ function showNotification(message) {
     }, 3000);
 }
 
-// 为服务器IP和QQ群添加点击复制功能
-document.addEventListener('DOMContentLoaded', () => {
-    const serverIPElement = document.querySelector('.server-ip');
-    const qqGroupElement = document.querySelector('.server-qq');
-    
-    if (serverIPElement) {
-        serverIPElement.style.cursor = 'pointer';
-        serverIPElement.addEventListener('click', copyServerIP);
-        serverIPElement.title = '点击复制服务器IP';
-    }
-    
-    if (qqGroupElement) {
-        qqGroupElement.style.cursor = 'pointer';
-        qqGroupElement.addEventListener('click', copyQQGroup);
-        qqGroupElement.title = '点击复制QQ群号';
-    }
-});
-
-// 平滑滚动效果 - 仅用于页面内锚点
-document.querySelectorAll('a[href^="#"]:not([data-page])').forEach(anchor => {
-    anchor.addEventListener('click', function (e) {
-        e.preventDefault();
-        const target = document.querySelector(this.getAttribute('href'));
-        if (target) {
-            target.scrollIntoView({
-                behavior: 'smooth',
-                block: 'start'
-            });
-        }
-    });
-});
+// 注意：AppInitializer.init()现在在第一个DOMContentLoaded监听器中被调用，避免重复初始化
+// 此监听器已被移除，以防止重复初始化和潜在的路由冲突
 
 // 滚动显示动画
 const observerOptions = {
@@ -598,17 +938,7 @@ const observer = new IntersectionObserver((entries) => {
     });
 }, observerOptions);
 
-// 为需要动画的元素添加观察
-document.addEventListener('DOMContentLoaded', () => {
-    const animatedElements = document.querySelectorAll('.status-item, .news-card');
-    
-    animatedElements.forEach(el => {
-        el.style.opacity = '0';
-        el.style.transform = 'translateY(20px)';
-        el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
-        observer.observe(el);
-    });
-});
+// 为需要动画的元素添加观察（已移动到AppInitializer.initAnimations中）
 
 // 背景图片切换功能
 let currentBgIndex = 0;
