@@ -1,5 +1,134 @@
 // 在这里添加JavaScript代码
 
+// 全局变量和函数定义
+let currentBgIndex = 0;
+let shuffledBackgroundImages = [];
+
+// 原始背景图片列表
+const originalBackgroundImages = [
+    'images/主页背景图/1.jpg',
+    'images/主页背景图/2.jpg',
+    'images/主页背景图/3.jpg',
+    'images/主页背景图/4.jpg'
+];
+
+// 初始化时对图片进行随机排序
+function initBackgroundImages() {
+    // 如果已经有排序结果（本次会话中已初始化），则直接返回
+    if (shuffledBackgroundImages.length > 0) {
+        return shuffledBackgroundImages;
+    }
+
+    // 深拷贝原始数组以避免修改原始数组
+    const tempArray = [...originalBackgroundImages];
+
+    // Fisher-Yates 洗牌算法进行随机排序
+    for (let i = tempArray.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [tempArray[i], tempArray[j]] = [tempArray[j], tempArray[i]];
+    }
+
+    // 保存排序结果，本次会话中保持固定
+    shuffledBackgroundImages = tempArray;
+    console.log('背景图片随机排序结果:', shuffledBackgroundImages);
+    return shuffledBackgroundImages;
+}
+
+// 获取当前会话的图片列表（已随机排序）
+function getBackgroundImages() {
+    return initBackgroundImages();
+}
+
+// 复制服务器IP功能
+function copyServerIP() {
+    const serverIP = 'mc.yuzhou.love';
+    copyText(serverIP, '服务器IP已复制到剪贴板！');
+}
+
+// 复制QQ群号功能
+function copyQQGroup() {
+    const qqGroup = '823557774';
+    copyText(qqGroup, 'QQ群号已复制到剪贴板！');
+}
+
+// 全局复制文本功能
+function copyText(text, customMessage = '已复制到剪贴板！') {
+    // 检查浏览器是否支持现代剪贴板API
+    if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(text).then(() => {
+            showNotification(customMessage);
+        }).catch(err => {
+            console.error('现代剪贴板API复制失败:', err);
+            fallbackCopyTextToClipboard(text, customMessage);
+        });
+    } else {
+        fallbackCopyTextToClipboard(text, customMessage);
+    }
+}
+
+// 降级复制方案
+function fallbackCopyTextToClipboard(text, customMessage) {
+    const textArea = document.createElement('textarea');
+    textArea.value = text;
+    textArea.style.position = 'fixed';
+    textArea.style.left = '-999999px';
+    textArea.style.top = '-999999px';
+    textArea.style.opacity = '0';
+
+    document.body.appendChild(textArea);
+
+    try {
+        textArea.select();
+        textArea.setSelectionRange(0, 999999);
+        const successful = document.execCommand('copy');
+
+        if (successful) {
+            showNotification(customMessage);
+        } else {
+            showNotification('复制失败，请手动复制：' + text);
+        }
+    } catch (err) {
+        console.error('降级方案复制失败:', err);
+        showNotification('复制失败，请手动复制：' + text);
+    } finally {
+        document.body.removeChild(textArea);
+    }
+}
+
+// 显示通知
+function showNotification(message) {
+    const notification = document.createElement('div');
+    notification.className = 'notification';
+    notification.textContent = message;
+    notification.style.position = 'fixed';
+    notification.style.bottom = '20px';
+    notification.style.left = '50%';
+    notification.style.transform = 'translateX(-50%)';
+    notification.style.backgroundColor = 'rgba(33, 150, 243, 0.9)';
+    notification.style.color = 'white';
+    notification.style.padding = '12px 24px';
+    notification.style.borderRadius = '4px';
+    notification.style.zIndex = '10000';
+    notification.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.3)';
+    notification.style.opacity = '0';
+    notification.style.transition = 'opacity 0.3s ease';
+
+    document.body.appendChild(notification);
+
+    setTimeout(() => {
+        notification.style.opacity = '1';
+    }, 10);
+
+    setTimeout(() => {
+        notification.style.opacity = '0';
+        setTimeout(() => {
+            if (document.body.contains(notification)) {
+                document.body.removeChild(notification);
+            }
+        }, 300);
+    }, 3000);
+}
+
 // 增强的触摸设备检测逻辑
 let isTouchDevice = false;
 let touchInteractionDetected = false;
@@ -562,9 +691,19 @@ function setupSkipLoadingButton() {
     }
 }
 
-// 检查是否需要显示跳过按钮
+// 检查是否需要显示跳过按钮 - 修复循环问题
 function checkSkipButtonDisplay() {
     try {
+        // 如果页面已经加载完成，清除定时器并返回
+        if (document.body.classList.contains('loaded')) {
+            if (skipButtonCheckInterval) {
+                clearInterval(skipButtonCheckInterval);
+                skipButtonCheckInterval = null;
+                console.log('页面已加载完成，清除跳过按钮检查定时器');
+            }
+            return;
+        }
+
         // 获取按钮元素
         const skipButton = document.getElementById('skip-loading-btn');
         if (!skipButton) {
@@ -623,12 +762,16 @@ document.addEventListener('DOMContentLoaded', () => {
     domCssLoaded = true;
     console.log('DOM和CSS加载完成');
 
-    // 立即检查是否需要显示跳过按钮
-    checkSkipButtonDisplay();
-
-    // 定时检查，确保在图片加载过程中也能正确显示按钮
-    // 保存定时器ID，以便在页面加载完成后清除
-    skipButtonCheckInterval = setInterval(checkSkipButtonDisplay, 500);
+    // 只有在页面未加载完成时才启动定时器检查
+    if (!document.body.classList.contains('loaded')) {
+        // 立即检查是否需要显示跳过按钮
+        checkSkipButtonDisplay();
+        
+        // 定时检查，确保在图片加载过程中也能正确显示按钮
+        // 保存定时器ID，以便在页面加载完成后清除
+        skipButtonCheckInterval = setInterval(checkSkipButtonDisplay, 500);
+        console.log('启动跳过按钮检查定时器');
+    }
 
     // 选择性预加载 - 只预加载可能会快速访问的页面
     // 延迟预加载以避免影响首页加载性能
@@ -1182,35 +1325,60 @@ const BackgroundImageManager = {
         this.loading = true;
         console.log('开始初始化背景图片');
 
-        const heroSection = document.querySelector('.hero');
-        if (!heroSection) {
-            console.log('背景图片管理器: 未找到hero元素');
+        try {
+            const heroSection = document.querySelector('.hero');
+            if (!heroSection) {
+                console.log('背景图片管理器: 未找到hero元素');
+                this.loading = false;
+                return;
+            }
+
+            const heroBg = heroSection.querySelector('.hero-bg');
+            const heroBgLayer = heroSection.querySelector('.hero-bg-layer');
+
+            if (!heroBg || !heroBgLayer) {
+                console.log('背景图片管理器: 未找到背景元素');
+                this.loading = false;
+                return;
+            }
+
+            // 验证DOM元素的有效性
+            if (!heroBg.style || !heroBgLayer.style) {
+                console.error('背景元素样式属性无效');
+                this.loading = false;
+                return;
+            }
+
+            // 设置初始状态
+            heroBg.style.opacity = '0';
+            heroBgLayer.style.opacity = '0';
+
+            // 预加载所有背景图片
+            this.preloadAllImages().then(() => {
+                console.log('所有背景图片预加载成功');
+                this.setBackgroundStyles(heroBg, heroBgLayer);
+                this.initialized = true;
+                this.loading = false;
+                document.body.dataset.backgroundInitialized = 'true';
+            }).catch(error => {
+                console.error('背景图片加载失败:', error);
+                this.loading = false;
+                // 即使失败也设置基本样式
+                this.setFallbackBackground(heroBg, heroBgLayer);
+            });
+        } catch (error) {
+            console.error('初始化背景图片时发生错误:', error);
             this.loading = false;
-            return;
+            // 尝试设置备用背景
+            const heroSection = document.querySelector('.hero');
+            if (heroSection) {
+                const heroBg = heroSection.querySelector('.hero-bg');
+                const heroBgLayer = heroSection.querySelector('.hero-bg-layer');
+                if (heroBg && heroBgLayer) {
+                    this.setFallbackBackground(heroBg, heroBgLayer);
+                }
+            }
         }
-
-        const heroBg = heroSection.querySelector('.hero-bg');
-        const heroBgLayer = heroSection.querySelector('.hero-bg-layer');
-
-        if (!heroBg || !heroBgLayer) {
-            console.log('背景图片管理器: 未找到背景元素');
-            this.loading = false;
-            return;
-        }
-
-        // 预加载所有背景图片
-        this.preloadAllImages().then(() => {
-            console.log('所有背景图片预加载成功');
-            this.setBackgroundStyles(heroBg, heroBgLayer);
-            this.initialized = true;
-            this.loading = false;
-            document.body.dataset.backgroundInitialized = 'true';
-        }).catch(error => {
-            console.error('背景图片加载失败:', error);
-            this.loading = false;
-            // 即使失败也设置基本样式
-            this.setFallbackBackground(heroBg, heroBgLayer);
-        });
     },
 
     // 预加载单张图片 - 添加循环请求防护
@@ -1358,16 +1526,40 @@ const BackgroundImageManager = {
         console.log('设置背景样式');
 
         try {
-            // 确定要使用的图片 - 简化逻辑，只使用第一张图片
+            // 确定要使用的图片 - 添加错误处理
             const fallbackImage = 'images/主页背景图/1.jpg';
             let imageToUse = fallbackImage;
 
-            // 直接使用第一张图片，不检查缓存状态
-            const images = getBackgroundImages();
-            if (images && images.length > 0) {
-                imageToUse = this.cleanUrl(images[0]);
-                console.log(`使用第一张图片: ${imageToUse}`);
+            // 安全地获取背景图片列表
+            let images = [];
+            try {
+                images = getBackgroundImages ? getBackgroundImages() : null;
+            } catch (error) {
+                console.warn('获取背景图片列表失败，使用默认图片:', error);
+                images = null;
             }
+
+            // 检查图片列表是否有效
+            if (images && Array.isArray(images) && images.length > 0) {
+                // 验证第一张图片是否有效
+                const firstImage = images[0];
+                if (firstImage && typeof firstImage === 'string' && firstImage.trim() !== '') {
+                    imageToUse = this.cleanUrl(firstImage);
+                    console.log(`使用第一张图片: ${imageToUse}`);
+                } else {
+                    console.warn('第一张图片无效，使用默认图片');
+                }
+            } else {
+                console.log('没有可用的背景图片，使用默认图片');
+            }
+
+            // 验证最终选择的图片路径
+            if (!imageToUse || typeof imageToUse !== 'string' || imageToUse.trim() === '') {
+                console.warn('图片路径无效，使用默认备用图片');
+                imageToUse = fallbackImage;
+            }
+
+            console.log(`最终使用图片: ${imageToUse}`);
 
             // 设置背景图片
             heroBg.style.backgroundImage = `url('${imageToUse}')`;
@@ -1382,11 +1574,19 @@ const BackgroundImageManager = {
             heroBgLayer.style.opacity = '0';
             heroBgLayer.style.transform = 'translate(0, 0)';
 
-            // 延迟显示背景
-            setTimeout(() => {
-                heroBg.style.opacity = '1';
-                heroBgLayer.style.opacity = '0.3';
-            }, 100);
+            // 延迟显示背景，添加错误处理
+            const showBackground = () => {
+                try {
+                    heroBg.style.opacity = '1';
+                    heroBgLayer.style.opacity = '0.3';
+                    console.log('背景样式设置成功');
+                } catch (error) {
+                    console.error('显示背景时出错:', error);
+                    this.setFallbackBackground(heroBg, heroBgLayer);
+                }
+            };
+
+            setTimeout(showBackground, 100);
 
         } catch (error) {
             console.error('设置背景样式时出错:', error);
@@ -1396,10 +1596,37 @@ const BackgroundImageManager = {
 
     setFallbackBackground(heroBg, heroBgLayer) {
         console.log('设置备用背景样式');
-        heroBg.style.backgroundColor = 'black';
-        heroBgLayer.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
-        heroBg.style.opacity = '1';
-        heroBgLayer.style.opacity = '1';
+        
+        try {
+            // 验证DOM元素是否存在
+            if (!heroBg || !heroBgLayer) {
+                console.error('DOM元素不存在，无法设置备用背景');
+                return;
+            }
+            
+            // 使用渐变背景作为备用方案
+            heroBg.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+            heroBg.style.backgroundImage = 'none'; // 清除可能的背景图片
+            heroBg.style.opacity = '1';
+            heroBg.style.transform = 'translate(0, 0)';
+            
+            heroBgLayer.style.background = 'rgba(0, 0, 0, 0.15)';
+            heroBgLayer.style.opacity = '0.3';
+            heroBgLayer.style.transform = 'translate(0, 0)';
+            
+            console.log('备用背景设置成功');
+        } catch (error) {
+            console.error('设置备用背景时出错:', error);
+            // 最后的备用方案 - 确保至少显示点什么
+            if (heroBg) {
+                heroBg.style.backgroundColor = '#667eea';
+                heroBg.style.opacity = '1';
+            }
+            if (heroBgLayer) {
+                heroBgLayer.style.backgroundColor = 'rgba(0, 0, 0, 0.15)';
+                heroBgLayer.style.opacity = '0.3';
+            }
+        }
     },
 
     reset() {
@@ -1675,113 +1902,7 @@ function finishLoading() {
     // 每30秒更新一次服务器状态
     setInterval(updateServerStatus, 30000);
 
-    // 复制服务器IP功能
-    function copyServerIP() {
-        const serverIP = 'mc.yuzhou.love';
-        // 统一使用copyText函数处理复制逻辑
-        copyText(serverIP, '服务器IP已复制到剪贴板！');
-    }
-
-    // 复制QQ群号功能
-    function copyQQGroup() {
-        const qqGroup = '823557774';
-        // 统一使用copyText函数处理复制逻辑
-        copyText(qqGroup, 'QQ群号已复制到剪贴板！');
-    }
-
-    // 增强的文本复制功能，支持自定义通知消息
-    function copyText(text, customMessage = '已复制到剪贴板！') {
-        // 检查浏览器是否支持现代剪贴板API
-        if (navigator.clipboard && window.isSecureContext) {
-            // 现代浏览器支持的方式
-            navigator.clipboard.writeText(text).then(() => {
-                showNotification(customMessage);
-            }).catch(err => {
-                console.error('现代剪贴板API复制失败:', err);
-                // 降级到传统方式
-                fallbackCopyTextToClipboard(text, customMessage);
-            });
-        } else {
-            // 直接使用降级方案
-            fallbackCopyTextToClipboard(text, customMessage);
-        }
-    }
-
-    // 降级复制方案，适用于所有浏览器
-    function fallbackCopyTextToClipboard(text, customMessage) {
-        // 创建临时元素用于复制
-        const textArea = document.createElement('textarea');
-        textArea.value = text;
-
-        // 设置样式避免在某些浏览器中闪烁
-        textArea.style.position = 'fixed';
-        textArea.style.left = '-999999px';
-        textArea.style.top = '-999999px';
-        textArea.style.opacity = '0';
-
-        document.body.appendChild(textArea);
-
-        try {
-            // 选择文本
-            textArea.select();
-            textArea.setSelectionRange(0, 999999); // 兼容移动设备
-
-            // 执行复制命令
-            const successful = document.execCommand('copy');
-
-            if (successful) {
-                showNotification(customMessage);
-            } else {
-                console.error('execCommand复制失败');
-                // 最终降级：提示用户手动复制
-                showNotification('复制失败，请手动复制：' + text);
-            }
-        } catch (err) {
-            console.error('降级方案复制失败:', err);
-            showNotification('复制失败，请手动复制：' + text);
-        } finally {
-            // 确保移除临时元素
-            document.body.removeChild(textArea);
-        }
-    }
-
-    // 显示通知
-    function showNotification(message) {
-        // 创建通知元素
-        const notification = document.createElement('div');
-        notification.className = 'notification';
-        notification.textContent = message;
-
-        // 添加样式
-        notification.style.position = 'fixed';
-        notification.style.bottom = '20px';
-        notification.style.left = '50%';
-        notification.style.transform = 'translateX(-50%)';
-        notification.style.backgroundColor = 'rgba(33, 150, 243, 0.9)';
-        notification.style.color = 'white';
-        notification.style.padding = '12px 24px';
-        notification.style.borderRadius = '4px';
-        notification.style.zIndex = '10000';
-        notification.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.3)';
-        notification.style.opacity = '0';
-        notification.style.transition = 'opacity 0.3s ease';
-
-        // 添加到页面
-        document.body.appendChild(notification);
-
-        // 显示通知
-        setTimeout(() => {
-            notification.style.opacity = '1';
-        }, 10);
-
-        // 3秒后移除通知
-        setTimeout(() => {
-            notification.style.opacity = '0';
-            setTimeout(() => {
-                document.body.removeChild(notification);
-            }, 300);
-        }, 3000);
-    }
+    // 全局函数已移至文件顶部
 
     // 注意：AppInitializer.init()现在在第一个DOMContentLoaded监听器中被调用，避免重复初始化
     // 此监听器已被移除，以防止重复初始化和潜在的路由冲突
@@ -1803,48 +1924,7 @@ function finishLoading() {
 
     // 为需要动画的元素添加观察（已移动到AppInitializer.initAnimations中）
 
-    // 背景图片切换功能 - 新目录和随机排序
-    let currentBgIndex = 0;
-    let shuffledBackgroundImages = [];
-
-    // 原始背景图片列表（新目录）
-    // 使用完整的images/前缀路径，确保路径一致性
-    const originalBackgroundImages = [
-        'images/主页背景图/1.jpg',
-        'images/主页背景图/2.jpg',
-        'images/主页背景图/3.jpg',
-        'images/主页背景图/4.jpg'
-    ];
-
-    // 初始化时对图片进行随机排序
-    function initBackgroundImages() {
-        // 如果已经有排序结果（本次会话中已初始化），则直接返回
-        if (shuffledBackgroundImages.length > 0) {
-            return shuffledBackgroundImages;
-        }
-
-        // 深拷贝原始数组以避免修改原始数组
-        const tempArray = [...originalBackgroundImages];
-
-        // Fisher-Yates 洗牌算法进行随机排序
-        for (let i = tempArray.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [tempArray[i], tempArray[j]] = [tempArray[j], tempArray[i]];
-        }
-
-        // 保存排序结果，本次会话中保持固定
-        shuffledBackgroundImages = tempArray;
-        console.log('背景图片随机排序结果:', shuffledBackgroundImages);
-        return shuffledBackgroundImages;
-    }
-
-    // 获取当前会话的图片列表（已随机排序）
-    function getBackgroundImages() {
-        return initBackgroundImages();
-    }
-
-    // 为了兼容现有代码，提供backgroundImages变量访问
-    const backgroundImages = getBackgroundImages();
+    // 背景图片切换功能 - 使用全局函数
 
     // 添加节流控制，防止频繁切换背景
     let isChangingBackground = false;
