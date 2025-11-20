@@ -14,18 +14,18 @@ function detectDeviceCapabilities() {
     // 基础触摸支持检测
     const hasTouchAPI = ('ontouchstart' in window);
     const hasTouchPoints = (navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0);
-    
+
     // 检测触摸事件构造函数
     const hasTouchEvents = 'TouchEvent' in window;
-    
+
     // 综合判断触摸能力
     isTouchDevice = hasTouchAPI || hasTouchPoints || hasTouchEvents;
-    
+
     // 检测用户代理信息（作为辅助）
     const ua = navigator.userAgent;
-    const hasTouchUA = /\btouch\b/i.test(ua) || 
-                      /iPad|iPhone|iPod|Android|Windows Phone/i.test(ua);
-    
+    const hasTouchUA = /\btouch\b/i.test(ua) ||
+        /iPad|iPhone|iPod|Android|Windows Phone/i.test(ua);
+
     // 如果检测到触摸能力，添加支持触摸类
     if (isTouchDevice || hasTouchUA) {
         document.documentElement.classList.add('supports-touch');
@@ -34,7 +34,7 @@ function detectDeviceCapabilities() {
     } else {
         document.documentElement.classList.add('mouse-device');
     }
-    
+
     console.log('设备检测结果:', { isTouchDevice, hasTouchUA });
 }
 
@@ -42,19 +42,19 @@ function detectDeviceCapabilities() {
 function handleTouchEvent(e) {
     // 记录触摸时间
     lastTouchTime = Date.now();
-    
+
     // 如果最近有鼠标事件，且时间差小于阈值，忽略此次触摸
     if (lastMouseEventTime && (lastTouchTime - lastMouseEventTime) < INTERACTION_THRESHOLD) {
         return;
     }
-    
+
     // 标记为触摸交互
     touchInteractionDetected = true;
-    
+
     // 更新DOM类
     document.documentElement.classList.add('touch-device');
     document.documentElement.classList.remove('mouse-device');
-    
+
     console.log('检测到触摸交互');
 }
 
@@ -64,17 +64,17 @@ function handleMouseEvent(e) {
     if (lastTouchTime && (Date.now() - lastTouchTime) < INTERACTION_THRESHOLD) {
         return;
     }
-    
+
     // 记录鼠标时间
     lastMouseEventTime = Date.now();
-    
+
     // 标记为鼠标交互
     mouseInteractionDetected = true;
-    
+
     // 更新DOM类
     document.documentElement.classList.remove('touch-device');
     document.documentElement.classList.add('mouse-device');
-    
+
     console.log('检测到鼠标交互');
 }
 
@@ -84,18 +84,18 @@ function setupEventListeners() {
     document.addEventListener('touchstart', handleTouchEvent, { passive: true, capture: true });
     document.addEventListener('touchmove', handleTouchEvent, { passive: true, capture: true });
     document.addEventListener('touchend', handleTouchEvent, { passive: true, capture: true });
-    
+
     document.addEventListener('mousedown', handleMouseEvent, { passive: true, capture: true });
     document.addEventListener('mousemove', handleMouseEvent, { passive: true, capture: true });
     document.addEventListener('mouseup', handleMouseEvent, { passive: true, capture: true });
-    
+
     // 定期检查，保持检测的准确性
     setInterval(() => {
         // 如果一段时间没有交互，重置状态
         const now = Date.now();
         const touchInactive = now - lastTouchTime > CHECK_INTERVAL;
         const mouseInactive = now - lastMouseEventTime > CHECK_INTERVAL;
-        
+
         if (touchInactive && mouseInactive) {
             // 都没有活动，根据初始检测设置默认状态
             if (isTouchDevice) {
@@ -113,22 +113,22 @@ function setupEventListeners() {
 function enhancedTouchDetection() {
     // 立即执行设备特性检测
     detectDeviceCapabilities();
-    
+
     // 设置事件监听器
     setupEventListeners();
-    
+
     // 优化幽灵点击处理，只阻止真正的幽灵点击而不影响正常交互
     let lastTouchTarget = null;
-    
+
     // 记录触摸目标
     document.addEventListener('touchend', (e) => {
         lastTouchTarget = e.target;
     }, { passive: true });
-    
+
     // 更智能的点击事件处理
     document.addEventListener('click', (e) => {
         // 只有当点击时间接近触摸时间且目标相同时，才可能是幽灵点击
-        if (lastTouchTime && (Date.now() - lastTouchTime) < INTERACTION_THRESHOLD && 
+        if (lastTouchTime && (Date.now() - lastTouchTime) < INTERACTION_THRESHOLD &&
             lastTouchTarget === e.target) {
             // 只阻止传播，不阻止默认行为，避免影响按钮功能
             e.stopPropagation();
@@ -148,7 +148,7 @@ class PageLoader {
         this.loadingPromises = new Map(); // 跟踪正在进行的加载请求
         this.transitionDuration = 300; // 过渡动画持续时间
     }
-    
+
     // 加载页面内容
     async loadPage(pageId, preload = false) {
         // 如果不是预加载模式，才显示页面过渡效果
@@ -156,12 +156,12 @@ class PageLoader {
         if (transitionLayer && !preload) {
             transitionLayer.classList.add('active');
         }
-        
+
         // 如果页面已经加载，等待过渡效果后返回
         if (this.loadedPages.has(pageId)) {
             // 获取页面内容元素
             const pageContent = document.getElementById(`${pageId}-content`);
-            
+
             // 确保主内容区域显示页面内容
             const mainContent = document.querySelector('#main-content');
             if (mainContent && pageContent && !mainContent.contains(pageContent)) {
@@ -170,19 +170,19 @@ class PageLoader {
                 // 添加页面内容
                 mainContent.appendChild(pageContent);
             }
-            
+
             await new Promise(resolve => setTimeout(resolve, this.transitionDuration));
-            
+
             // 隐藏过渡效果
             if (transitionLayer) {
                 setTimeout(() => {
                     transitionLayer.classList.remove('active');
                 }, 50);
             }
-            
+
             return pageContent;
         }
-        
+
         // 如果页面正在加载中，返回加载Promise
         if (this.loadingPromises.has(pageId)) {
             // 确保显示过渡效果
@@ -191,10 +191,10 @@ class PageLoader {
             }
             return this.loadingPromises.get(pageId);
         }
-        
+
         // 页面不存在于缓存中，需要加载
         const pagePath = `pages/${pageId}.html`;
-        
+
         // 创建加载Promise
         const loadPromise = fetch(pagePath)
             .then(response => {
@@ -215,7 +215,7 @@ class PageLoader {
                 // 解析HTML内容
                 const parser = new DOMParser();
                 const doc = parser.parseFromString(html, 'text/html');
-                
+
                 // 提取页面内容部分
                 let pageContent = doc.querySelector('.page-content');
                 if (!pageContent) {
@@ -226,23 +226,23 @@ class PageLoader {
                         pageContent.innerHTML = html;
                     }
                 }
-                
+
                 // 获取主内容区域
                 const mainContent = document.querySelector('#main-content');
-                
+
                 if (mainContent) {
                     // 清空主内容区域（移除加载占位符）
                     mainContent.innerHTML = '';
-                    
+
                     // 为页面内容添加ID，以便后续可以找到它
                     pageContent.id = `${pageId}-content`;
                     pageContent.className = 'page-content';
-                    
+
                     // 添加页面内容
                     mainContent.appendChild(pageContent);
                     console.log(`页面 ${pageId} 内容已添加到主内容区域`);
                 }
-                
+
                 // 对于首页，重置并重新初始化背景
                 if (pageId === 'home') {
                     resetBackgroundInitialization();
@@ -250,7 +250,7 @@ class PageLoader {
                         initHeroBackground();
                     }, 100);
                 }
-                
+
                 // 只有在非预加载模式下才立即添加active类
                 if (!preload) {
                     pageContent.classList.add('active');
@@ -258,19 +258,19 @@ class PageLoader {
                     // 预加载模式下，延迟添加active类，直到页面真正显示
                     console.log(`页面 ${pageId} 已预加载，但暂时不激活显示`);
                 }
-                
+
                 // 注意：AppInitializer.init()不再在这里调用，而是在首次页面加载时统一初始化
-                
+
                 // 标记页面为已加载
                 this.loadedPages.add(pageId);
-                
+
                 // 如果不是预加载模式，才隐藏过渡效果
                 if (transitionLayer && !preload) {
                     setTimeout(() => {
                         transitionLayer.classList.remove('active');
                     }, 50);
                 }
-                
+
                 return pageContent;
             })
             .catch(error => {
@@ -292,44 +292,44 @@ class PageLoader {
                         </div>
                     </div>
                 `;
-                
+
                 // 添加到主内容区域
                 const mainContent = document.querySelector('#main-content');
                 if (mainContent) {
                     mainContent.appendChild(errorPage);
                 }
-                
+
                 // 即使出错也要隐藏过渡效果
                 if (transitionLayer) {
                     setTimeout(() => {
                         transitionLayer.classList.remove('active');
                     }, 50);
                 }
-                
+
                 return errorPage;
             })
             .finally(() => {
                 // 清除加载Promise
                 this.loadingPromises.delete(pageId);
             });
-        
+
         // 保存加载Promise
         this.loadingPromises.set(pageId, loadPromise);
-        
+
         return loadPromise;
     }
-    
+
     // 检查页面是否已加载
     isPageLoaded(pageId) {
         return this.loadedPages.has(pageId);
     }
-    
+
     // 预加载页面 - 只加载但不添加到DOM
     preloadPage(pageId) {
         if (!this.isPageLoaded(pageId) && pageId !== 'home') {
             // 直接使用fetch预加载，不调用loadPage以避免DOM操作和页面切换
             const pagePath = `pages/${pageId}.html`;
-            
+
             fetch(pagePath)
                 .then(response => {
                     if (response.ok) {
@@ -361,33 +361,33 @@ if (loadingIndicator) {
 function loadLoadingGif() {
     const loadingGif = document.getElementById('loading-gif');
     const loadingSpinner = document.querySelector('.loading-spinner');
-    
+
     if (loadingGif && loadingSpinner) {
         // 创建图片对象进行预加载
         const img = new Image();
         img.src = 'images/loading.avif';
-        
+
         // 设置超时处理 - 确保即使图片加载缓慢也有响应
         const timeoutId = setTimeout(() => {
             console.warn('loading.avif 动图加载超时，保持默认动画');
             loadingGif.style.display = 'none';
             loadingSpinner.style.display = 'block';
         }, 3000); // 3秒超时
-        
+
         // 加载成功
-        img.onload = function() {
+        img.onload = function () {
             clearTimeout(timeoutId); // 清除超时计时器
             console.log('loading.avif 动图加载成功，替换加载动画');
             loadingGif.src = 'images/loading.avif';
             loadingGif.style.display = 'block';
             loadingSpinner.style.display = 'none';
-            
+
             // 保持按钮显示状态一致，不自动隐藏
             // 按钮的显示/隐藏由checkSkipButtonDisplay函数控制
         };
-        
+
         // 加载失败
-        img.onerror = function() {
+        img.onerror = function () {
             clearTimeout(timeoutId); // 清除超时计时器
             console.log('loading.avif 动图加载失败，使用默认动画');
             loadingGif.style.display = 'none';
@@ -423,7 +423,7 @@ let pagesTotalCount = 0;
 // 预加载所有资源的函数
 async function preloadAllResources() {
     console.log('开始预加载所有资源...');
-    
+
     // 图片资源列表
     const imageResources = [
         'images/主页背景图/1.jpg',
@@ -437,7 +437,7 @@ async function preloadAllResources() {
         'images/Java版加入指南.png',
         'images/基岩版加入指南.png'
     ];
-    
+
     // 页面资源列表
     const pageResources = [
         'pages/home.html',
@@ -445,19 +445,19 @@ async function preloadAllResources() {
         'pages/join.html',
         'pages/about.html'
     ];
-    
+
     // 字体资源列表 - 只包含当前项目引用到的字体
     const fontResources = [
         'fonts/fontawesome-free-6.4.0-web/webfonts/fa-solid-900.woff2',
         'fonts/fontawesome-free-6.4.0-web/webfonts/fa-brands-400.woff2',
         'fonts/fontawesome-free-6.4.0-web/webfonts/fa-regular-400.woff2'
     ];
-    
+
     // 初始化计数器
     imagesTotalCount = imageResources.length;
     pagesTotalCount = pageResources.length;
     fontsTotalCount = fontResources.length;
-    
+
     // 预加载图片
     const imagePromises = imageResources.map(imgSrc => {
         return new Promise((resolve) => {
@@ -471,7 +471,7 @@ async function preloadAllResources() {
             img.src = imgSrc;
         });
     });
-    
+
     // 预加载页面
     const pagePromises = pageResources.map(pageSrc => {
         return new Promise((resolve) => {
@@ -489,7 +489,7 @@ async function preloadAllResources() {
                 });
         });
     });
-    
+
     // 预加载字体
     const fontPromises = fontResources.map(fontSrc => {
         return new Promise((resolve) => {
@@ -509,10 +509,10 @@ async function preloadAllResources() {
                 });
         });
     });
-    
+
     // 等待所有资源加载完成
     await Promise.all([...imagePromises, ...pagePromises, ...fontPromises]);
-    
+
     console.log('所有资源预加载完成!');
     return true;
 }
@@ -520,32 +520,32 @@ async function preloadAllResources() {
 // 设置跳过加载按钮功能
 function setupSkipLoadingButton() {
     const skipButton = document.getElementById('skip-loading-btn');
-    
+
     if (skipButton) {
-        skipButton.addEventListener('click', function() {
+        skipButton.addEventListener('click', function () {
             console.log('测试模式 - 用户点击了"不等了，先看文字"按钮，跳过图片加载');
-            
+
             try {
                 // 先显示页面内容
                 document.body.classList.remove('loading');
                 document.body.classList.add('loaded');
                 document.body.dataset.skipLoading = 'true'; // 添加标记表示用户选择跳过加载
-                
+
                 // 然后淡出加载指示器
                 const loadingIndicator = document.querySelector('.loading-indicator');
                 if (loadingIndicator) {
                     loadingIndicator.style.opacity = '0';
                     loadingIndicator.style.transform = 'translate(-50%, -50%)'; // 移除scale(0.9)，避免突然缩小的效果
-                    
+
                     setTimeout(() => {
                         loadingIndicator.style.display = 'none';
                         console.log('测试模式 - 加载指示器已隐藏');
                     }, 300);
                 }
-                
+
                 // 隐藏跳过按钮
                 skipButton.style.display = 'none';
-                
+
                 // 模拟图片仍在后台加载的情况
                 console.log('测试模式 - 背景图片仍在后台继续加载中...');
             } catch (error) {
@@ -569,15 +569,15 @@ function checkSkipButtonDisplay() {
             console.warn('跳过加载按钮未找到');
             return;
         }
-        
+
         // 只有在CSS、JS、HTML加载完成但图片和字体资源仍在加载时才显示按钮
         const htmlCssJsLoaded = domCssLoaded; // HTML、CSS、JS已加载
         const assetsStillLoading = (imagesLoadingCount > 0 || fontsLoadingCount > 0); // 图片或字体仍在加载
         const pageNotLoaded = !document.body.classList.contains('loaded'); // 页面还未完全加载
-        
+
         console.log(`检查跳过按钮显示条件 - HTML/CSS/JS加载: ${htmlCssJsLoaded}, 资源仍在加载: ${assetsStillLoading}, 页面未完成: ${pageNotLoaded}`);
         console.log(`资源加载状态 - 图片剩余: ${imagesLoadingCount}/${imagesTotalCount}, 字体剩余: ${fontsLoadingCount}/${fontsTotalCount}`);
-        
+
         // 符合条件：HTML、CSS、JS已加载，但图片和字体资源仍在加载中
         if (htmlCssJsLoaded && assetsStillLoading && pageNotLoaded) {
             // 立即显示按钮，不添加延迟
@@ -600,13 +600,13 @@ document.addEventListener('DOMContentLoaded', () => {
     // 获取所有导航链接
     const navLinks = document.querySelectorAll('.nav-link[data-page]');
     const footer = document.querySelector('footer');
-    
+
     // 只有在3秒后且页面未完全加载时才显示加载提示
     if (loadingIndicator && !document.body.classList.contains('loaded')) {
         // 检查是否已经过了3秒
         const currentTime = Date.now();
         const elapsedTime = currentTime - loadStartTime;
-        
+
         if (elapsedTime >= 3000 || loadingIndicatorVisible) {
             loadingIndicator.style.display = 'flex';
             loadingIndicatorVisible = true;
@@ -616,17 +616,17 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log('DOM加载完成但未过3秒，暂不显示加载提示');
         }
     }
-    
+
     // DOM和CSS已加载完成
     domCssLoaded = true;
     console.log('DOM和CSS加载完成');
-    
+
     // 立即检查是否需要显示跳过按钮
     checkSkipButtonDisplay();
-    
+
     // 定时检查，确保在图片加载过程中也能正确显示按钮
     setInterval(checkSkipButtonDisplay, 500);
-    
+
     // 选择性预加载 - 只预加载可能会快速访问的页面
     // 延迟预加载以避免影响首页加载性能
     setTimeout(() => {
@@ -634,21 +634,21 @@ document.addEventListener('DOMContentLoaded', () => {
         pageLoader.preloadPage('features');
         console.log('已预加载主要页面');
     }, 3000);
-    
+
     // 页面切换函数 - 使用异步加载
     async function switchPage(pageId) {
         console.log(`[路由] 尝试切换到页面: ${pageId}`);
-        
+
         // 验证页面ID是否有效
         const validPages = ['home', 'features', 'join', 'about'];
         if (!validPages.includes(pageId)) {
             console.error(`[路由] 无效的页面ID: ${pageId}`);
             return;
         }
-        
+
         // 获取目标页面ID
         const targetPageId = `${pageId}-content`;
-        
+
         // 首先确保加载页面内容，无论当前是否已在目标页面
         try {
             // 强制重新加载页面内容，确保最新内容显示
@@ -660,35 +660,35 @@ document.addEventListener('DOMContentLoaded', () => {
             showNotification(`页面加载失败: ${error.message}`);
             return; // 如果加载失败，终止切换
         }
-        
+
         // 获取目标页面（此时应该已存在）
         const targetPage = document.getElementById(targetPageId);
         if (!targetPage) {
             console.error(`[路由] 无法找到页面元素: ${targetPageId}`);
             return;
         }
-        
+
         // 获取当前活跃页面
         const currentActivePage = document.querySelector('.page-content.active');
-        
+
         // 更新导航链接
         navLinks.forEach(link => {
             link.classList.remove('active');
         });
-        
+
         // 添加active类到目标导航链接
         const targetLink = document.querySelector(`.nav-link[data-page="${pageId}"]`);
         if (targetLink) {
             targetLink.classList.add('active');
         }
-        
+
         // 执行页面切换动画 - 无论是否已在目标页面都执行切换逻辑
         // 确保过渡层激活
         const transitionLayer = document.querySelector('.page-transition');
         if (transitionLayer) {
             transitionLayer.classList.add('active');
         }
-        
+
         // 隐藏当前页面（如果存在）
         if (currentActivePage) {
             currentActivePage.style.opacity = '0';
@@ -696,7 +696,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 footer.style.opacity = '0';
             }
         }
-        
+
         // 使用统一的切换逻辑，确保无论从哪个页面切换都能正常工作
         setTimeout(() => {
             // 隐藏当前页面
@@ -704,26 +704,26 @@ document.addEventListener('DOMContentLoaded', () => {
                 currentActivePage.style.display = 'none';
                 currentActivePage.classList.remove('active'); // 移除当前页面的active类
             }
-            
+
             // 显示目标页面
             targetPage.style.display = 'block';
             targetPage.classList.add('active'); // 确保添加active类
             targetPage.style.opacity = '0';
             targetPage.offsetHeight; // 触发重排
             targetPage.style.opacity = '1';
-            
+
             setTimeout(() => {
                 targetPage.style.opacity = '';
             }, 300);
-            
+
             console.log(`[路由] 切换到页面: ${pageId}`);
-        
+
             // 页脚淡入
             if (footer) {
                 footer.offsetHeight; // 触发重排
                 footer.style.opacity = '1';
             }
-            
+
             // 隐藏过渡效果
             if (transitionLayer) {
                 setTimeout(() => {
@@ -731,7 +731,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }, 50);
             }
         }, 300);
-        
+
         // 如果是首页，重置并重新初始化背景
         if (pageId === 'home') {
             resetBackgroundInitialization();
@@ -740,19 +740,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 initHeroBackground();
             }, 100);
         }
-        
+
         window.scrollTo(0, 0);
-        
+
         // 更新浏览器历史记录
         const pageTitle = getPageTitle(pageId);
-        history.pushState({page: pageId}, pageTitle, `/${getPagePath(pageId)}`);
-        
+        history.pushState({ page: pageId }, pageTitle, `/${getPagePath(pageId)}`);
+
         // 更新页面标题
         document.title = pageTitle;
-        
+
         console.log(`[路由] 页面切换完成: ${pageId}`);
     }
-    
+
     // 获取页面标题
     function getPageTitle(pageId) {
         const titles = {
@@ -763,7 +763,7 @@ document.addEventListener('DOMContentLoaded', () => {
         };
         return titles[pageId] || '雨州Minecraft服务器';
     }
-    
+
     // 获取页面路径
     function getPagePath(pageId) {
         const paths = {
@@ -781,7 +781,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (path.startsWith('/')) {
             path = path.substring(1);
         }
-        
+
         const paths = {
             '': 'home',
             'features': 'features',
@@ -790,23 +790,23 @@ document.addEventListener('DOMContentLoaded', () => {
         };
         return paths[path] || 'home';
     }
-    
+
     // 页面加载时检查URL路径并切换到相应页面
     async function checkInitialPage() {
         console.log('[路由] 开始检查初始页面');
-        
+
         // 定义有效的页面ID列表
         const validPages = ['home', 'features', 'join', 'about'];
-        
+
         // 定义有效的页面路径映射
         const pathToPageId = {
             '': 'home',
             'home': 'home',
-            'features': 'features', 
+            'features': 'features',
             'join': 'join',
             'about': 'about'
         };
-        
+
         // 解析路径获取页面ID的辅助函数
         function parsePageIdFromPath(path) {
             // 清理路径
@@ -817,22 +817,22 @@ document.addEventListener('DOMContentLoaded', () => {
             if (cleanPath.endsWith('/')) {
                 cleanPath = cleanPath.substring(0, cleanPath.length - 1);
             }
-            
+
             // 获取第一部分路径
             const pathPart = cleanPath.split('/')[0];
             console.log('[路由] 清理后的路径部分:', pathPart);
-            
+
             // 返回对应的页面ID或默认值
             return pathToPageId[pathPart] || 'home';
         }
-        
+
         // 1. 优先处理从404页面重定向过来的路径
         let redirectPath = null;
         try {
             if (sessionStorage) {
                 // 尝试多种可能的存储键名，确保兼容性
-                redirectPath = sessionStorage.getItem('githubPagesRedirectPath') || 
-                               sessionStorage.getItem('redirectPath');
+                redirectPath = sessionStorage.getItem('githubPagesRedirectPath') ||
+                    sessionStorage.getItem('redirectPath');
                 // 无论如何都清除sessionStorage中的值，避免影响后续操作
                 sessionStorage.removeItem('githubPagesRedirectPath');
                 sessionStorage.removeItem('redirectPath');
@@ -841,9 +841,9 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (e) {
             console.error('[路由] 读取或清除sessionStorage失败:', e);
         }
-        
+
         let targetPageId = 'home';
-        
+
         if (redirectPath) {
             console.log('[路由] 检测到重定向路径:', redirectPath);
             // 从重定向路径解析页面ID
@@ -854,34 +854,34 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log('[路由] 当前路径:', currentPath);
             targetPageId = parsePageIdFromPath(currentPath);
         }
-        
+
         console.log('[路由] 确定的目标页面ID:', targetPageId);
-        
+
         // 确保目标页面ID有效
         if (!validPages.includes(targetPageId)) {
             console.warn('[路由] 无效的页面ID，默认使用home:', targetPageId);
             targetPageId = 'home';
         }
-        
+
         try {
             // 切换到目标页面
             await switchPage(targetPageId);
-            
+
             // 更新页面标题
             const pageTitle = getPageTitle(targetPageId);
             document.title = pageTitle;
-            
+
             // 更新浏览器历史记录，确保URL路径正确
             const targetPath = `/${getPagePath(targetPageId)}`;
             if (window.location.pathname !== targetPath) {
                 try {
-                    history.replaceState({page: targetPageId}, pageTitle, targetPath);
+                    history.replaceState({ page: targetPageId }, pageTitle, targetPath);
                     console.log('[路由] 已更新浏览器历史记录到:', targetPath);
                 } catch (e) {
                     console.error('[路由] 更新历史记录失败:', e);
                 }
             }
-            
+
             console.log('[路由] 初始页面检查和加载完成');
         } catch (error) {
             console.error('[路由] 加载目标页面失败:', error);
@@ -894,13 +894,13 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
     }
-    
+
     // 检查初始页面
     checkInitialPage();
-    
+
     // 初始化应用程序组件
     AppInitializer.init();
-    
+
     // 事件监听器
     // 为导航链接添加点击事件
     navLinks.forEach(link => {
@@ -908,7 +908,7 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             const pageId = link.getAttribute('data-page');
             await switchPage(pageId);
-            
+
             // 关闭移动端菜单
             const hamburger = document.querySelector('.hamburger');
             const navMenu = document.querySelector('.nav-menu');
@@ -918,7 +918,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     });
-    
+
     // 为带有data-page属性的按钮添加点击事件
     document.querySelectorAll('.btn[data-page]').forEach(button => {
         button.addEventListener('click', async (e) => {
@@ -927,7 +927,7 @@ document.addEventListener('DOMContentLoaded', () => {
             await switchPage(pageId);
         });
     });
-    
+
     // 为页脚链接添加点击事件
     document.querySelectorAll('.footer-nav-link').forEach(link => {
         link.addEventListener('click', async (e) => {
@@ -936,14 +936,14 @@ document.addEventListener('DOMContentLoaded', () => {
             await switchPage(pageId);
         });
     });
-    
+
     // 为logo区域添加点击事件，切换到首页
     const logoArea = document.querySelector('.logo');
     if (logoArea) {
         logoArea.addEventListener('click', async (e) => {
             e.preventDefault();
             await switchPage('home');
-            
+
             // 关闭移动端菜单
             const hamburger = document.querySelector('.hamburger');
             const navMenu = document.querySelector('.nav-menu');
@@ -953,9 +953,9 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
-    
+
     // 监听浏览器的后退/前进按钮
-    window.addEventListener('popstate', async function(event) {
+    window.addEventListener('popstate', async function (event) {
         let pageId = 'home';
         if (event.state && event.state.page) {
             pageId = event.state.page;
@@ -965,7 +965,7 @@ document.addEventListener('DOMContentLoaded', () => {
             pageId = getPageIdFromPath(path);
         }
         await switchPage(pageId);
-        
+
         // 更新页面标题
         document.title = getPageTitle(pageId);
     });
@@ -979,33 +979,33 @@ const AppInitializer = {
             console.log('应用已初始化，跳过重复初始化');
             return;
         }
-        
+
         console.log('开始应用程序初始化');
         this.initialized = true;
-        
+
         // 初始化页面组件
         this.initPageComponents();
         this.initCopyFeatures();
         // 注意：动画初始化已移至finishLoading函数中，确保在页面完全加载后才执行
         this.initBackgroundEffects();
     },
-    
+
     initPageComponents() {
         // 复制按钮功能
         document.querySelectorAll('.copy-btn').forEach(button => {
             button.isCopying = false;
-            
-            button.addEventListener('click', function() {
+
+            button.addEventListener('click', function () {
                 if (this.isCopying) {
                     return;
                 }
-                
+
                 const textToCopy = this.getAttribute('data-copy');
                 navigator.clipboard.writeText(textToCopy).then(() => {
                     const originalText = this.innerHTML;
                     this.innerHTML = '<i class="fas fa-check"></i> 已复制';
                     this.isCopying = true;
-                    
+
                     setTimeout(() => {
                         this.innerHTML = originalText;
                         this.isCopying = false;
@@ -1016,7 +1016,7 @@ const AppInitializer = {
                 });
             });
         });
-        
+
         // 平滑滚动效果 - 仅用于页面内锚点
         document.querySelectorAll('a[href^="#"]:not([data-page])').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
@@ -1031,33 +1031,33 @@ const AppInitializer = {
             });
         });
     },
-    
+
     initCopyFeatures() {
         const serverIPElement = document.querySelector('.server-ip');
         const qqGroupElement = document.querySelector('.server-qq');
-        
+
         // 优化后的事件处理函数，使用统一的事件处理方式
         function addCopyEvent(element, callback, title) {
             if (element) {
                 element.style.cursor = 'pointer';
                 element.title = title;
-                
+
                 // 使用click事件作为主要交互方式
                 // 移除touchstart事件避免事件冲突
                 element.addEventListener('click', (e) => {
                     // 只阻止冒泡，不阻止默认行为
                     e.stopPropagation();
-                    
+
                     // 立即执行复制操作
                     callback();
                 });
-                
+
                 // 添加touchend事件作为备用，但不阻止默认行为
                 element.addEventListener('touchend', (e) => {
                     // 确保不与click事件冲突
                     // 只阻止冒泡，不阻止默认行为
                     e.stopPropagation();
-                    
+
                     // 检查目标元素是否为复制按钮或其子元素
                     if (element.contains(e.target)) {
                         // 添加微小延迟确保不与click冲突
@@ -1068,18 +1068,18 @@ const AppInitializer = {
                 }, { passive: true }); // 使用passive提高性能
             }
         }
-        
+
         addCopyEvent(serverIPElement, copyServerIP, '点击复制服务器IP');
         addCopyEvent(qqGroupElement, copyQQGroup, '点击复制QQ群号');
     },
-    
+
     initAnimations() {
         // 滚动显示动画
         const observerOptions = {
             threshold: 0.1,
             rootMargin: '0px 0px -50px 0px'
         };
-        
+
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
@@ -1088,7 +1088,7 @@ const AppInitializer = {
                 }
             });
         }, observerOptions);
-        
+
         // 为需要动画的元素添加观察
         const animatedElements = document.querySelectorAll('.status-item, .news-card');
         animatedElements.forEach(el => {
@@ -1098,26 +1098,26 @@ const AppInitializer = {
             observer.observe(el);
         });
     },
-    
+
     initBackgroundEffects() {
         // 鼠标移动视差效果
         document.addEventListener('mousemove', (e) => {
             const hero = document.querySelector('.hero');
             const heroBg = document.querySelector('.hero-bg');
             const heroBgLayer = document.querySelector('.hero-bg-layer');
-            
+
             if (hero && heroBg && heroBgLayer) {
                 const x = e.clientX / window.innerWidth;
                 const y = e.clientY / window.innerHeight;
-                
+
                 // 主背景图移动（较小幅度）
                 const moveX1 = (x - 0.5) * 40;
                 const moveY1 = (y - 0.5) * 40;
-                
+
                 // 次背景层移动（较大幅度）
                 const moveX2 = (x - 0.5) * 80;
                 const moveY2 = (y - 0.5) * 80;
-                
+
                 // 应用移动效果
                 heroBg.style.transform = `translate(${moveX1}px, ${moveY1}px)`;
                 heroBgLayer.style.transform = `translate(${moveX2}px, ${moveY2}px)`;
@@ -1145,11 +1145,11 @@ const BackgroundImageManager = {
     initialized: false,
     loading: false,
     cachedImages: {}, // 存储已缓存的图片
-    
+
     // 清理URL中的查询参数，确保使用一致的URL作为缓存键
     cleanUrl(url) {
         if (typeof url !== 'string') return url;
-        
+
         // 解码URL（处理中文等特殊字符）
         let decodedUrl;
         try {
@@ -1157,44 +1157,44 @@ const BackgroundImageManager = {
         } catch (e) {
             decodedUrl = url; // 如果解码失败，使用原始URL
         }
-        
+
         // 移除查询参数
         let cleanUrl = decodedUrl.split('?')[0];
-        
+
         // 确保图片URL路径正确
         // 如果URL是相对路径但不以images/开头，则添加images/前缀
         if (!cleanUrl.startsWith('http') && !cleanUrl.startsWith('/') && !cleanUrl.startsWith('images/')) {
             cleanUrl = 'images/' + cleanUrl;
         }
-        
+
         return cleanUrl;
     },
-    
+
     init() {
         if (this.initialized || this.loading) {
             console.log('背景图片管理器: 已初始化或正在初始化，跳过');
             return;
         }
-        
+
         this.loading = true;
         console.log('开始初始化背景图片');
-        
+
         const heroSection = document.querySelector('.hero');
         if (!heroSection) {
             console.log('背景图片管理器: 未找到hero元素');
             this.loading = false;
             return;
         }
-        
+
         const heroBg = heroSection.querySelector('.hero-bg');
         const heroBgLayer = heroSection.querySelector('.hero-bg-layer');
-        
+
         if (!heroBg || !heroBgLayer) {
             console.log('背景图片管理器: 未找到背景元素');
             this.loading = false;
             return;
         }
-        
+
         // 预加载所有背景图片
         this.preloadAllImages().then(() => {
             console.log('所有背景图片预加载成功');
@@ -1209,36 +1209,36 @@ const BackgroundImageManager = {
             this.setFallbackBackground(heroBg, heroBgLayer);
         });
     },
-    
+
     // 预加载单张图片 - 添加循环请求防护
     preloadImage(src) {
         // 清理URL
         const cleanSrc = this.cleanUrl(src);
-        
+
         // 如果图片已经缓存，直接返回成功
         if (this.cachedImages[cleanSrc]) {
             console.log(`图片 ${cleanSrc} 已在缓存中，直接使用`);
             return Promise.resolve(this.cachedImages[cleanSrc]);
         }
-        
+
         // 防止对同一图片的重复加载
         if (this._loadingPromises && this._loadingPromises[cleanSrc]) {
             console.log(`图片 ${cleanSrc} 正在加载中，返回现有Promise`);
             return this._loadingPromises[cleanSrc];
         }
-        
+
         // 初始化加载Promise集合
         if (!this._loadingPromises) {
             this._loadingPromises = {};
         }
-        
+
         // 创建加载Promise
         const loadingPromise = new Promise((resolve, reject) => {
             const img = new Image();
-            
+
             // 增加调试信息
             console.log(`开始加载图片: ${cleanSrc}`);
-            
+
             img.onload = () => {
                 this.cachedImages[cleanSrc] = img; // 缓存已加载的图片
                 console.log(`图片 ${cleanSrc} 加载完成并缓存`);
@@ -1248,14 +1248,14 @@ const BackgroundImageManager = {
             img.onerror = (err) => {
                 console.error(`图片 ${cleanSrc} 加载失败`, err);
                 delete this._loadingPromises[cleanSrc]; // 清除加载中的Promise
-                
+
                 // 不再尝试使用替代路径，直接拒绝以避免循环请求
                 reject(err);
             };
-            
+
             // 移除cache_bust参数，允许浏览器缓存
             img.src = cleanSrc;
-            
+
             // 设置超时防止无限等待
             setTimeout(() => {
                 if (!img.complete) {
@@ -1266,12 +1266,12 @@ const BackgroundImageManager = {
                 }
             }, 5000);
         });
-        
+
         // 保存加载中的Promise
         this._loadingPromises[cleanSrc] = loadingPromise;
         return loadingPromise;
     },
-    
+
     // 获取备用图片路径 - 防止无限循环
     getFallbackPath(originalPath) {
         // 如果已经尝试过这个路径，返回null防止循环
@@ -1279,46 +1279,46 @@ const BackgroundImageManager = {
             console.warn(`已经尝试过路径 ${originalPath}，避免循环`);
             return null;
         }
-        
+
         // 初始化已尝试路径集合
         if (!this._triedPaths) {
             this._triedPaths = new Set();
         }
-        
+
         // 记录当前尝试的路径
         this._triedPaths.add(originalPath);
-        
+
         // 尝试不同的路径组合 - 简化逻辑，只尝试最可能的路径
         const possiblePaths = [
             originalPath, // 原始路径
             originalPath.replace('images/', '') // 移除images/前缀
         ];
-        
+
         // 返回一个不在原路径中且未尝试过的备用路径
         for (let path of possiblePaths) {
             if (path !== originalPath && !this._triedPaths.has(path)) {
                 return path;
             }
         }
-        
+
         return null; // 没有可用的备用路径
     },
-    
+
     // 预加载所有背景图片 - 添加失败计数和熔断机制
     preloadAllImages() {
         const imagesToLoad = getBackgroundImages() || ['images/主页背景图/1.jpg'];
         console.log('需要预加载的图片列表:', imagesToLoad);
-        
+
         // 初始化失败计数器
         if (!this._failureCount) this._failureCount = 0;
         if (!this._maxFailures) this._maxFailures = 5; // 最大失败次数
-        
+
         // 检查是否超过最大失败次数
         if (this._failureCount >= this._maxFailures) {
             console.warn(`图片加载失败次数过多(${this._failureCount})，启用熔断机制，跳过预加载`);
             return Promise.resolve([]); // 返回空数组，跳过预加载
         }
-        
+
         // 使用Promise.allSettled替代Promise.all，允许部分图片加载失败但其他图片仍能使用
         const promises = imagesToLoad.map(src => this.preloadImage(src)
             .catch(err => {
@@ -1326,12 +1326,12 @@ const BackgroundImageManager = {
                 this._failureCount++; // 增加失败计数
                 return null; // 返回null表示此图片加载失败但不中断整体流程
             }));
-            
+
         return Promise.allSettled(promises).then(results => {
             // 过滤出成功的结果
             const successfulLoads = results.filter(result => result.status === 'fulfilled' && result.value !== null);
             console.log(`预加载完成，成功: ${successfulLoads.length}/${imagesToLoad.length} 张图片`);
-            
+
             // 如果所有图片都加载失败，增加失败计数
             if (successfulLoads.length === 0) {
                 this._failureCount++;
@@ -1340,32 +1340,32 @@ const BackgroundImageManager = {
                 // 有图片加载成功，重置失败计数
                 this._failureCount = 0;
             }
-            
+
             return successfulLoads.map(result => result.value);
         });
     },
-    
+
     // 检查图片是否已缓存
     isImageCached(src) {
         const cleanSrc = this.cleanUrl(src);
         return !!this.cachedImages[cleanSrc];
     },
-    
+
     setBackgroundStyles(heroBg, heroBgLayer) {
         console.log('设置背景样式');
-        
+
         try {
             // 确定要使用的图片 - 简化逻辑，只使用第一张图片
             const fallbackImage = 'images/主页背景图/1.jpg';
             let imageToUse = fallbackImage;
-            
+
             // 直接使用第一张图片，不检查缓存状态
             const images = getBackgroundImages();
             if (images && images.length > 0) {
                 imageToUse = this.cleanUrl(images[0]);
                 console.log(`使用第一张图片: ${imageToUse}`);
             }
-            
+
             // 设置背景图片
             heroBg.style.backgroundImage = `url('${imageToUse}')`;
             heroBg.style.backgroundSize = 'cover';
@@ -1373,24 +1373,24 @@ const BackgroundImageManager = {
             heroBg.style.backgroundRepeat = 'no-repeat';
             heroBg.style.opacity = '0';
             heroBg.style.transform = 'translate(0, 0)';
-            
+
             // heroBgLayer设置
             heroBgLayer.style.background = 'rgba(0, 0, 0, 0.15)';
             heroBgLayer.style.opacity = '0';
             heroBgLayer.style.transform = 'translate(0, 0)';
-            
+
             // 延迟显示背景
             setTimeout(() => {
                 heroBg.style.opacity = '1';
                 heroBgLayer.style.opacity = '0.3';
             }, 100);
-            
+
         } catch (error) {
             console.error('设置背景样式时出错:', error);
             this.setFallbackBackground(heroBg, heroBgLayer);
         }
     },
-    
+
     setFallbackBackground(heroBg, heroBgLayer) {
         console.log('设置备用背景样式');
         heroBg.style.backgroundColor = 'black';
@@ -1398,7 +1398,7 @@ const BackgroundImageManager = {
         heroBg.style.opacity = '1';
         heroBgLayer.style.opacity = '1';
     },
-    
+
     reset() {
         this.initialized = false;
         this.loading = false;
@@ -1424,7 +1424,7 @@ function initNavigation() {
     // 只保留移动端菜单切换的逻辑
     const hamburger = document.querySelector('.hamburger');
     const navMenu = document.querySelector('.nav-menu');
-    
+
     if (hamburger && navMenu) {
         hamburger.addEventListener('click', () => {
             hamburger.classList.toggle('active');
@@ -1454,9 +1454,9 @@ let initialPageId = null;
 window.addEventListener('load', async () => {
     // 不再在这里直接隐藏按钮，而是让checkSkipButtonDisplay函数统一控制
     // 这样可以避免在带资源路径URL访问时出现显示混乱
-    
+
     console.log('基础资源加载完成，开始等待背景图片加载和预加载所有资源');
-    
+
     // 确保BackgroundImageManager被初始化
     if (!BackgroundImageManager || !BackgroundImageManager.initialized) {
         // 如果还没初始化，手动调用initHeroBackground()
@@ -1464,7 +1464,7 @@ window.addEventListener('load', async () => {
             initHeroBackground();
         }
     }
-    
+
     // 等待背景图片加载完成后再结束加载界面
     const waitForAllResources = async () => {
         try {
@@ -1474,11 +1474,11 @@ window.addEventListener('load', async () => {
                     resolve();
                     return;
                 }
-                
+
                 // 设置一个最大等待时间，防止无限等待
                 const maxWaitTime = 10000; // 10秒
                 const startTime = Date.now();
-                
+
                 const checkInterval = setInterval(() => {
                     if (BackgroundImageManager && BackgroundImageManager.initialized) {
                         clearInterval(checkInterval);
@@ -1491,12 +1491,12 @@ window.addEventListener('load', async () => {
                     }
                 }, 200); // 每200ms检查一次
             });
-            
+
             // 然后预加载所有其他资源
             console.log('开始预加载所有其他资源（图片、页面、字体）');
             await preloadAllResources();
             console.log('所有资源已全部预加载完成');
-            
+
         } catch (error) {
             console.error('资源加载过程中出现错误:', error);
             // 即使出错也继续，避免加载界面永久停留
@@ -1504,7 +1504,7 @@ window.addEventListener('load', async () => {
             finishLoading();
         }
     };
-    
+
     // 开始等待所有资源加载
     waitForAllResources();
 });
@@ -1513,7 +1513,7 @@ window.addEventListener('load', async () => {
 function finishLoading() {
     // 更新背景图片加载状态
     backgroundImagesLoaded = true;
-    
+
     // 检查是否有初始页面ID（来自404.html的路由修复）
     // 先从sessionStorage获取（新的方式）
     let pageIdFromStorage = sessionStorage.getItem('initialPageId');
@@ -1522,7 +1522,7 @@ function finishLoading() {
         console.log('从sessionStorage检测到初始页面ID:', initialPageId);
         // 清除sessionStorage中的页面ID，避免影响后续导航
         sessionStorage.removeItem('initialPageId');
-    } 
+    }
     // 兼容旧的方式
     else if (window.initialPageId && pageLoader) {
         initialPageId = window.initialPageId;
@@ -1530,101 +1530,46 @@ function finishLoading() {
     } else {
         initialPageId = 'home';
     }
-    
+
     // 计算加载时长
     const loadDuration = Date.now() - loadStartTime;
     const isQuickLoad = loadDuration < 3000; // 3秒
-    
+
     console.log(`加载完成，总时长: ${loadDuration}ms，是否快速加载: ${isQuickLoad}`);
-    
+
     // 先淡出加载指示器
     const loadingIndicator = document.querySelector('.loading-indicator');
     if (loadingIndicator) {
         // 如果加载界面未显示，则无需淡出动画
         if (!loadingIndicatorVisible) {
             loadingIndicator.style.display = 'none';
-        if (isQuickLoad) {
-            // 如果是快速加载，直接隐藏加载指示器，不播放淡出动画
-            loadingIndicator.style.display = 'none';
-            
-            // 立即初始化页面
-            initNavigation();
-            
-            if (!AppInitializer.initialized && AppInitializer && typeof AppInitializer.init === 'function') {
-                AppInitializer.init();
-            }
-            
-            // 如果不是首页，先加载页面内容，再显示页面，避免黑色闪烁
-            if (initialPageId && initialPageId !== 'home' && pageLoader && typeof pageLoader.loadPage === 'function') {
-                console.log('快速加载模式 - 预加载初始页面:', initialPageId);
-                // 异步加载页面内容，完成后再显示页面
-                (async () => {
-                    // 先加载页面内容到容器中（不显示）
-                    await pageLoader.loadPage(initialPageId, true); // 第二个参数表示预加载模式
-                    
-                    console.log('初始页面内容加载完成，现在显示页面');
-                    // 内容加载完成后，再显示页面
-                    document.body.classList.remove('loading');
-                    document.body.classList.add('loaded');
-                    
-                    // 只有在页面完全加载后才初始化动画
-                    if (AppInitializer && typeof AppInitializer.initAnimations === 'function') {
-                        console.log('快速加载模式 - 页面加载完成，开始初始化动画');
-                        AppInitializer.initAnimations();
-                    }
-                })();
-            } else {
-                // 是首页，直接显示页面内容
-                document.body.classList.remove('loading');
-                document.body.classList.add('loaded');
-                
-                // 只有在页面完全加载后才初始化动画
-                if (AppInitializer && typeof AppInitializer.initAnimations === 'function') {
-                    console.log('快速加载模式 - 首页加载完成，开始初始化动画');
-                    AppInitializer.initAnimations();
-                }
-                
-                if (pageLoader && typeof pageLoader.preloadPage === 'function') {
-                    pageLoader.preloadPage('features');
-                }
-            }
-            
-            console.log('快速加载模式 - 页面已显示');
-        } else {
-            // 正常加载，播放淡出动画
-            loadingIndicator.style.opacity = '0';
-            loadingIndicator.style.transform = 'translate(-50%, -50%)'; // 移除scale(0.9)，避免突然缩小的效果
-            
-            setTimeout(() => {
-                // 隐藏加载指示器
+            if (isQuickLoad) {
+                // 如果是快速加载，直接隐藏加载指示器，不播放淡出动画
                 loadingIndicator.style.display = 'none';
-                
-                // 初始化导航
+
+                // 立即初始化页面
                 initNavigation();
-                
-                // 确保AppInitializer初始化
+
                 if (!AppInitializer.initialized && AppInitializer && typeof AppInitializer.init === 'function') {
                     AppInitializer.init();
                 }
-                
+
                 // 如果不是首页，先加载页面内容，再显示页面，避免黑色闪烁
                 if (initialPageId && initialPageId !== 'home' && pageLoader && typeof pageLoader.loadPage === 'function') {
-                    console.log('预加载初始页面:', initialPageId);
+                    console.log('快速加载模式 - 预加载初始页面:', initialPageId);
                     // 异步加载页面内容，完成后再显示页面
                     (async () => {
                         // 先加载页面内容到容器中（不显示）
                         await pageLoader.loadPage(initialPageId, true); // 第二个参数表示预加载模式
-                        
+
                         console.log('初始页面内容加载完成，现在显示页面');
                         // 内容加载完成后，再显示页面
                         document.body.classList.remove('loading');
                         document.body.classList.add('loaded');
-                        
-                        console.log('正常加载模式 - 页面完全加载完成');
-                        
+
                         // 只有在页面完全加载后才初始化动画
                         if (AppInitializer && typeof AppInitializer.initAnimations === 'function') {
-                            console.log('页面加载完成，开始初始化动画');
+                            console.log('快速加载模式 - 页面加载完成，开始初始化动画');
                             AppInitializer.initAnimations();
                         }
                     })();
@@ -1632,365 +1577,421 @@ function finishLoading() {
                     // 是首页，直接显示页面内容
                     document.body.classList.remove('loading');
                     document.body.classList.add('loaded');
-                    
-                    console.log('正常加载模式 - 页面完全加载完成');
-                
-                // 只有在页面完全加载后才初始化动画
-                if (AppInitializer && typeof AppInitializer.initAnimations === 'function') {
-                    console.log('首页加载完成，开始初始化动画');
-                    AppInitializer.initAnimations();
-                }
-                
-                if (pageLoader && typeof pageLoader.preloadPage === 'function') {
-                        // 预加载服务器特色页面
+
+                    // 只有在页面完全加载后才初始化动画
+                    if (AppInitializer && typeof AppInitializer.initAnimations === 'function') {
+                        console.log('快速加载模式 - 首页加载完成，开始初始化动画');
+                        AppInitializer.initAnimations();
+                    }
+
+                    if (pageLoader && typeof pageLoader.preloadPage === 'function') {
                         pageLoader.preloadPage('features');
                     }
                 }
-            }, 300); // 等待加载指示器淡出动画完成
+
+                console.log('快速加载模式 - 页面已显示');
+            } else {
+                // 正常加载，播放淡出动画
+                loadingIndicator.style.opacity = '0';
+                loadingIndicator.style.transform = 'translate(-50%, -50%)'; // 移除scale(0.9)，避免突然缩小的效果
+
+                setTimeout(() => {
+                    // 隐藏加载指示器
+                    loadingIndicator.style.display = 'none';
+
+                    // 初始化导航
+                    initNavigation();
+
+                    // 确保AppInitializer初始化
+                    if (!AppInitializer.initialized && AppInitializer && typeof AppInitializer.init === 'function') {
+                        AppInitializer.init();
+                    }
+
+                    // 如果不是首页，先加载页面内容，再显示页面，避免黑色闪烁
+                    if (initialPageId && initialPageId !== 'home' && pageLoader && typeof pageLoader.loadPage === 'function') {
+                        console.log('预加载初始页面:', initialPageId);
+                        // 异步加载页面内容，完成后再显示页面
+                        (async () => {
+                            // 先加载页面内容到容器中（不显示）
+                            await pageLoader.loadPage(initialPageId, true); // 第二个参数表示预加载模式
+
+                            console.log('初始页面内容加载完成，现在显示页面');
+                            // 内容加载完成后，再显示页面
+                            document.body.classList.remove('loading');
+                            document.body.classList.add('loaded');
+
+                            console.log('正常加载模式 - 页面完全加载完成');
+
+                            // 只有在页面完全加载后才初始化动画
+                            if (AppInitializer && typeof AppInitializer.initAnimations === 'function') {
+                                console.log('页面加载完成，开始初始化动画');
+                                AppInitializer.initAnimations();
+                            }
+                        })();
+                    } else {
+                        // 是首页，直接显示页面内容
+                        document.body.classList.remove('loading');
+                        document.body.classList.add('loaded');
+
+                        console.log('正常加载模式 - 页面完全加载完成');
+
+                        // 只有在页面完全加载后才初始化动画
+                        if (AppInitializer && typeof AppInitializer.initAnimations === 'function') {
+                            console.log('首页加载完成，开始初始化动画');
+                            AppInitializer.initAnimations();
+                        }
+
+                        if (pageLoader && typeof pageLoader.preloadPage === 'function') {
+                            // 预加载服务器特色页面
+                            pageLoader.preloadPage('features');
+                        }
+                    }
+                }, 300); // 等待加载指示器淡出动画完成
+            }
         }
     }
-}
 
-// 服务器状态模拟更新
-function updateServerStatus() {
-    const playerCount = document.querySelector('.status-item:nth-child(2) .status-text');
-    if (playerCount) {
-        // 模拟玩家数量变化
-        const minPlayers = 8;
-        const maxPlayers = 25;
-        const randomPlayers = Math.floor(Math.random() * (maxPlayers - minPlayers + 1)) + minPlayers;
-        playerCount.textContent = `在线玩家: ${randomPlayers}/100`;
+    // 服务器状态模拟更新
+    function updateServerStatus() {
+        const playerCount = document.querySelector('.status-item:nth-child(2) .status-text');
+        if (playerCount) {
+            // 模拟玩家数量变化
+            const minPlayers = 8;
+            const maxPlayers = 25;
+            const randomPlayers = Math.floor(Math.random() * (maxPlayers - minPlayers + 1)) + minPlayers;
+            playerCount.textContent = `在线玩家: ${randomPlayers}/100`;
+        }
     }
-}
 
-// 每30秒更新一次服务器状态
-setInterval(updateServerStatus, 30000);
+    // 每30秒更新一次服务器状态
+    setInterval(updateServerStatus, 30000);
 
-// 复制服务器IP功能
-function copyServerIP() {
-    const serverIP = 'mc.yuzhou.love';
-    // 统一使用copyText函数处理复制逻辑
-    copyText(serverIP, '服务器IP已复制到剪贴板！');
-}
-
-// 复制QQ群号功能
-function copyQQGroup() {
-    const qqGroup = '823557774';
-    // 统一使用copyText函数处理复制逻辑
-    copyText(qqGroup, 'QQ群号已复制到剪贴板！');
-}
-
-// 增强的文本复制功能，支持自定义通知消息
-function copyText(text, customMessage = '已复制到剪贴板！') {
-    // 检查浏览器是否支持现代剪贴板API
-    if (navigator.clipboard && window.isSecureContext) {
-        // 现代浏览器支持的方式
-        navigator.clipboard.writeText(text).then(() => {
-            showNotification(customMessage);
-        }).catch(err => {
-            console.error('现代剪贴板API复制失败:', err);
-            // 降级到传统方式
-            fallbackCopyTextToClipboard(text, customMessage);
-        });
-    } else {
-        // 直接使用降级方案
-        fallbackCopyTextToClipboard(text, customMessage);
+    // 复制服务器IP功能
+    function copyServerIP() {
+        const serverIP = 'mc.yuzhou.love';
+        // 统一使用copyText函数处理复制逻辑
+        copyText(serverIP, '服务器IP已复制到剪贴板！');
     }
-}
 
-// 降级复制方案，适用于所有浏览器
-function fallbackCopyTextToClipboard(text, customMessage) {
-    // 创建临时元素用于复制
-    const textArea = document.createElement('textarea');
-    textArea.value = text;
-    
-    // 设置样式避免在某些浏览器中闪烁
-    textArea.style.position = 'fixed';
-    textArea.style.left = '-999999px';
-    textArea.style.top = '-999999px';
-    textArea.style.opacity = '0';
-    
-    document.body.appendChild(textArea);
-    
-    try {
-        // 选择文本
-        textArea.select();
-        textArea.setSelectionRange(0, 999999); // 兼容移动设备
-        
-        // 执行复制命令
-        const successful = document.execCommand('copy');
-        
-        if (successful) {
-            showNotification(customMessage);
+    // 复制QQ群号功能
+    function copyQQGroup() {
+        const qqGroup = '823557774';
+        // 统一使用copyText函数处理复制逻辑
+        copyText(qqGroup, 'QQ群号已复制到剪贴板！');
+    }
+
+    // 增强的文本复制功能，支持自定义通知消息
+    function copyText(text, customMessage = '已复制到剪贴板！') {
+        // 检查浏览器是否支持现代剪贴板API
+        if (navigator.clipboard && window.isSecureContext) {
+            // 现代浏览器支持的方式
+            navigator.clipboard.writeText(text).then(() => {
+                showNotification(customMessage);
+            }).catch(err => {
+                console.error('现代剪贴板API复制失败:', err);
+                // 降级到传统方式
+                fallbackCopyTextToClipboard(text, customMessage);
+            });
         } else {
-            console.error('execCommand复制失败');
-            // 最终降级：提示用户手动复制
-            showNotification('复制失败，请手动复制：' + text);
+            // 直接使用降级方案
+            fallbackCopyTextToClipboard(text, customMessage);
         }
-    } catch (err) {
-        console.error('降级方案复制失败:', err);
-        showNotification('复制失败，请手动复制：' + text);
-    } finally {
-        // 确保移除临时元素
-        document.body.removeChild(textArea);
     }
-}
 
-// 显示通知
-function showNotification(message) {
-    // 创建通知元素
-    const notification = document.createElement('div');
-    notification.className = 'notification';
-    notification.textContent = message;
-    
-    // 添加样式
-    notification.style.position = 'fixed';
-    notification.style.bottom = '20px';
-    notification.style.left = '50%';
-    notification.style.transform = 'translateX(-50%)';
-    notification.style.backgroundColor = 'rgba(33, 150, 243, 0.9)';
-    notification.style.color = 'white';
-    notification.style.padding = '12px 24px';
-    notification.style.borderRadius = '4px';
-    notification.style.zIndex = '10000';
-    notification.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.3)';
-    notification.style.opacity = '0';
-    notification.style.transition = 'opacity 0.3s ease';
-    
-    // 添加到页面
-    document.body.appendChild(notification);
-    
-    // 显示通知
-    setTimeout(() => {
-        notification.style.opacity = '1';
-    }, 10);
-    
-    // 3秒后移除通知
-    setTimeout(() => {
-        notification.style.opacity = '0';
-        setTimeout(() => {
-            document.body.removeChild(notification);
-        }, 300);
-    }, 3000);
-}
+    // 降级复制方案，适用于所有浏览器
+    function fallbackCopyTextToClipboard(text, customMessage) {
+        // 创建临时元素用于复制
+        const textArea = document.createElement('textarea');
+        textArea.value = text;
 
-// 注意：AppInitializer.init()现在在第一个DOMContentLoaded监听器中被调用，避免重复初始化
-// 此监听器已被移除，以防止重复初始化和潜在的路由冲突
+        // 设置样式避免在某些浏览器中闪烁
+        textArea.style.position = 'fixed';
+        textArea.style.left = '-999999px';
+        textArea.style.top = '-999999px';
+        textArea.style.opacity = '0';
 
-// 滚动显示动画
-const observerOptions = {
-    threshold: 0.1,
-    rootMargin: '0px 0px -50px 0px'
-};
+        document.body.appendChild(textArea);
 
-const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-        if (entry.isIntersecting) {
-            entry.target.style.opacity = '1';
-            entry.target.style.transform = 'translateY(0)';
+        try {
+            // 选择文本
+            textArea.select();
+            textArea.setSelectionRange(0, 999999); // 兼容移动设备
+
+            // 执行复制命令
+            const successful = document.execCommand('copy');
+
+            if (successful) {
+                showNotification(customMessage);
+            } else {
+                console.error('execCommand复制失败');
+                // 最终降级：提示用户手动复制
+                showNotification('复制失败，请手动复制：' + text);
+            }
+        } catch (err) {
+            console.error('降级方案复制失败:', err);
+            showNotification('复制失败，请手动复制：' + text);
+        } finally {
+            // 确保移除临时元素
+            document.body.removeChild(textArea);
         }
-    });
-}, observerOptions);
+    }
 
-// 为需要动画的元素添加观察（已移动到AppInitializer.initAnimations中）
+    // 显示通知
+    function showNotification(message) {
+        // 创建通知元素
+        const notification = document.createElement('div');
+        notification.className = 'notification';
+        notification.textContent = message;
 
-// 背景图片切换功能 - 新目录和随机排序
-let currentBgIndex = 0;
-let shuffledBackgroundImages = [];
+        // 添加样式
+        notification.style.position = 'fixed';
+        notification.style.bottom = '20px';
+        notification.style.left = '50%';
+        notification.style.transform = 'translateX(-50%)';
+        notification.style.backgroundColor = 'rgba(33, 150, 243, 0.9)';
+        notification.style.color = 'white';
+        notification.style.padding = '12px 24px';
+        notification.style.borderRadius = '4px';
+        notification.style.zIndex = '10000';
+        notification.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.3)';
+        notification.style.opacity = '0';
+        notification.style.transition = 'opacity 0.3s ease';
 
-// 原始背景图片列表（新目录）
-// 使用完整的images/前缀路径，确保路径一致性
-const originalBackgroundImages = [
-    'images/主页背景图/1.jpg',
-    'images/主页背景图/2.jpg',
-    'images/主页背景图/3.jpg',
-    'images/主页背景图/4.jpg'
-];
+        // 添加到页面
+        document.body.appendChild(notification);
 
-// 初始化时对图片进行随机排序
-function initBackgroundImages() {
-    // 如果已经有排序结果（本次会话中已初始化），则直接返回
-    if (shuffledBackgroundImages.length > 0) {
+        // 显示通知
+        setTimeout(() => {
+            notification.style.opacity = '1';
+        }, 10);
+
+        // 3秒后移除通知
+        setTimeout(() => {
+            notification.style.opacity = '0';
+            setTimeout(() => {
+                document.body.removeChild(notification);
+            }, 300);
+        }, 3000);
+    }
+
+    // 注意：AppInitializer.init()现在在第一个DOMContentLoaded监听器中被调用，避免重复初始化
+    // 此监听器已被移除，以防止重复初始化和潜在的路由冲突
+
+    // 滚动显示动画
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    }, observerOptions);
+
+    // 为需要动画的元素添加观察（已移动到AppInitializer.initAnimations中）
+
+    // 背景图片切换功能 - 新目录和随机排序
+    let currentBgIndex = 0;
+    let shuffledBackgroundImages = [];
+
+    // 原始背景图片列表（新目录）
+    // 使用完整的images/前缀路径，确保路径一致性
+    const originalBackgroundImages = [
+        'images/主页背景图/1.jpg',
+        'images/主页背景图/2.jpg',
+        'images/主页背景图/3.jpg',
+        'images/主页背景图/4.jpg'
+    ];
+
+    // 初始化时对图片进行随机排序
+    function initBackgroundImages() {
+        // 如果已经有排序结果（本次会话中已初始化），则直接返回
+        if (shuffledBackgroundImages.length > 0) {
+            return shuffledBackgroundImages;
+        }
+
+        // 深拷贝原始数组以避免修改原始数组
+        const tempArray = [...originalBackgroundImages];
+
+        // Fisher-Yates 洗牌算法进行随机排序
+        for (let i = tempArray.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [tempArray[i], tempArray[j]] = [tempArray[j], tempArray[i]];
+        }
+
+        // 保存排序结果，本次会话中保持固定
+        shuffledBackgroundImages = tempArray;
+        console.log('背景图片随机排序结果:', shuffledBackgroundImages);
         return shuffledBackgroundImages;
     }
-    
-    // 深拷贝原始数组以避免修改原始数组
-    const tempArray = [...originalBackgroundImages];
-    
-    // Fisher-Yates 洗牌算法进行随机排序
-    for (let i = tempArray.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [tempArray[i], tempArray[j]] = [tempArray[j], tempArray[i]];
+
+    // 获取当前会话的图片列表（已随机排序）
+    function getBackgroundImages() {
+        return initBackgroundImages();
     }
-    
-    // 保存排序结果，本次会话中保持固定
-    shuffledBackgroundImages = tempArray;
-    console.log('背景图片随机排序结果:', shuffledBackgroundImages);
-    return shuffledBackgroundImages;
-}
 
-// 获取当前会话的图片列表（已随机排序）
-function getBackgroundImages() {
-    return initBackgroundImages();
-}
+    // 为了兼容现有代码，提供backgroundImages变量访问
+    const backgroundImages = getBackgroundImages();
 
-// 为了兼容现有代码，提供backgroundImages变量访问
-const backgroundImages = getBackgroundImages();
+    // 添加节流控制，防止频繁切换背景
+    let isChangingBackground = false;
 
-// 添加节流控制，防止频繁切换背景
-let isChangingBackground = false;
-
-function changeBackground() {
-    // 如果正在切换背景或图片列表为空，则直接返回
-    if (isChangingBackground) {
-        console.log('背景切换被节流控制阻止');
-        return;
-    }
-    
-    const heroSection = document.querySelector('.hero');
-    const heroBg = heroSection ? heroSection.querySelector('.hero-bg') : null;
-    const backgroundImages = getBackgroundImages(); // 获取当前会话的随机排序图片列表
-    
-    if (heroSection && heroBg && backgroundImages && backgroundImages.length > 0) {
-        // 设置节流标志
-        isChangingBackground = true;
-        
-        // 先淡出当前背景
-        heroBg.style.transition = 'opacity 1s ease-in-out';
-        heroBg.style.opacity = '0';
-        
-        // 在淡出完成后切换图片并淡入
-        setTimeout(() => {
-            try {
-                // 找到下一个有效的图片索引
-                let validIndex = currentBgIndex;
-                let attempts = 0;
-                const maxAttempts = backgroundImages.length;
-                
-                // 优化图片选择逻辑，避免不必要的预加载尝试
-                do {
-                    validIndex = (validIndex + 1) % backgroundImages.length;
-                    attempts++;
-                } while (attempts < maxAttempts && 
-                         BackgroundImageManager && 
-                         !BackgroundImageManager.isImageCached(backgroundImages[validIndex]));
-                
-                currentBgIndex = validIndex;
-                const nextImageUrl = backgroundImages[currentBgIndex];
-                
-                // 创建新图片对象来测试加载
-                const testImg = new Image();
-                
-                testImg.onload = () => {
-                    // 图片加载成功，应用到背景
-                    console.log(`背景图片切换成功: ${nextImageUrl}`);
-                    heroBg.style.backgroundImage = `url('${nextImageUrl}')`;
-                    heroBg.style.opacity = '1';
-                    
-                    // 缓存图片
-                    if (BackgroundImageManager) {
-                        BackgroundImageManager.cachedImages[nextImageUrl] = testImg;
-                    }
-                    
-                    // 重置失败计数
-                    resetFailureCount();
-                };
-                
-                testImg.onerror = () => {
-                    // 图片加载失败
-                    console.error(`背景图片切换失败: ${nextImageUrl}`);
-                    incrementFailureCount();
-                    
-                    // 保持当前背景或使用默认背景
-                    heroBg.style.opacity = '1';
-                };
-                
-                // 开始加载图片
-                testImg.src = nextImageUrl;
-                
-            } catch (error) {
-                console.error('背景切换过程中发生错误:', error);
-                incrementFailureCount();
-                heroBg.style.opacity = '1'; // 确保背景可见
-            } finally {
-                // 确保在动画完成后重置节流标志
-                setTimeout(() => {
-                    isChangingBackground = false;
-                }, 1000); // 与淡入动画时间保持一致
-            }
-        }, 1000);
-    } else {
-        // 如果没有找到必要的元素，重置节流标志
-        isChangingBackground = false;
-        incrementFailureCount();
-    }
-}
-
-// 每10秒切换一次背景图片 - 添加请求频率限制
-let backgroundIntervalId = null;
-let consecutiveFailures = 0;
-const maxConsecutiveFailures = 3;
-
-function startBackgroundRotation() {
-    // 清除可能存在的旧定时器
-    if (backgroundIntervalId) {
-        clearInterval(backgroundIntervalId);
-    }
-    
-    // 设置新的定时器
-    backgroundIntervalId = setInterval(() => {
-        // 检查连续失败次数，超过阈值则停止轮换
-        if (consecutiveFailures >= maxConsecutiveFailures) {
-            console.warn(`背景图片连续切换失败${consecutiveFailures}次，暂停自动切换`);
-            clearInterval(backgroundIntervalId);
-            backgroundIntervalId = null;
+    function changeBackground() {
+        // 如果正在切换背景或图片列表为空，则直接返回
+        if (isChangingBackground) {
+            console.log('背景切换被节流控制阻止');
             return;
         }
-        
-        changeBackground();
-    }, 10000);
-}
 
-// 重置连续失败计数
-function resetFailureCount() {
-    if (consecutiveFailures > 0) {
-        console.log(`背景图片切换成功，重置失败计数(原为${consecutiveFailures})`);
-        consecutiveFailures = 0;
+        const heroSection = document.querySelector('.hero');
+        const heroBg = heroSection ? heroSection.querySelector('.hero-bg') : null;
+        const backgroundImages = getBackgroundImages(); // 获取当前会话的随机排序图片列表
+
+        if (heroSection && heroBg && backgroundImages && backgroundImages.length > 0) {
+            // 设置节流标志
+            isChangingBackground = true;
+
+            // 先淡出当前背景
+            heroBg.style.transition = 'opacity 1s ease-in-out';
+            heroBg.style.opacity = '0';
+
+            // 在淡出完成后切换图片并淡入
+            setTimeout(() => {
+                try {
+                    // 找到下一个有效的图片索引
+                    let validIndex = currentBgIndex;
+                    let attempts = 0;
+                    const maxAttempts = backgroundImages.length;
+
+                    // 优化图片选择逻辑，避免不必要的预加载尝试
+                    do {
+                        validIndex = (validIndex + 1) % backgroundImages.length;
+                        attempts++;
+                    } while (attempts < maxAttempts &&
+                    BackgroundImageManager &&
+                        !BackgroundImageManager.isImageCached(backgroundImages[validIndex]));
+
+                    currentBgIndex = validIndex;
+                    const nextImageUrl = backgroundImages[currentBgIndex];
+
+                    // 创建新图片对象来测试加载
+                    const testImg = new Image();
+
+                    testImg.onload = () => {
+                        // 图片加载成功，应用到背景
+                        console.log(`背景图片切换成功: ${nextImageUrl}`);
+                        heroBg.style.backgroundImage = `url('${nextImageUrl}')`;
+                        heroBg.style.opacity = '1';
+
+                        // 缓存图片
+                        if (BackgroundImageManager) {
+                            BackgroundImageManager.cachedImages[nextImageUrl] = testImg;
+                        }
+
+                        // 重置失败计数
+                        resetFailureCount();
+                    };
+
+                    testImg.onerror = () => {
+                        // 图片加载失败
+                        console.error(`背景图片切换失败: ${nextImageUrl}`);
+                        incrementFailureCount();
+
+                        // 保持当前背景或使用默认背景
+                        heroBg.style.opacity = '1';
+                    };
+
+                    // 开始加载图片
+                    testImg.src = nextImageUrl;
+
+                } catch (error) {
+                    console.error('背景切换过程中发生错误:', error);
+                    incrementFailureCount();
+                    heroBg.style.opacity = '1'; // 确保背景可见
+                } finally {
+                    // 确保在动画完成后重置节流标志
+                    setTimeout(() => {
+                        isChangingBackground = false;
+                    }, 1000); // 与淡入动画时间保持一致
+                }
+            }, 1000);
+        } else {
+            // 如果没有找到必要的元素，重置节流标志
+            isChangingBackground = false;
+            incrementFailureCount();
+        }
     }
-}
 
-// 增加失败计数
-function incrementFailureCount() {
-    consecutiveFailures++;
-    console.warn(`背景图片切换失败，连续失败次数: ${consecutiveFailures}/${maxConsecutiveFailures}`);
-}
+    // 每10秒切换一次背景图片 - 添加请求频率限制
+    let backgroundIntervalId = null;
+    let consecutiveFailures = 0;
+    const maxConsecutiveFailures = 3;
 
-// 初始化背景轮换
-document.addEventListener('DOMContentLoaded', () => {
-    // 延迟启动背景轮换，确保页面完全加载
-    setTimeout(startBackgroundRotation, 5000);
-});
+    function startBackgroundRotation() {
+        // 清除可能存在的旧定时器
+        if (backgroundIntervalId) {
+            clearInterval(backgroundIntervalId);
+        }
 
-// 鼠标移动视差效果
-document.addEventListener('mousemove', (e) => {
-    const hero = document.querySelector('.hero');
-    const heroBg = document.querySelector('.hero-bg');
-    const heroBgLayer = document.querySelector('.hero-bg-layer');
-    
-    if (hero && heroBg && heroBgLayer) {
-        const x = e.clientX / window.innerWidth;
-        const y = e.clientY / window.innerHeight;
-        
-        // 主背景图移动（较小幅度）
-        const moveX1 = (x - 0.5) * 40;  // 增加移动范围
-        const moveY1 = (y - 0.5) * 40;  // 增加移动范围
-        
-        // 次背景层移动（较大幅度）
-        const moveX2 = (x - 0.5) * 80;  // 增加移动范围
-        const moveY2 = (y - 0.5) * 80;  // 增加移动范围
-        
-        // 应用移动效果（使用transform而不是backgroundPosition）
-        heroBg.style.transform = `translate(${moveX1}px, ${moveY1}px)`;
-        heroBgLayer.style.transform = `translate(${moveX2}px, ${moveY2}px)`;
+        // 设置新的定时器
+        backgroundIntervalId = setInterval(() => {
+            // 检查连续失败次数，超过阈值则停止轮换
+            if (consecutiveFailures >= maxConsecutiveFailures) {
+                console.warn(`背景图片连续切换失败${consecutiveFailures}次，暂停自动切换`);
+                clearInterval(backgroundIntervalId);
+                backgroundIntervalId = null;
+                return;
+            }
+
+            changeBackground();
+        }, 10000);
     }
-});
+
+    // 重置连续失败计数
+    function resetFailureCount() {
+        if (consecutiveFailures > 0) {
+            console.log(`背景图片切换成功，重置失败计数(原为${consecutiveFailures})`);
+            consecutiveFailures = 0;
+        }
+    }
+
+    // 增加失败计数
+    function incrementFailureCount() {
+        consecutiveFailures++;
+        console.warn(`背景图片切换失败，连续失败次数: ${consecutiveFailures}/${maxConsecutiveFailures}`);
+    }
+
+    // 初始化背景轮换
+    document.addEventListener('DOMContentLoaded', () => {
+        // 延迟启动背景轮换，确保页面完全加载
+        setTimeout(startBackgroundRotation, 5000);
+    });
+
+    // 鼠标移动视差效果
+    document.addEventListener('mousemove', (e) => {
+        const hero = document.querySelector('.hero');
+        const heroBg = document.querySelector('.hero-bg');
+        const heroBgLayer = document.querySelector('.hero-bg-layer');
+
+        if (hero && heroBg && heroBgLayer) {
+            const x = e.clientX / window.innerWidth;
+            const y = e.clientY / window.innerHeight;
+
+            // 主背景图移动（较小幅度）
+            const moveX1 = (x - 0.5) * 40;  // 增加移动范围
+            const moveY1 = (y - 0.5) * 40;  // 增加移动范围
+
+            // 次背景层移动（较大幅度）
+            const moveX2 = (x - 0.5) * 80;  // 增加移动范围
+            const moveY2 = (y - 0.5) * 80;  // 增加移动范围
+
+            // 应用移动效果（使用transform而不是backgroundPosition）
+            heroBg.style.transform = `translate(${moveX1}px, ${moveY1}px)`;
+            heroBgLayer.style.transform = `translate(${moveX2}px, ${moveY2}px)`;
+        }
+    })
+}
