@@ -511,9 +511,6 @@ function loadLoadingGif() {
             console.log('loading.avif 动图加载成功，替换加载动画');
             loadingGif.src = 'images/loading.avif';
             loadingGif.style.display = 'block';
-            // 放大加载动图的尺寸
-            loadingGif.style.width = '120px'; // 增加宽度
-            loadingGif.style.height = '120px'; // 增加高度
             loadingSpinner.style.display = 'none';
 
             // 保持按钮显示状态一致，不自动隐藏
@@ -1809,75 +1806,71 @@ function finishLoading() {
     // 先淡出加载指示器
     const loadingIndicator = document.querySelector('.loading-indicator');
     if (loadingIndicator) {
+        // 统一设置body类，确保在所有情况下都添加loaded类
+        document.body.classList.remove('loading');
+        document.body.classList.add('loaded');
+        
         // 如果加载界面未显示，则无需淡出动画
         if (!loadingIndicatorVisible) {
             loadingIndicator.style.display = 'none';
-            if (isQuickLoad) {
-                // 如果是快速加载，直接隐藏加载指示器，不播放淡出动画
+            
+            // 立即初始化页面
+            initNavigation();
+
+            if (!AppInitializer.initialized && AppInitializer && typeof AppInitializer.init === 'function') {
+                AppInitializer.init();
+            }
+
+            // 如果不是首页，先加载页面内容，再显示页面，避免黑色闪烁
+            if (initialPageId && initialPageId !== 'home' && pageLoader && typeof pageLoader.loadPage === 'function') {
+                console.log('快速加载模式 - 预加载初始页面:', initialPageId);
+                // 异步加载页面内容，完成后再显示页面
+                (async () => {
+                    // 先加载页面内容到容器中（不显示）
+                    await pageLoader.loadPage(initialPageId, true); // 第二个参数表示预加载模式
+
+                    console.log('初始页面内容加载完成，现在显示页面');
+
+                    // 只有在页面完全加载后才初始化动画
+                    if (AppInitializer && typeof AppInitializer.initAnimations === 'function') {
+                        console.log('快速加载模式 - 页面加载完成，开始初始化动画');
+                        AppInitializer.initAnimations();
+                    }
+                })();
+            } else {
+                // 是首页，直接显示页面内容
+
+                // 只有在页面完全加载后才初始化动画
+                if (AppInitializer && typeof AppInitializer.initAnimations === 'function') {
+                    console.log('快速加载模式 - 首页加载完成，开始初始化动画');
+                    AppInitializer.initAnimations();
+                }
+
+                if (pageLoader && typeof pageLoader.preloadPage === 'function') {
+                    pageLoader.preloadPage('features');
+                }
+            }
+
+            console.log('快速加载模式 - 页面已显示');
+        } else {
+            // 正常加载，播放淡出动画
+            loadingIndicator.style.opacity = '0';
+            loadingIndicator.style.transform = 'translate(-50%, -50%)'; // 移除scale(0.9)，避免突然缩小的效果
+
+            setTimeout(() => {
+                // 隐藏加载指示器
                 loadingIndicator.style.display = 'none';
 
-                // 立即初始化页面
+                // 初始化导航
                 initNavigation();
 
+                // 确保AppInitializer初始化
                 if (!AppInitializer.initialized && AppInitializer && typeof AppInitializer.init === 'function') {
                     AppInitializer.init();
                 }
 
                 // 如果不是首页，先加载页面内容，再显示页面，避免黑色闪烁
                 if (initialPageId && initialPageId !== 'home' && pageLoader && typeof pageLoader.loadPage === 'function') {
-                    console.log('快速加载模式 - 预加载初始页面:', initialPageId);
-                    // 异步加载页面内容，完成后再显示页面
-                    (async () => {
-                        // 先加载页面内容到容器中（不显示）
-                        await pageLoader.loadPage(initialPageId, true); // 第二个参数表示预加载模式
-
-                        console.log('初始页面内容加载完成，现在显示页面');
-                        // 内容加载完成后，再显示页面
-                        document.body.classList.remove('loading');
-                        document.body.classList.add('loaded');
-
-                        // 只有在页面完全加载后才初始化动画
-                        if (AppInitializer && typeof AppInitializer.initAnimations === 'function') {
-                            console.log('快速加载模式 - 页面加载完成，开始初始化动画');
-                            AppInitializer.initAnimations();
-                        }
-                    })();
-                } else {
-                    // 是首页，直接显示页面内容
-                    document.body.classList.remove('loading');
-                    document.body.classList.add('loaded');
-
-                    // 只有在页面完全加载后才初始化动画
-                    if (AppInitializer && typeof AppInitializer.initAnimations === 'function') {
-                        console.log('快速加载模式 - 首页加载完成，开始初始化动画');
-                        AppInitializer.initAnimations();
-                    }
-
-                    if (pageLoader && typeof pageLoader.preloadPage === 'function') {
-                        pageLoader.preloadPage('features');
-                    }
-                }
-
-                console.log('快速加载模式 - 页面已显示');
-            } else {
-                // 正常加载，播放淡出动画
-                loadingIndicator.style.opacity = '0';
-                loadingIndicator.style.transform = 'translate(-50%, -50%)'; // 移除scale(0.9)，避免突然缩小的效果
-
-                setTimeout(() => {
-                    // 隐藏加载指示器
-                    loadingIndicator.style.display = 'none';
-
-                    // 初始化导航
-                    initNavigation();
-
-                    // 确保AppInitializer初始化
-                    if (!AppInitializer.initialized && AppInitializer && typeof AppInitializer.init === 'function') {
-                        AppInitializer.init();
-                    }
-
-                    // 如果不是首页，先加载页面内容，再显示页面，避免黑色闪烁
-                    if (initialPageId && initialPageId !== 'home' && pageLoader && typeof pageLoader.loadPage === 'function') {
                         console.log('预加载初始页面:', initialPageId);
                         // 异步加载页面内容，完成后再显示页面
                         (async () => {
@@ -1958,7 +1951,8 @@ function finishLoading() {
     // 为需要动画的元素添加观察（已移动到AppInitializer.initAnimations中）
 
     // 背景图片切换功能 - 使用全局函数
-
+    // 已在全局作用域声明currentBgIndex，这里不再重复声明
+    
     // 添加节流控制，防止频繁切换背景
     let isChangingBackground = false;
 
@@ -1984,51 +1978,18 @@ function finishLoading() {
             // 在淡出完成后切换图片并淡入
             setTimeout(() => {
                 try {
-                    // 找到下一个有效的图片索引
-                    let validIndex = currentBgIndex;
-                    let attempts = 0;
-                    const maxAttempts = backgroundImages.length;
-
-                    // 优化图片选择逻辑，避免不必要的预加载尝试
-                    do {
-                        validIndex = (validIndex + 1) % backgroundImages.length;
-                        attempts++;
-                    } while (attempts < maxAttempts &&
-                    BackgroundImageManager &&
-                        !BackgroundImageManager.isImageCached(backgroundImages[validIndex]));
-
-                    currentBgIndex = validIndex;
+                    // 简单地切换到下一个图片索引，不依赖缓存检查
+                    currentBgIndex = (currentBgIndex + 1) % backgroundImages.length;
                     const nextImageUrl = backgroundImages[currentBgIndex];
 
-                    // 创建新图片对象来测试加载
-                    const testImg = new Image();
+                    // 直接设置背景图片，不再进行额外的加载测试
+                    // 这确保了即使图片未缓存也会尝试显示
+                    console.log(`背景图片切换: ${nextImageUrl}`);
+                    heroBg.style.backgroundImage = `url('${nextImageUrl}')`;
+                    heroBg.style.opacity = '1';
 
-                    testImg.onload = () => {
-                        // 图片加载成功，应用到背景
-                        console.log(`背景图片切换成功: ${nextImageUrl}`);
-                        heroBg.style.backgroundImage = `url('${nextImageUrl}')`;
-                        heroBg.style.opacity = '1';
-
-                        // 缓存图片
-                        if (BackgroundImageManager) {
-                            BackgroundImageManager.cachedImages[nextImageUrl] = testImg;
-                        }
-
-                        // 重置失败计数
-                        resetFailureCount();
-                    };
-
-                    testImg.onerror = () => {
-                        // 图片加载失败
-                        console.error(`背景图片切换失败: ${nextImageUrl}`);
-                        incrementFailureCount();
-
-                        // 保持当前背景或使用默认背景
-                        heroBg.style.opacity = '1';
-                    };
-
-                    // 开始加载图片
-                    testImg.src = nextImageUrl;
+                    // 重置失败计数（优化：即使没有完全加载也视为成功切换）
+                    resetFailureCount();
 
                 } catch (error) {
                     console.error('背景切换过程中发生错误:', error);
@@ -2044,14 +2005,15 @@ function finishLoading() {
         } else {
             // 如果没有找到必要的元素，重置节流标志
             isChangingBackground = false;
-            incrementFailureCount();
+            // 优化：不增加失败计数，避免因DOM问题导致切换停止
         }
     }
 
-    // 每10秒切换一次背景图片 - 添加请求频率限制
+    // 每10秒切换一次背景图片 - 改进的实现
     let backgroundIntervalId = null;
     let consecutiveFailures = 0;
-    const maxConsecutiveFailures = 3;
+    const maxConsecutiveFailures = 10; // 增加阈值，避免轻易停止
+    let nextScheduledChange = Date.now(); // 记录下次计划切换时间
 
     function startBackgroundRotation() {
         // 清除可能存在的旧定时器
@@ -2059,18 +2021,26 @@ function finishLoading() {
             clearInterval(backgroundIntervalId);
         }
 
+        // 记录下次计划切换时间
+        nextScheduledChange = Date.now() + 10000;
+
         // 设置新的定时器
         backgroundIntervalId = setInterval(() => {
-            // 检查连续失败次数，超过阈值则停止轮换
+            // 即使有失败，也继续尝试切换，但会记录失败次数
             if (consecutiveFailures >= maxConsecutiveFailures) {
-                console.warn(`背景图片连续切换失败${consecutiveFailures}次，暂停自动切换`);
-                clearInterval(backgroundIntervalId);
-                backgroundIntervalId = null;
-                return;
+                console.warn(`背景图片连续切换失败${consecutiveFailures}次，但仍会继续尝试`);
+                // 不再停止轮换，而是继续尝试
             }
 
-            changeBackground();
-        }, 10000);
+            // 确保距离上次切换至少有9秒，避免切换过快
+            const now = Date.now();
+            if (now >= nextScheduledChange) {
+                changeBackground();
+                nextScheduledChange = now + 10000;
+            }
+        }, 10000); // 每10秒尝试一次
+        
+        console.log('背景图片自动切换已启动，每10秒切换一次');
     }
 
     // 重置连续失败计数
@@ -2087,10 +2057,24 @@ function finishLoading() {
         console.warn(`背景图片切换失败，连续失败次数: ${consecutiveFailures}/${maxConsecutiveFailures}`);
     }
 
-    // 初始化背景轮换
+    // 初始化背景轮换 - 确保在页面完全加载后启动
     document.addEventListener('DOMContentLoaded', () => {
+        // 确保currentBgIndex已初始化
+        currentBgIndex = 0;
+        
         // 延迟启动背景轮换，确保页面完全加载
-        setTimeout(startBackgroundRotation, 5000);
+        setTimeout(() => {
+            startBackgroundRotation();
+            
+            // 添加额外的故障恢复机制
+            setInterval(() => {
+                // 如果定时器不存在或已停止，重新启动
+                if (!backgroundIntervalId) {
+                    console.log('检测到背景轮换停止，正在重新启动...');
+                    startBackgroundRotation();
+                }
+            }, 60000); // 每分钟检查一次
+        }, 3000); // 缩短启动延迟时间
     });
 
     // 鼠标移动视差效果
@@ -2116,4 +2100,3 @@ function finishLoading() {
             heroBgLayer.style.transform = `translate(${moveX2}px, ${moveY2}px)`;
         }
     })
-}
