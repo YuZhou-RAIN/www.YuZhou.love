@@ -1518,8 +1518,8 @@ function finishLoading() {
     backgroundImagesLoaded = true;
     
     // 清除跳过按钮检查定时器，避免无限循环
-    if (window.skipButtonCheckInterval) {
-        clearInterval(window.skipButtonCheckInterval);
+    if (skipButtonCheckInterval) {
+        clearInterval(skipButtonCheckInterval);
         console.log('已清除跳过按钮检查定时器');
     }
 
