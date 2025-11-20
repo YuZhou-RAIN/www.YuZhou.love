@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>雨州 Minecraft</title>
+    <link rel="icon" href="images/logo.png" type="image/png">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="fonts/fontawesome-free-6.4.0-web/css/all.min.css">
+</head>
+<body class="loading">
+        <!-- 加载指示器 -->
+        <div class="loading-indicator">
+            <div class="loading-spinner"></div>
+            <img id="loading-gif" src="" alt="加载动画" class="loading-gif" style="display: none; width: 70px; height: 70px; margin-bottom: 1.5rem;" />
+            <div class="loading-text">正在加载</div>
+            <button id="skip-loading-btn" class="skip-loading-btn" style="display: none; margin-top: 1rem; padding: 0.5rem 1.5rem; background-color: #4CAF50; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; transition: background-color 0.3s ease;">不等了，先看文字</button>
+        </div>
+        
+        <!-- 页面切换过渡层 -->
+        <div class="page-transition"></div>
+        
+        <!-- 注册Service Worker以缓存关键资源 -->
+        <script>
+            if ('serviceWorker' in navigator) {
+                window.addEventListener('load', () => {
+                    navigator.serviceWorker.register('service-worker.js')
+                        .then((registration) => {
+                            console.log('ServiceWorker 注册成功:', registration.scope);
+                        })
+                        .catch((error) => {
+                            console.log('ServiceWorker 注册失败:', error);
+                        });
+                });
+            }
+        </script>
+    <!-- 导航栏 -->
+    <header>
+        <nav class="navbar">
+            <div class="nav-container">
+                <div class="logo" style="cursor: pointer;" data-page="home">
+                    <img src="images/logo.png" alt="雨州Minecraft" style="height: 1.8rem; margin-right: 10px;">
+                    <span>雨州 Minecraft</span>
+                </div>
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="/" class="nav-link active" data-page="home">首页</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/features" class="nav-link" data-page="features">服务器特色</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/join" class="nav-link" data-page="join">加入指南</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a href="/about" class="nav-link" data-page="about">关于我们</a>
+                    </li>
+                </ul>
+                <div class="hamburger">
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- 主要内容区域 - 动态内容加载容器 -->
+    <main style="display: flex; flex-direction: column; min-height: calc(100vh - 60px); margin-top: 60px;">
+        <div id="content-wrapper">
+            <div id="main-content">
+                <!-- 内容将通过JavaScript动态加载 -->
+            </div>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <img src="images/logo.png" alt="雨州Minecraft" style="height: 60px; margin-bottom: 15px;">
+                    <h3>雨州 Minecraft 服务器</h3>
+                    <p>致力于有趣的游戏体验</p>
+                </div>
+                <div class="footer-section">
+                    <h3>快速链接</h3>
+                    <ul>
+                        <li><a href="/" class="footer-nav-link" data-page="home">首页</a></li>
+                        <li><a href="/features" class="footer-nav-link" data-page="features">服务器特色</a></li>
+                        <li><a href="/join" class="footer-nav-link" data-page="join">加入指南</a></li>
+                        <li><a href="/about" class="footer-nav-link" data-page="about">关于我们</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>关于我们</h3>
+                    <p><i class="fas fa-server"></i> 服务器地址: mc.yuzhou.love <button class="copy-btn small" data-copy="mc.yuzhou.love" style="margin-left: 10px;"><i class="fas fa-copy"></i> 复制</button></p>
+                    <p><i class="fab fa-qq"></i> QQ交流群: <a href="https://qm.qq.com/q/sgWsIw909q" target="_blank" class="qq-group-link">823557774</a> <button class="copy-btn small" data-copy="823557774" style="margin-left: 10px;"><i class="fas fa-copy"></i> 复制</button></p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 雨州 Minecraft 服务器 保留所有权利.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // GitHub Pages SPA路由修复 - 在加载主脚本前执行
+        (function() {
+            // 解析当前URL路径
+            const path = window.location.pathname;
+            
+            // 如果不是根路径且不以.js/.css/.png等静态资源结尾
+            if (path !== '/' && !path.match(/\.(js|css|png|jpg|jpeg|gif|svg|ico|avif|webp)$/)) {
+                console.log('检测到非根路径访问:', path);
+                
+                // 清理路径，提取页面ID
+                let pageId = path.replace(/^\//, '').replace(/\/$/, '');
+                
+                // 如果路径为空或不包含有效页面ID，默认为home
+                if (!pageId || !['home', 'features', 'join', 'about'].includes(pageId)) {
+                    pageId = 'home';
+                }
+                
+                // 将页面ID存储在window对象上，供主脚本使用
+                window.initialPageId = pageId;
+                console.log('初始化页面ID:', pageId);
+            }
+        })();
+    </script>
+
+    <script src="script.js"></script>
+    <script>
+        // 复制按钮功能
+        document.querySelectorAll('.copy-btn').forEach(button => {
+            // 为每个按钮添加状态标志
+            button.isCopying = false;
+            
+            button.addEventListener('click', function() {
+                // 如果按钮正在显示"已复制"状态，则不处理重复点击
+                if (this.isCopying) {
+                    return;
+                }
+                
+                const textToCopy = this.getAttribute('data-copy');
+                navigator.clipboard.writeText(textToCopy).then(() => {
+                    const originalText = this.innerHTML;
+                    // 对于小按钮，只显示图标和文字
+                    if (this.classList.contains('small')) {
+                        this.innerHTML = '<i class="fas fa-check"></i> 已复制';
+                    } else {
+                        this.innerHTML = '<i class="fas fa-check"></i> 已复制';
+                    }
+                    
+                    // 设置状态标志
+                    this.isCopying = true;
+                    
+                    // 3秒后恢复原始文本
+                    setTimeout(() => {
+                        this.innerHTML = originalText;
+                        this.isCopying = false;
+                    }, 3000);
+                }).catch(err => {
+                    console.error('复制失败: ', err);
+                    // 即使复制失败也要重置状态
+                    this.isCopying = false;
+                });
+            });
+        });
+
+        // FAQ折叠功能
+        document.addEventListener('DOMContentLoaded', function() {
+            const faqQuestions = document.querySelectorAll('.faq-question');
+            faqQuestions.forEach(question => {
+                question.addEventListener('click', function() {
+                    const answer = this.nextElementSibling;
+                    const icon = this.querySelector('i');
+                    
+                    if (answer) {
+                        // 如果答案已经展开，则收起
+                        if (answer.classList.contains('active')) {
+                            // 先设置为具体的高度
+                            answer.style.maxHeight = answer.scrollHeight + 'px';
+                            // 强制重排
+                            answer.offsetHeight;
+                            // 然后设置为0，触发动画
+                            answer.style.maxHeight = '0';
+                            answer.classList.remove('active');
+                        } else {
+                            // 展开答案
+                            answer.classList.add('active');
+                            // 设置为具体的高度
+                            answer.style.maxHeight = answer.scrollHeight + 'px';
+                        }
+                        
+                        // 旋转图标
+                        if (icon) {
+                            icon.classList.toggle('rotate');
+                        }
+                        
+                        // 动画结束后清理样式
+                        setTimeout(() => {
+                            if (!answer.classList.contains('active')) {
+                                answer.style.maxHeight = '';
+                            }
+                        }, 300);
+                    }
+                });
+            });
+        });
+
+        // 表单提交处理
+        document.addEventListener('DOMContentLoaded', function() {
+            const feedbackForm = document.getElementById('feedbackForm');
+            if (feedbackForm) {
+                feedbackForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    // 获取表单数据
+                    const formData = new FormData(this);
+                    const name = formData.get('nickname');
+                    const email = formData.get('email');
+                    const type = formData.get('type');
+                    const message = formData.get('message');
+                    
+                    // 这里可以添加实际的表单提交逻辑
+                    // 例如发送到服务器或使用第三方服务
+                    
+                    // 显示成功消息
+                    const successMessage = document.createElement('div');
+                    successMessage.className = 'success-message';
+                    successMessage.innerHTML = `
+                        <div class="success-content">
+                            <i class="fas fa-check-circle"></i>
+                            <h3>反馈提交成功！</h3>
+                            <p>感谢您的反馈，我们会尽快处理并回复您。</p>
+                        </div>
+                    `;
+                    
+                    // 插入到表单前面
+                    this.parentNode.insertBefore(successMessage, this);
+                    
+                    // 重置表单
+                    this.reset();
+                    
+                    // 3秒后移除成功消息
+                    setTimeout(() => {
+                        if (successMessage.parentNode) {
+                            successMessage.remove();
+                        }
+                    }, 3000);
+                });
+            }
+        });
+    </script>
+</body>
+</html>

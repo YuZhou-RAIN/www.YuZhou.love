@@ -1308,35 +1308,102 @@ window.addEventListener('scroll', () => {
 });
 
 // 页面加载动画 - 统一的加载事件监听器
+// 检查是否有初始页面ID（用于GitHub Pages路由修复）
+let initialPageId = null;
 window.addEventListener('load', () => {
-    // 更新背景图片加载状态
-    backgroundImagesLoaded = true;
-    
     // 隐藏跳过加载按钮
     const skipButton = document.getElementById('skip-loading-btn');
     if (skipButton) {
         skipButton.style.display = 'none';
     }
     
-    console.log('资源加载完成');
+    console.log('基础资源加载完成，开始等待背景图片加载');
     
-    // 先显示页面内容
-    document.body.classList.remove('loading');
-    document.body.classList.add('loaded');
+    // 等待背景图片加载完成后再结束加载界面
+    const waitForBackgroundImages = () => {
+        // 检查背景图片管理器是否已初始化完成
+        if (BackgroundImageManager && BackgroundImageManager.initialized) {
+            console.log('背景图片已全部加载完成');
+            finishLoading();
+        } else {
+            // 设置一个最大等待时间，防止无限等待
+            const maxWaitTime = 10000; // 10秒
+            const startTime = Date.now();
+            
+            const checkInterval = setInterval(() => {
+                if (BackgroundImageManager && BackgroundImageManager.initialized) {
+                    clearInterval(checkInterval);
+                    console.log('背景图片已全部加载完成');
+                    finishLoading();
+                } else if (Date.now() - startTime > maxWaitTime) {
+                    clearInterval(checkInterval);
+                    console.warn('背景图片加载超时，强制完成加载流程');
+                    finishLoading();
+                }
+            }, 200); // 每200ms检查一次
+        }
+    };
     
-    // 然后淡出加载指示器
+    // 确保BackgroundImageManager被初始化
+    if (!BackgroundImageManager || !BackgroundImageManager.initialized) {
+        // 如果还没初始化，手动调用initHeroBackground()
+        if (typeof initHeroBackground === 'function') {
+            initHeroBackground();
+        }
+    }
+    
+    // 开始等待背景图片加载
+    waitForBackgroundImages();
+});
+
+// 完成加载流程的函数
+function finishLoading() {
+    // 更新背景图片加载状态
+    backgroundImagesLoaded = true;
+    
+    // 检查是否有初始页面ID（来自404.html的路由修复）
+    if (window.initialPageId && pageLoader) {
+        initialPageId = window.initialPageId;
+        console.log('检测到初始页面ID:', initialPageId);
+    } else {
+        initialPageId = 'home';
+    }
+    
+    // 先淡出加载指示器
     const loadingIndicator = document.querySelector('.loading-indicator');
     if (loadingIndicator) {
         loadingIndicator.style.opacity = '0';
         loadingIndicator.style.transform = 'translate(-50%, -50%) scale(0.9)';
         
         setTimeout(() => {
+            // 隐藏加载指示器
             loadingIndicator.style.display = 'none';
-        }, 300);
+            
+            // 然后显示页面内容（移除loading类，添加loaded类）
+            document.body.classList.remove('loading');
+            document.body.classList.add('loaded');
+            
+            console.log('页面完全加载完成');
+            
+            // 初始化导航
+            initNavigation();
+            
+            // 确保AppInitializer初始化
+            if (!AppInitializer.initialized && AppInitializer && typeof AppInitializer.init === 'function') {
+                AppInitializer.init();
+            }
+            
+            // 如果不是首页，加载对应的页面内容
+            if (initialPageId && initialPageId !== 'home' && pageLoader && typeof pageLoader.loadPage === 'function') {
+                console.log('加载初始页面:', initialPageId);
+                pageLoader.loadPage(initialPageId);
+            } else if (pageLoader && typeof pageLoader.preloadPage === 'function') {
+                // 预加载服务器特色页面
+                pageLoader.preloadPage('features');
+            }
+        }, 300); // 等待加载指示器淡出动画完成
     }
-    
-    console.log('页面完全加载完成');
-});
+}
 
 // 服务器状态模拟更新
 function updateServerStatus() {
