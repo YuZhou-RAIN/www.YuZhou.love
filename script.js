@@ -480,12 +480,12 @@ class PageLoader {
 const pageLoader = new PageLoader();
 
 // 单页应用页面切换功能
-// 立即显示加载提示 - 不需要等待DOMContentLoaded
+// 初始化loadingIndicator变量，但不立即显示
 const loadingIndicator = document.querySelector('.loading-indicator');
 if (loadingIndicator) {
-    loadingIndicator.style.display = 'flex';
-    loadingIndicator.style.opacity = '1';
-    console.log('加载提示已立即显示');
+    // 先隐藏加载指示器，等待3秒后再显示
+    loadingIndicator.style.display = 'none';
+    console.log('加载提示已初始化并暂时隐藏');
 }
 
 // 优先加载loading.avif动图
@@ -527,13 +527,15 @@ function loadLoadingGif() {
     }
 }
 
-// 延迟3秒后开始显示加载动图
+// 延迟3秒后显示完整的加载界面
 setTimeout(() => {
-    // 只有在页面未完全加载时才显示加载动图
-    if (!document.body.classList.contains('loaded')) {
+    // 只有在页面未完全加载时才显示加载界面
+    if (!document.body.classList.contains('loaded') && loadingIndicator) {
+        loadingIndicator.style.display = 'flex';
+        loadingIndicator.style.opacity = '1';
         loadLoadingGif();
         loadingIndicatorVisible = true;
-        console.log('3秒后显示加载界面');
+        console.log('3秒后显示完整加载界面');
     }
 }, 3000);
 
@@ -691,7 +693,7 @@ function setupSkipLoadingButton() {
     }
 }
 
-// 检查是否需要显示跳过按钮 - 修复循环问题
+// 检查是否需要显示跳过按钮 - 彻底修复循环问题
 function checkSkipButtonDisplay() {
     try {
         // 如果页面已经加载完成，清除定时器并返回
@@ -707,7 +709,15 @@ function checkSkipButtonDisplay() {
         // 获取按钮元素
         const skipButton = document.getElementById('skip-loading-btn');
         if (!skipButton) {
-            console.warn('跳过加载按钮未找到');
+            // 只在开发时输出警告，避免循环日志
+            if (process && process.env && process.env.NODE_ENV === 'development') {
+                console.warn('跳过加载按钮未找到');
+            }
+            // 确保清除定时器，避免循环
+            if (skipButtonCheckInterval) {
+                clearInterval(skipButtonCheckInterval);
+                skipButtonCheckInterval = null;
+            }
             return;
         }
 
@@ -715,22 +725,39 @@ function checkSkipButtonDisplay() {
         const htmlCssJsLoaded = domCssLoaded; // HTML、CSS、JS已加载
         const assetsStillLoading = (imagesLoadingCount > 0 || fontsLoadingCount > 0); // 图片或字体仍在加载
         const pageNotLoaded = !document.body.classList.contains('loaded'); // 页面还未完全加载
+        
+        // 增加时间限制：只有在加载超过5秒后才显示跳过按钮
+        const currentTime = Date.now();
+        const elapsedTime = currentTime - loadStartTime;
+        const loadingLongEnough = elapsedTime >= 5000; // 5秒
 
-        console.log(`检查跳过按钮显示条件 - HTML/CSS/JS加载: ${htmlCssJsLoaded}, 资源仍在加载: ${assetsStillLoading}, 页面未完成: ${pageNotLoaded}`);
-        console.log(`资源加载状态 - 图片剩余: ${imagesLoadingCount}/${imagesTotalCount}, 字体剩余: ${fontsLoadingCount}/${fontsTotalCount}`);
+        // 优化日志输出：每2秒才输出一次状态，避免日志过多
+        const currentSecond = Math.floor(elapsedTime / 2000);
+        if (!window.lastLogSecond || window.lastLogSecond !== currentSecond) {
+            window.lastLogSecond = currentSecond;
+            console.log(`加载状态更新 (${Math.floor(elapsedTime/1000)}秒): 图片剩余 ${imagesLoadingCount}/${imagesTotalCount}`);
+        }
 
-        // 符合条件：HTML、CSS、JS已加载，但图片和字体资源仍在加载中
-        if (htmlCssJsLoaded && assetsStillLoading && pageNotLoaded) {
-            // 立即显示按钮，不添加延迟
-            skipButton.style.display = 'block';
-            console.log('显示跳过加载按钮：HTML、CSS、JS已加载，但图片和字体资源仍在加载');
+        // 修改显示条件：加载足够长时间且满足其他条件时才显示按钮
+        if (htmlCssJsLoaded && assetsStillLoading && pageNotLoaded && loadingLongEnough) {
+            // 避免重复设置display
+            if (skipButton.style.display !== 'block') {
+                skipButton.style.display = 'block';
+                console.log('显示跳过加载按钮：加载时间超过5秒且资源仍在加载');
+            }
         } else {
-            // 确保在不满足条件时隐藏按钮
-            skipButton.style.display = 'none';
-            console.log('隐藏跳过按钮：条件不满足');
+            // 避免重复设置display
+            if (skipButton.style.display !== 'none') {
+                skipButton.style.display = 'none';
+            }
         }
     } catch (error) {
         console.error('检查跳过按钮显示状态出错:', error);
+        // 出错时确保清除定时器，防止无限循环
+        if (skipButtonCheckInterval) {
+            clearInterval(skipButtonCheckInterval);
+            skipButtonCheckInterval = null;
+        }
     }
 }
 
@@ -769,8 +796,11 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // 定时检查，确保在图片加载过程中也能正确显示按钮
         // 保存定时器ID，以便在页面加载完成后清除
-        skipButtonCheckInterval = setInterval(checkSkipButtonDisplay, 500);
-        console.log('启动跳过按钮检查定时器');
+        // 确保只创建一个定时器，防止多个定时器导致循环
+        if (!skipButtonCheckInterval) {
+            skipButtonCheckInterval = setInterval(checkSkipButtonDisplay, 1000); // 降低频率到1秒，减少资源消耗
+            console.log('启动跳过按钮检查定时器，每1秒检查一次');
+        }
     }
 
     // 选择性预加载 - 只预加载可能会快速访问的页面
