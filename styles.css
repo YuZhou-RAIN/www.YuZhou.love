@@ -10,7 +10,7 @@ body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     line-height: 1.6;
     color: #e0e0e0;
-    background-color: #0a0a0a;
+    background-color: #010101;
     overflow-x: hidden;
     overflow-y: scroll;
 }
@@ -64,7 +64,7 @@ body.loaded {
     width: 70px;
     height: 70px;
     border: 5px solid rgba(255, 255, 255, 0.2);
-    border-top: 5px solid #4CAF50;
+    border-top: 5px solid #45CDF3;
     border-radius: 50%;
     animation: spin 1s linear infinite;
     margin-bottom: 1.5rem;
@@ -139,7 +139,7 @@ body.loaded {
     width: 40px;
     height: 40px;
     border: 3px solid rgba(255, 255, 255, 0.2);
-    border-top: 3px solid #4CAF50;
+    border-top: 3px solid #45CDF3;
     border-radius: 50%;
     animation: spin 1s linear infinite;
     margin-bottom: 1rem;
@@ -200,7 +200,7 @@ body.loaded {
     align-items: center;
     font-size: 1.5rem;
     font-weight: bold;
-    color: #79CAF2;
+    color: #45CDF3;
 }
 
 .logo i {
@@ -227,7 +227,7 @@ body.loaded {
 
 .nav-link:hover,
 .nav-link.active {
-    color: #79CAF2;
+    color: #45CDF3;
 }
 
 .nav-link::after {
@@ -237,7 +237,7 @@ body.loaded {
     left: 0;
     width: 0;
     height: 2px;
-    background-color: #79CAF2;
+    background-color: #45CDF3;
     transition: width 0.3s ease;
 }
 
@@ -640,7 +640,7 @@ body.loaded {
 /* 服务器状态 */
 .server-status {
     padding: 100px 0;
-    background-color: #0a0a0a;
+    background-color: #010101;
 }
 
 .status-grid {
@@ -724,7 +724,7 @@ body.loaded {
 
 /* 页脚 */
 footer {
-    background-color: #0a0a0a;
+    background-color: #010101;
     padding: 70px 0 20px;
     border-top: 1px solid rgba(255, 255, 255, 0.1);
     position: relative;
@@ -1598,7 +1598,7 @@ footer {
     justify-content: center;
     background-color: rgba(76, 175, 80, 0.1);
     border-radius: 50%;
-    color: #4caf50;
+    color: #45CDF3;
     font-size: 1.8rem;
 }
 
@@ -1708,7 +1708,7 @@ footer {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, #44CEF3, #79CAF2);
+    background: linear-gradient(135deg, #44CEF3, #45CDF3);
     border-radius: 15px;
     color: white;
     font-size: 1.5rem;
@@ -1949,7 +1949,7 @@ footer {
 .showcase-icon {
     width: 80px;
     height: 80px;
-    background: linear-gradient(135deg, #44CEF3, #79CAF2);
+    background: linear-gradient(135deg, #44CEF3, #45CDF3);
     border-radius: 50%;
     display: inline-flex;
     align-items: center;
@@ -1964,7 +1964,7 @@ footer {
     font-size: 2.5rem;
     color: #ffffff;
     margin-bottom: 10px;
-    background: linear-gradient(135deg, #44CEF3, #79CAF2);
+    background: linear-gradient(135deg, #44CEF3, #45CDF3);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -2266,7 +2266,7 @@ footer {
 
 .platform-badge.bedrock {
     background: rgba(76, 175, 80, 0.2);
-    color: #4CAF50;
+    color: #45CDF3;
 }
 
 .platform-badge i {
@@ -2321,7 +2321,7 @@ footer {
 .performance-card .card-icon {
     width: 60px;
     height: 60px;
-    background: linear-gradient(135deg, #44CEF3, #79CAF2);
+    background: linear-gradient(135deg, #44CEF3, #45CDF3);
     border-radius: 15px;
     display: flex;
     align-items: center;
@@ -2384,7 +2384,7 @@ footer {
 .hardware-header .card-icon {
     width: 60px;
     height: 60px;
-    background: linear-gradient(135deg, #44CEF3, #79CAF2);
+    background: linear-gradient(135deg, #44CEF3, #45CDF3);
     border-radius: 15px;
     display: flex;
     align-items: center;
@@ -2457,7 +2457,7 @@ footer {
 }
 
 .feature-list li i {
-    color: #4CAF50;
+    color: #45CDF3;
     font-size: 0.9rem;
     width: 16px;
 }
@@ -2492,7 +2492,7 @@ footer {
     font-weight: bold;
     color: #44CEF3;
     margin-bottom: 5px;
-    background: linear-gradient(135deg, #44CEF3, #79CAF2);
+    background: linear-gradient(135deg, #44CEF3, #45CDF3);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;

@@ -150,10 +150,10 @@ class PageLoader {
     }
     
     // 加载页面内容
-    async loadPage(pageId) {
-        // 显示页面过渡效果
+    async loadPage(pageId, preload = false) {
+        // 如果不是预加载模式，才显示页面过渡效果
         const transitionLayer = document.querySelector('.page-transition');
-        if (transitionLayer) {
+        if (transitionLayer && !preload) {
             transitionLayer.classList.add('active');
         }
         
@@ -251,16 +251,21 @@ class PageLoader {
                     }, 100);
                 }
                 
-                // 为页面内容添加active类，确保它可见
-                pageContent.classList.add('active');
+                // 只有在非预加载模式下才立即添加active类
+                if (!preload) {
+                    pageContent.classList.add('active');
+                } else {
+                    // 预加载模式下，延迟添加active类，直到页面真正显示
+                    console.log(`页面 ${pageId} 已预加载，但暂时不激活显示`);
+                }
                 
                 // 注意：AppInitializer.init()不再在这里调用，而是在首次页面加载时统一初始化
                 
                 // 标记页面为已加载
                 this.loadedPages.add(pageId);
                 
-                // 隐藏过渡效果
-                if (transitionLayer) {
+                // 如果不是预加载模式，才隐藏过渡效果
+                if (transitionLayer && !preload) {
                     setTimeout(() => {
                         transitionLayer.classList.remove('active');
                     }, 50);
@@ -391,11 +396,20 @@ function loadLoadingGif() {
     }
 }
 
-// 立即开始加载动图
-loadLoadingGif();
+// 延迟3秒后开始显示加载动图
+setTimeout(() => {
+    // 只有在页面未完全加载时才显示加载动图
+    if (!document.body.classList.contains('loaded')) {
+        loadLoadingGif();
+        loadingIndicatorVisible = true;
+        console.log('3秒后显示加载界面');
+    }
+}, 3000);
 
 // 记录加载开始时间
 const loadStartTime = Date.now();
+// 加载界面显示控制
+let loadingIndicatorVisible = false;
 // 跟踪资源加载状态
 let domCssLoaded = false;
 let backgroundImagesLoaded = false;
@@ -549,30 +563,30 @@ function setupSkipLoadingButton() {
 // 检查是否需要显示跳过按钮
 function checkSkipButtonDisplay() {
     try {
+        // 获取按钮元素
+        const skipButton = document.getElementById('skip-loading-btn');
+        if (!skipButton) {
+            console.warn('跳过加载按钮未找到');
+            return;
+        }
+        
         // 只有在CSS、JS、HTML加载完成但图片和字体资源仍在加载时才显示按钮
-        // 确保在带资源路径URL访问的情况下也能正确工作
         const htmlCssJsLoaded = domCssLoaded; // HTML、CSS、JS已加载
         const assetsStillLoading = (imagesLoadingCount > 0 || fontsLoadingCount > 0); // 图片或字体仍在加载
         const pageNotLoaded = !document.body.classList.contains('loaded'); // 页面还未完全加载
         
+        console.log(`检查跳过按钮显示条件 - HTML/CSS/JS加载: ${htmlCssJsLoaded}, 资源仍在加载: ${assetsStillLoading}, 页面未完成: ${pageNotLoaded}`);
+        console.log(`资源加载状态 - 图片剩余: ${imagesLoadingCount}/${imagesTotalCount}, 字体剩余: ${fontsLoadingCount}/${fontsTotalCount}`);
+        
         // 符合条件：HTML、CSS、JS已加载，但图片和字体资源仍在加载中
         if (htmlCssJsLoaded && assetsStillLoading && pageNotLoaded) {
-            const skipButton = document.getElementById('skip-loading-btn');
-            if (skipButton) {
-                skipButton.style.display = 'block';
-                console.log('显示跳过加载按钮：HTML、CSS、JS已加载，但图片和字体资源仍在加载');
-                console.log(`当前加载状态 - 图片剩余: ${imagesLoadingCount}/${imagesTotalCount}, 字体剩余: ${fontsLoadingCount}/${fontsTotalCount}`);
-            } else {
-                console.warn('按钮元素不存在，无法显示跳过按钮');
-            }
+            // 立即显示按钮，不添加延迟
+            skipButton.style.display = 'block';
+            console.log('显示跳过加载按钮：HTML、CSS、JS已加载，但图片和字体资源仍在加载');
         } else {
             // 确保在不满足条件时隐藏按钮
-            const skipButton = document.getElementById('skip-loading-btn');
-            if (skipButton && skipButton.style.display === 'block') {
-                // 只在真正加载完成时才隐藏，避免加载动画切换时隐藏按钮
-                skipButton.style.display = 'none';
-                console.log('隐藏跳过按钮：条件不满足');
-            }
+            skipButton.style.display = 'none';
+            console.log('隐藏跳过按钮：条件不满足');
         }
     } catch (error) {
         console.error('检查跳过按钮显示状态出错:', error);
@@ -587,18 +601,31 @@ document.addEventListener('DOMContentLoaded', () => {
     const navLinks = document.querySelectorAll('.nav-link[data-page]');
     const footer = document.querySelector('footer');
     
-    // 确保加载提示在DOM加载完成后仍然可见
-    if (loadingIndicator) {
-        loadingIndicator.style.display = 'flex';
-        console.log('DOM加载完成，加载提示保持可见');
+    // 只有在3秒后且页面未完全加载时才显示加载提示
+    if (loadingIndicator && !document.body.classList.contains('loaded')) {
+        // 检查是否已经过了3秒
+        const currentTime = Date.now();
+        const elapsedTime = currentTime - loadStartTime;
+        
+        if (elapsedTime >= 3000 || loadingIndicatorVisible) {
+            loadingIndicator.style.display = 'flex';
+            loadingIndicatorVisible = true;
+            console.log('DOM加载完成且已过3秒，加载提示保持可见');
+        } else {
+            loadingIndicator.style.display = 'none';
+            console.log('DOM加载完成但未过3秒，暂不显示加载提示');
+        }
     }
     
     // DOM和CSS已加载完成
     domCssLoaded = true;
     console.log('DOM和CSS加载完成');
     
-    // 检查是否需要显示跳过按钮
+    // 立即检查是否需要显示跳过按钮
     checkSkipButtonDisplay();
+    
+    // 定时检查，确保在图片加载过程中也能正确显示按钮
+    setInterval(checkSkipButtonDisplay, 500);
     
     // 选择性预加载 - 只预加载可能会快速访问的页面
     // 延迟预加载以避免影响首页加载性能
@@ -959,7 +986,7 @@ const AppInitializer = {
         // 初始化页面组件
         this.initPageComponents();
         this.initCopyFeatures();
-        this.initAnimations();
+        // 注意：动画初始化已移至finishLoading函数中，确保在页面完全加载后才执行
         this.initBackgroundEffects();
     },
     
@@ -1488,9 +1515,18 @@ function finishLoading() {
     backgroundImagesLoaded = true;
     
     // 检查是否有初始页面ID（来自404.html的路由修复）
-    if (window.initialPageId && pageLoader) {
+    // 先从sessionStorage获取（新的方式）
+    let pageIdFromStorage = sessionStorage.getItem('initialPageId');
+    if (pageIdFromStorage && pageLoader) {
+        initialPageId = pageIdFromStorage;
+        console.log('从sessionStorage检测到初始页面ID:', initialPageId);
+        // 清除sessionStorage中的页面ID，避免影响后续导航
+        sessionStorage.removeItem('initialPageId');
+    } 
+    // 兼容旧的方式
+    else if (window.initialPageId && pageLoader) {
         initialPageId = window.initialPageId;
-        console.log('检测到初始页面ID:', initialPageId);
+        console.log('从window对象检测到初始页面ID:', initialPageId);
     } else {
         initialPageId = 'home';
     }
@@ -1504,13 +1540,12 @@ function finishLoading() {
     // 先淡出加载指示器
     const loadingIndicator = document.querySelector('.loading-indicator');
     if (loadingIndicator) {
+        // 如果加载界面未显示，则无需淡出动画
+        if (!loadingIndicatorVisible) {
+            loadingIndicator.style.display = 'none';
         if (isQuickLoad) {
             // 如果是快速加载，直接隐藏加载指示器，不播放淡出动画
             loadingIndicator.style.display = 'none';
-            
-            // 然后立即显示页面内容
-            document.body.classList.remove('loading');
-            document.body.classList.add('loaded');
             
             // 立即初始化页面
             initNavigation();
@@ -1519,11 +1554,39 @@ function finishLoading() {
                 AppInitializer.init();
             }
             
+            // 如果不是首页，先加载页面内容，再显示页面，避免黑色闪烁
             if (initialPageId && initialPageId !== 'home' && pageLoader && typeof pageLoader.loadPage === 'function') {
-                console.log('加载初始页面:', initialPageId);
-                pageLoader.loadPage(initialPageId);
-            } else if (pageLoader && typeof pageLoader.preloadPage === 'function') {
-                pageLoader.preloadPage('features');
+                console.log('快速加载模式 - 预加载初始页面:', initialPageId);
+                // 异步加载页面内容，完成后再显示页面
+                (async () => {
+                    // 先加载页面内容到容器中（不显示）
+                    await pageLoader.loadPage(initialPageId, true); // 第二个参数表示预加载模式
+                    
+                    console.log('初始页面内容加载完成，现在显示页面');
+                    // 内容加载完成后，再显示页面
+                    document.body.classList.remove('loading');
+                    document.body.classList.add('loaded');
+                    
+                    // 只有在页面完全加载后才初始化动画
+                    if (AppInitializer && typeof AppInitializer.initAnimations === 'function') {
+                        console.log('快速加载模式 - 页面加载完成，开始初始化动画');
+                        AppInitializer.initAnimations();
+                    }
+                })();
+            } else {
+                // 是首页，直接显示页面内容
+                document.body.classList.remove('loading');
+                document.body.classList.add('loaded');
+                
+                // 只有在页面完全加载后才初始化动画
+                if (AppInitializer && typeof AppInitializer.initAnimations === 'function') {
+                    console.log('快速加载模式 - 首页加载完成，开始初始化动画');
+                    AppInitializer.initAnimations();
+                }
+                
+                if (pageLoader && typeof pageLoader.preloadPage === 'function') {
+                    pageLoader.preloadPage('features');
+                }
             }
             
             console.log('快速加载模式 - 页面已显示');
@@ -1536,12 +1599,6 @@ function finishLoading() {
                 // 隐藏加载指示器
                 loadingIndicator.style.display = 'none';
                 
-                // 然后显示页面内容
-                document.body.classList.remove('loading');
-                document.body.classList.add('loaded');
-                
-                console.log('正常加载模式 - 页面完全加载完成');
-                
                 // 初始化导航
                 initNavigation();
                 
@@ -1550,13 +1607,44 @@ function finishLoading() {
                     AppInitializer.init();
                 }
                 
-                // 如果不是首页，加载对应的页面内容
+                // 如果不是首页，先加载页面内容，再显示页面，避免黑色闪烁
                 if (initialPageId && initialPageId !== 'home' && pageLoader && typeof pageLoader.loadPage === 'function') {
-                    console.log('加载初始页面:', initialPageId);
-                    pageLoader.loadPage(initialPageId);
-                } else if (pageLoader && typeof pageLoader.preloadPage === 'function') {
-                    // 预加载服务器特色页面
-                    pageLoader.preloadPage('features');
+                    console.log('预加载初始页面:', initialPageId);
+                    // 异步加载页面内容，完成后再显示页面
+                    (async () => {
+                        // 先加载页面内容到容器中（不显示）
+                        await pageLoader.loadPage(initialPageId, true); // 第二个参数表示预加载模式
+                        
+                        console.log('初始页面内容加载完成，现在显示页面');
+                        // 内容加载完成后，再显示页面
+                        document.body.classList.remove('loading');
+                        document.body.classList.add('loaded');
+                        
+                        console.log('正常加载模式 - 页面完全加载完成');
+                        
+                        // 只有在页面完全加载后才初始化动画
+                        if (AppInitializer && typeof AppInitializer.initAnimations === 'function') {
+                            console.log('页面加载完成，开始初始化动画');
+                            AppInitializer.initAnimations();
+                        }
+                    })();
+                } else {
+                    // 是首页，直接显示页面内容
+                    document.body.classList.remove('loading');
+                    document.body.classList.add('loaded');
+                    
+                    console.log('正常加载模式 - 页面完全加载完成');
+                
+                // 只有在页面完全加载后才初始化动画
+                if (AppInitializer && typeof AppInitializer.initAnimations === 'function') {
+                    console.log('首页加载完成，开始初始化动画');
+                    AppInitializer.initAnimations();
+                }
+                
+                if (pageLoader && typeof pageLoader.preloadPage === 'function') {
+                        // 预加载服务器特色页面
+                        pageLoader.preloadPage('features');
+                    }
                 }
             }, 300); // 等待加载指示器淡出动画完成
         }
