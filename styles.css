@@ -200,7 +200,7 @@ body.loaded {
     align-items: center;
     font-size: 1.5rem;
     font-weight: bold;
-    color: #79CBF5;
+    color: #79CAF2;
 }
 
 .logo i {
@@ -227,7 +227,7 @@ body.loaded {
 
 .nav-link:hover,
 .nav-link.active {
-    color: #79CBF5;
+    color: #79CAF2;
 }
 
 .nav-link::after {
@@ -237,7 +237,7 @@ body.loaded {
     left: 0;
     width: 0;
     height: 2px;
-    background-color: #79CBF5;
+    background-color: #79CAF2;
     transition: width 0.3s ease;
 }
 
@@ -1708,7 +1708,7 @@ footer {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, #44CEF3, #79CBF5);
+    background: linear-gradient(135deg, #44CEF3, #79CAF2);
     border-radius: 15px;
     color: white;
     font-size: 1.5rem;
@@ -1949,7 +1949,7 @@ footer {
 .showcase-icon {
     width: 80px;
     height: 80px;
-    background: linear-gradient(135deg, #44CEF3, #79CBF5);
+    background: linear-gradient(135deg, #44CEF3, #79CAF2);
     border-radius: 50%;
     display: inline-flex;
     align-items: center;
@@ -1964,7 +1964,7 @@ footer {
     font-size: 2.5rem;
     color: #ffffff;
     margin-bottom: 10px;
-    background: linear-gradient(135deg, #44CEF3, #79CBF5);
+    background: linear-gradient(135deg, #44CEF3, #79CAF2);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -2321,7 +2321,7 @@ footer {
 .performance-card .card-icon {
     width: 60px;
     height: 60px;
-    background: linear-gradient(135deg, #44CEF3, #79CBF5);
+    background: linear-gradient(135deg, #44CEF3, #79CAF2);
     border-radius: 15px;
     display: flex;
     align-items: center;
@@ -2384,7 +2384,7 @@ footer {
 .hardware-header .card-icon {
     width: 60px;
     height: 60px;
-    background: linear-gradient(135deg, #44CEF3, #79CBF5);
+    background: linear-gradient(135deg, #44CEF3, #79CAF2);
     border-radius: 15px;
     display: flex;
     align-items: center;
@@ -2492,7 +2492,7 @@ footer {
     font-weight: bold;
     color: #44CEF3;
     margin-bottom: 5px;
-    background: linear-gradient(135deg, #44CEF3, #79CBF5);
+    background: linear-gradient(135deg, #44CEF3, #79CAF2);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;

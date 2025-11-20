@@ -417,7 +417,7 @@ async function preloadAllResources() {
         'images/主页背景图/3.jpg',
         'images/主页背景图/4.jpg',
         'images/loading.avif',
-        'images/logo.png',
+        'images/雨州logo.svg',
         'images/服务器特色-四象限构图/左.jpg',
         'images/服务器特色-四象限构图/右.jpg',
         'images/Java版加入指南.png',
