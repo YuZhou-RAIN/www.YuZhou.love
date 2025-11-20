@@ -374,58 +374,11 @@ document.addEventListener('DOMContentLoaded', () => {
     async function checkInitialPage() {
         console.log('[路由] 开始检查初始页面');
         
-        // 首先检查是否有从404页面重定向过来的路径
-        let redirectPath = sessionStorage.getItem('githubPagesRedirectPath');
-        if (redirectPath) {
-            // 清除sessionStorage中的重定向路径
-            sessionStorage.removeItem('githubPagesRedirectPath');
-            
-            try {
-                console.log('[路由] 检测到重定向路径:', redirectPath);
-                
-                // 处理重定向路径，去除可能的查询参数
-                let cleanRedirectPath = redirectPath.split('?')[0];
-                console.log('[路由] 清理后的重定向路径:', cleanRedirectPath);
-                
-                // 解析路径获取页面ID
-                const pageId = getPageIdFromPath(cleanRedirectPath);
-                console.log('[路由] 解析后页面ID:', pageId);
-                
-                // 确保是有效的页面ID
-                const validPages = ['home', 'features', 'join', 'about'];
-                const finalPageId = validPages.includes(pageId) ? pageId : 'home';
-                
-                // 切换到相应页面
-                await switchPage(finalPageId);
-                
-                // 更新浏览器历史记录，使用replaceState避免在历史记录中留下404页面的记录
-                const pageTitle = getPageTitle(finalPageId);
-                
-                // 计算正确的目标路径，不包含任何查询参数
-                const targetPath = `/${getPagePath(finalPageId)}`;
-                history.replaceState({page: finalPageId}, pageTitle, targetPath);
-                
-                // 更新页面标题
-                document.title = pageTitle;
-                
-                console.log('[路由] 重定向路径处理完成，页面已正确加载');
-                return;
-            } catch (error) {
-                console.error('[路由] 处理重定向路径时出错:', error);
-                // 如果处理重定向路径出错，继续处理当前URL路径
-            }
-        }
-        
-        // 如果没有重定向路径或处理失败，则从当前URL路径获取页面ID
-        const path = window.location.pathname;
-        const search = window.location.search;
-        console.log('[路由] 当前路径:', path, '查询参数:', search);
-        
-        // 处理当前URL中的重定向标记，移除它以清理URL
-        const hasRedirectedParam = search.includes('redirected=true');
+        // 定义有效的页面ID列表
+        const validPages = ['home', 'features', 'join', 'about'];
         
         // 定义有效的页面路径映射
-        const validPaths = {
+        const pathToPageId = {
             '': 'home',
             'home': 'home',
             'features': 'features', 
@@ -433,37 +386,92 @@ document.addEventListener('DOMContentLoaded', () => {
             'about': 'about'
         };
         
-        // 清理路径并获取第一部分，处理各种可能的路径格式
-        let cleanPath = path.trim();
-        if (cleanPath.startsWith('/')) {
-            cleanPath = cleanPath.substring(1);
-        }
-        if (cleanPath.endsWith('/')) {
-            cleanPath = cleanPath.substring(0, cleanPath.length - 1);
-        }
-        // 获取第一部分路径
-        const pathPart = cleanPath.split('/')[0];
-        
-        console.log('[路由] 清理后的路径部分:', pathPart);
-        
-        // 获取对应的页面ID
-        const pageId = validPaths[pathPart] || 'home';
-        console.log('[路由] 确定的页面ID:', pageId);
-        
-        // 切换到最终确定的页面
-        await switchPage(pageId);
-        
-        // 更新浏览器历史记录
-        const pageTitle = getPageTitle(pageId);
-        const targetPath = `/${getPagePath(pageId)}`;
-        
-        // 只有当当前路径与目标路径不同，或者URL中包含重定向标记时，才更新历史记录
-        if (path !== targetPath || hasRedirectedParam) {
-            history.replaceState({page: pageId}, pageTitle, targetPath);
-            console.log('[路由] 已清理URL中的重定向标记');
+        // 解析路径获取页面ID的辅助函数
+        function parsePageIdFromPath(path) {
+            // 清理路径
+            let cleanPath = path.trim();
+            if (cleanPath.startsWith('/')) {
+                cleanPath = cleanPath.substring(1);
+            }
+            if (cleanPath.endsWith('/')) {
+                cleanPath = cleanPath.substring(0, cleanPath.length - 1);
+            }
+            
+            // 获取第一部分路径
+            const pathPart = cleanPath.split('/')[0];
+            console.log('[路由] 清理后的路径部分:', pathPart);
+            
+            // 返回对应的页面ID或默认值
+            return pathToPageId[pathPart] || 'home';
         }
         
-        console.log('[路由] 初始页面检查完成');
+        // 1. 优先处理从404页面重定向过来的路径
+        let redirectPath = null;
+        try {
+            if (sessionStorage) {
+                // 尝试多种可能的存储键名，确保兼容性
+                redirectPath = sessionStorage.getItem('githubPagesRedirectPath') || 
+                               sessionStorage.getItem('redirectPath');
+                // 无论如何都清除sessionStorage中的值，避免影响后续操作
+                sessionStorage.removeItem('githubPagesRedirectPath');
+                sessionStorage.removeItem('redirectPath');
+                console.log('[路由] 重定向路径处理:', redirectPath);
+            }
+        } catch (e) {
+            console.error('[路由] 读取或清除sessionStorage失败:', e);
+        }
+        
+        let targetPageId = 'home';
+        
+        if (redirectPath) {
+            console.log('[路由] 检测到重定向路径:', redirectPath);
+            // 从重定向路径解析页面ID
+            targetPageId = parsePageIdFromPath(redirectPath);
+        } else {
+            // 2. 如果没有重定向路径，则从当前URL解析
+            const currentPath = window.location.pathname;
+            console.log('[路由] 当前路径:', currentPath);
+            targetPageId = parsePageIdFromPath(currentPath);
+        }
+        
+        console.log('[路由] 确定的目标页面ID:', targetPageId);
+        
+        // 确保目标页面ID有效
+        if (!validPages.includes(targetPageId)) {
+            console.warn('[路由] 无效的页面ID，默认使用home:', targetPageId);
+            targetPageId = 'home';
+        }
+        
+        try {
+            // 切换到目标页面
+            await switchPage(targetPageId);
+            
+            // 更新页面标题
+            const pageTitle = getPageTitle(targetPageId);
+            document.title = pageTitle;
+            
+            // 更新浏览器历史记录，确保URL路径正确
+            const targetPath = `/${getPagePath(targetPageId)}`;
+            if (window.location.pathname !== targetPath) {
+                try {
+                    history.replaceState({page: targetPageId}, pageTitle, targetPath);
+                    console.log('[路由] 已更新浏览器历史记录到:', targetPath);
+                } catch (e) {
+                    console.error('[路由] 更新历史记录失败:', e);
+                }
+            }
+            
+            console.log('[路由] 初始页面检查和加载完成');
+        } catch (error) {
+            console.error('[路由] 加载目标页面失败:', error);
+            // 即使加载失败，也确保用户看到一个有效的页面
+            try {
+                await switchPage('home');
+                document.title = getPageTitle('home');
+            } catch (e) {
+                console.error('[路由] 恢复到首页也失败:', e);
+            }
+        }
     }
     
     // 检查初始页面

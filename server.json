@@ -1,0 +1,13 @@
+{
+  "port": 8000,
+  "cors": true,
+  "cache": -1,
+  "proxy": {
+    "/*": {
+      "target": "http://localhost:8000",
+      "pathRewrite": {
+        "^.*$": "/index.html"
+      }
+    }
+  }
+}
