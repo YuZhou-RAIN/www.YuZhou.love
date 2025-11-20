@@ -511,6 +511,9 @@ function loadLoadingGif() {
             console.log('loading.avif 动图加载成功，替换加载动画');
             loadingGif.src = 'images/loading.avif';
             loadingGif.style.display = 'block';
+            // 放大加载动图的尺寸
+            loadingGif.style.width = '120px'; // 增加宽度
+            loadingGif.style.height = '120px'; // 增加高度
             loadingSpinner.style.display = 'none';
 
             // 保持按钮显示状态一致，不自动隐藏
@@ -527,6 +530,11 @@ function loadLoadingGif() {
     }
 }
 
+// 记录加载开始时间
+const loadStartTime = Date.now();
+// 加载界面显示控制
+let loadingIndicatorVisible = false;
+
 // 延迟3秒后显示完整的加载界面
 setTimeout(() => {
     // 只有在页面未完全加载时才显示加载界面
@@ -538,11 +546,6 @@ setTimeout(() => {
         console.log('3秒后显示完整加载界面');
     }
 }, 3000);
-
-// 记录加载开始时间
-const loadStartTime = Date.now();
-// 加载界面显示控制
-let loadingIndicatorVisible = false;
 // 跟踪资源加载状态
 let domCssLoaded = false;
 let backgroundImagesLoaded = false;
