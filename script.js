@@ -376,6 +376,9 @@ function loadLoadingGif() {
             loadingGif.src = 'images/loading.avif';
             loadingGif.style.display = 'block';
             loadingSpinner.style.display = 'none';
+            
+            // 保持按钮显示状态一致，不自动隐藏
+            // 按钮的显示/隐藏由checkSkipButtonDisplay函数控制
         };
         
         // 加载失败
@@ -415,7 +418,7 @@ function setupSkipLoadingButton() {
                 const loadingIndicator = document.querySelector('.loading-indicator');
                 if (loadingIndicator) {
                     loadingIndicator.style.opacity = '0';
-                    loadingIndicator.style.transform = 'translate(-50%, -50%) scale(0.9)';
+                    loadingIndicator.style.transform = 'translate(-50%, -50%)'; // 移除scale(0.9)，避免突然缩小的效果
                     
                     setTimeout(() => {
                         loadingIndicator.style.display = 'none';
@@ -444,6 +447,7 @@ function setupSkipLoadingButton() {
 function checkSkipButtonDisplay() {
     try {
         // 只有在DOM和CSS已加载但图片资源仍在加载时才显示按钮
+        // 确保在带资源路径URL访问的情况下也能正确工作
         if (domCssLoaded && !backgroundImagesLoaded && !document.body.classList.contains('loaded')) {
             const skipButton = document.getElementById('skip-loading-btn');
             if (skipButton) {
@@ -456,6 +460,7 @@ function checkSkipButtonDisplay() {
             // 确保在不满足条件时隐藏按钮
             const skipButton = document.getElementById('skip-loading-btn');
             if (skipButton && skipButton.style.display === 'block') {
+                // 只在真正加载完成时才隐藏，避免加载动画切换时隐藏按钮
                 skipButton.style.display = 'none';
                 console.log('测试模式 - 隐藏跳过按钮：条件不满足');
             }
@@ -1311,11 +1316,8 @@ window.addEventListener('scroll', () => {
 // 检查是否有初始页面ID（用于GitHub Pages路由修复）
 let initialPageId = null;
 window.addEventListener('load', () => {
-    // 隐藏跳过加载按钮
-    const skipButton = document.getElementById('skip-loading-btn');
-    if (skipButton) {
-        skipButton.style.display = 'none';
-    }
+    // 不再在这里直接隐藏按钮，而是让checkSkipButtonDisplay函数统一控制
+    // 这样可以避免在带资源路径URL访问时出现显示混乱
     
     console.log('基础资源加载完成，开始等待背景图片加载');
     
@@ -1373,7 +1375,7 @@ function finishLoading() {
     const loadingIndicator = document.querySelector('.loading-indicator');
     if (loadingIndicator) {
         loadingIndicator.style.opacity = '0';
-        loadingIndicator.style.transform = 'translate(-50%, -50%) scale(0.9)';
+        loadingIndicator.style.transform = 'translate(-50%, -50%)'; // 移除scale(0.9)，避免突然缩小的效果
         
         setTimeout(() => {
             // 隐藏加载指示器

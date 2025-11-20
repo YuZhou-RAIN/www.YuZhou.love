@@ -334,7 +334,7 @@ body.loaded {
     left: -20%;
     width: 140%;
     height: 140%;
-    background: rgba(0, 0, 0, 0.9); /* 黑色遮罩，透明度90%（不透明度0.9） */
+    background: rgba(0, 0, 0, 0.8); /* 黑色遮罩，透明度80%（不透明度0.8） */
     z-index: -2;
     opacity: 1.0; /* 完全显示遮罩层 */
     transition: transform 0.5s ease-out, opacity 2s ease;
