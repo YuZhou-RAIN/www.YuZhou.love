@@ -1779,6 +1779,13 @@ function finishLoading() {
         clearInterval(skipButtonCheckInterval);
         console.log('已清除跳过按钮检查定时器');
     }
+    
+    // 隐藏"不等了，先看文字"按钮
+    const skipButton = document.getElementById('skip-loading-btn');
+    if (skipButton) {
+        skipButton.style.display = 'none';
+        console.log('加载完成，已隐藏跳过按钮');
+    }
 
     // 检查是否有初始页面ID（来自404.html的路由修复）
     // 先从sessionStorage获取（新的方式）
