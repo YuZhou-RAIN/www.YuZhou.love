@@ -6,6 +6,8 @@ let touchInteractionDetected = false;
 let mouseInteractionDetected = false;
 let lastTouchTime = 0;
 let lastMouseEventTime = 0;
+// 跳过按钮检查定时器ID
+let skipButtonCheckInterval = null;
 const INTERACTION_THRESHOLD = 500; // 交互间隔阈值，毫秒
 const CHECK_INTERVAL = 30000; // 定期检查间隔，30秒
 
@@ -625,7 +627,8 @@ document.addEventListener('DOMContentLoaded', () => {
     checkSkipButtonDisplay();
 
     // 定时检查，确保在图片加载过程中也能正确显示按钮
-    setInterval(checkSkipButtonDisplay, 500);
+    // 保存定时器ID，以便在页面加载完成后清除
+    skipButtonCheckInterval = setInterval(checkSkipButtonDisplay, 500);
 
     // 选择性预加载 - 只预加载可能会快速访问的页面
     // 延迟预加载以避免影响首页加载性能
@@ -1513,6 +1516,12 @@ window.addEventListener('load', async () => {
 function finishLoading() {
     // 更新背景图片加载状态
     backgroundImagesLoaded = true;
+    
+    // 清除跳过按钮检查定时器，避免无限循环
+    if (window.skipButtonCheckInterval) {
+        clearInterval(window.skipButtonCheckInterval);
+        console.log('已清除跳过按钮检查定时器');
+    }
 
     // 检查是否有初始页面ID（来自404.html的路由修复）
     // 先从sessionStorage获取（新的方式）
