@@ -1008,11 +1008,21 @@ const BackgroundImageManager = {
     // 清理URL中的查询参数，确保使用一致的URL作为缓存键
     cleanUrl(url) {
         if (typeof url !== 'string') return url;
-        // 移除查询参数
-        let cleanUrl = url.split('?')[0];
         
-        // 安全检查：确保图片URL以images/开头
-        if (cleanUrl.includes('%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE') && !cleanUrl.startsWith('images/')) {
+        // 解码URL（处理中文等特殊字符）
+        let decodedUrl;
+        try {
+            decodedUrl = decodeURIComponent(url);
+        } catch (e) {
+            decodedUrl = url; // 如果解码失败，使用原始URL
+        }
+        
+        // 移除查询参数
+        let cleanUrl = decodedUrl.split('?')[0];
+        
+        // 确保图片URL路径正确
+        // 如果URL是相对路径但不以images/开头，则添加images/前缀
+        if (!cleanUrl.startsWith('http') && !cleanUrl.startsWith('/') && !cleanUrl.startsWith('images/')) {
             cleanUrl = 'images/' + cleanUrl;
         }
         
@@ -1059,7 +1069,7 @@ const BackgroundImageManager = {
         });
     },
     
-    // 预加载单张图片
+    // 预加载单张图片 - 添加循环请求防护
     preloadImage(src) {
         // 清理URL
         const cleanSrc = this.cleanUrl(src);
@@ -1070,15 +1080,35 @@ const BackgroundImageManager = {
             return Promise.resolve(this.cachedImages[cleanSrc]);
         }
         
-        return new Promise((resolve, reject) => {
+        // 防止对同一图片的重复加载
+        if (this._loadingPromises && this._loadingPromises[cleanSrc]) {
+            console.log(`图片 ${cleanSrc} 正在加载中，返回现有Promise`);
+            return this._loadingPromises[cleanSrc];
+        }
+        
+        // 初始化加载Promise集合
+        if (!this._loadingPromises) {
+            this._loadingPromises = {};
+        }
+        
+        // 创建加载Promise
+        const loadingPromise = new Promise((resolve, reject) => {
             const img = new Image();
+            
+            // 增加调试信息
+            console.log(`开始加载图片: ${cleanSrc}`);
+            
             img.onload = () => {
                 this.cachedImages[cleanSrc] = img; // 缓存已加载的图片
                 console.log(`图片 ${cleanSrc} 加载完成并缓存`);
+                delete this._loadingPromises[cleanSrc]; // 清除加载中的Promise
                 resolve(img);
             };
             img.onerror = (err) => {
                 console.error(`图片 ${cleanSrc} 加载失败`, err);
+                delete this._loadingPromises[cleanSrc]; // 清除加载中的Promise
+                
+                // 不再尝试使用替代路径，直接拒绝以避免循环请求
                 reject(err);
             };
             
@@ -1088,17 +1118,90 @@ const BackgroundImageManager = {
             // 设置超时防止无限等待
             setTimeout(() => {
                 if (!img.complete) {
-                    reject(new Error('图片加载超时'));
+                    const error = new Error('图片加载超时');
+                    console.error(`图片 ${cleanSrc} 加载超时`);
+                    delete this._loadingPromises[cleanSrc]; // 清除加载中的Promise
+                    reject(error);
                 }
             }, 5000);
         });
+        
+        // 保存加载中的Promise
+        this._loadingPromises[cleanSrc] = loadingPromise;
+        return loadingPromise;
     },
     
-    // 预加载所有背景图片
+    // 获取备用图片路径 - 防止无限循环
+    getFallbackPath(originalPath) {
+        // 如果已经尝试过这个路径，返回null防止循环
+        if (this._triedPaths && this._triedPaths.has(originalPath)) {
+            console.warn(`已经尝试过路径 ${originalPath}，避免循环`);
+            return null;
+        }
+        
+        // 初始化已尝试路径集合
+        if (!this._triedPaths) {
+            this._triedPaths = new Set();
+        }
+        
+        // 记录当前尝试的路径
+        this._triedPaths.add(originalPath);
+        
+        // 尝试不同的路径组合 - 简化逻辑，只尝试最可能的路径
+        const possiblePaths = [
+            originalPath, // 原始路径
+            originalPath.replace('images/', '') // 移除images/前缀
+        ];
+        
+        // 返回一个不在原路径中且未尝试过的备用路径
+        for (let path of possiblePaths) {
+            if (path !== originalPath && !this._triedPaths.has(path)) {
+                return path;
+            }
+        }
+        
+        return null; // 没有可用的备用路径
+    },
+    
+    // 预加载所有背景图片 - 添加失败计数和熔断机制
     preloadAllImages() {
-        const imagesToLoad = backgroundImages || ['images/EF13DDC8136672FB8AB3C77429A5FE14.jpg'];
-        const promises = imagesToLoad.map(src => this.preloadImage(src));
-        return Promise.all(promises);
+        const imagesToLoad = getBackgroundImages() || ['images/主页背景图/1.jpg'];
+        console.log('需要预加载的图片列表:', imagesToLoad);
+        
+        // 初始化失败计数器
+        if (!this._failureCount) this._failureCount = 0;
+        if (!this._maxFailures) this._maxFailures = 5; // 最大失败次数
+        
+        // 检查是否超过最大失败次数
+        if (this._failureCount >= this._maxFailures) {
+            console.warn(`图片加载失败次数过多(${this._failureCount})，启用熔断机制，跳过预加载`);
+            return Promise.resolve([]); // 返回空数组，跳过预加载
+        }
+        
+        // 使用Promise.allSettled替代Promise.all，允许部分图片加载失败但其他图片仍能使用
+        const promises = imagesToLoad.map(src => this.preloadImage(src)
+            .catch(err => {
+                console.warn(`单张图片加载失败，但继续尝试其他图片: ${src}`, err);
+                this._failureCount++; // 增加失败计数
+                return null; // 返回null表示此图片加载失败但不中断整体流程
+            }));
+            
+        return Promise.allSettled(promises).then(results => {
+            // 过滤出成功的结果
+            const successfulLoads = results.filter(result => result.status === 'fulfilled' && result.value !== null);
+            console.log(`预加载完成，成功: ${successfulLoads.length}/${imagesToLoad.length} 张图片`);
+            
+            // 如果所有图片都加载失败，增加失败计数
+            if (successfulLoads.length === 0) {
+                this._failureCount++;
+                console.warn(`所有图片加载失败，失败计数: ${this._failureCount}/${this._maxFailures}`);
+            } else {
+                // 有图片加载成功，重置失败计数
+                this._failureCount = 0;
+            }
+            
+            return successfulLoads.map(result => result.value);
+        });
     },
     
     // 检查图片是否已缓存
@@ -1110,26 +1213,41 @@ const BackgroundImageManager = {
     setBackgroundStyles(heroBg, heroBgLayer) {
         console.log('设置背景样式');
         
-        // 只在heroBg上设置主背景图片，优先使用缓存
-        const firstImage = backgroundImages ? backgroundImages[0] : 'images/EF13DDC8136672FB8AB3C77429A5FE14.jpg';
-        const cleanFirstImage = this.cleanUrl(firstImage);
-        heroBg.style.backgroundImage = `url('${cleanFirstImage}')`;
-        heroBg.style.backgroundSize = 'cover';
-        heroBg.style.backgroundPosition = 'center';
-        heroBg.style.backgroundRepeat = 'no-repeat';
-        heroBg.style.opacity = '0';
-        heroBg.style.transform = 'translate(0, 0)';
-        
-        // heroBgLayer改为使用半透明渐变，不使用重复的背景图片
-        heroBgLayer.style.background = 'linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.3))';
-        heroBgLayer.style.opacity = '0';
-        heroBgLayer.style.transform = 'translate(0, 0)';
-        
-        // 延迟显示背景
-        setTimeout(() => {
-            heroBg.style.opacity = '1'; // 增加主背景的不透明度
-            heroBgLayer.style.opacity = '1'; // 渐变层保持较高透明度
-        }, 100);
+        try {
+            // 确定要使用的图片 - 简化逻辑，只使用第一张图片
+            const fallbackImage = 'images/主页背景图/1.jpg';
+            let imageToUse = fallbackImage;
+            
+            // 直接使用第一张图片，不检查缓存状态
+            const images = getBackgroundImages();
+            if (images && images.length > 0) {
+                imageToUse = this.cleanUrl(images[0]);
+                console.log(`使用第一张图片: ${imageToUse}`);
+            }
+            
+            // 设置背景图片
+            heroBg.style.backgroundImage = `url('${imageToUse}')`;
+            heroBg.style.backgroundSize = 'cover';
+            heroBg.style.backgroundPosition = 'center';
+            heroBg.style.backgroundRepeat = 'no-repeat';
+            heroBg.style.opacity = '0';
+            heroBg.style.transform = 'translate(0, 0)';
+            
+            // heroBgLayer设置
+            heroBgLayer.style.background = 'rgba(0, 0, 0, 0.15)';
+            heroBgLayer.style.opacity = '0';
+            heroBgLayer.style.transform = 'translate(0, 0)';
+            
+            // 延迟显示背景
+            setTimeout(() => {
+                heroBg.style.opacity = '1';
+                heroBgLayer.style.opacity = '0.3';
+            }, 100);
+            
+        } catch (error) {
+            console.error('设置背景样式时出错:', error);
+            this.setFallbackBackground(heroBg, heroBgLayer);
+        }
     },
     
     setFallbackBackground(heroBg, heroBgLayer) {
@@ -1363,77 +1481,182 @@ const observer = new IntersectionObserver((entries) => {
 
 // 为需要动画的元素添加观察（已移动到AppInitializer.initAnimations中）
 
-// 背景图片切换功能
+// 背景图片切换功能 - 新目录和随机排序
 let currentBgIndex = 0;
-const backgroundImages = [
-    'images/EF13DDC8136672FB8AB3C77429A5FE14.jpg',
-    'images/38B32115FF628DB757ECA3562B2178AB.jpg',
-    'images/2E0A6A054B80D94AA1FE5A5D45A17F6D.jpg',
-    'images/6A7AC902334C0E90B0E5568DF4FBEEB6.jpg',
-    'images/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202025-05-18%20130428.png'
+let shuffledBackgroundImages = [];
+
+// 原始背景图片列表（新目录）
+// 使用完整的images/前缀路径，确保路径一致性
+const originalBackgroundImages = [
+    'images/主页背景图/1.jpg',
+    'images/主页背景图/2.jpg',
+    'images/主页背景图/3.jpg',
+    'images/主页背景图/4.jpg'
 ];
 
+// 初始化时对图片进行随机排序
+function initBackgroundImages() {
+    // 如果已经有排序结果（本次会话中已初始化），则直接返回
+    if (shuffledBackgroundImages.length > 0) {
+        return shuffledBackgroundImages;
+    }
+    
+    // 深拷贝原始数组以避免修改原始数组
+    const tempArray = [...originalBackgroundImages];
+    
+    // Fisher-Yates 洗牌算法进行随机排序
+    for (let i = tempArray.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [tempArray[i], tempArray[j]] = [tempArray[j], tempArray[i]];
+    }
+    
+    // 保存排序结果，本次会话中保持固定
+    shuffledBackgroundImages = tempArray;
+    console.log('背景图片随机排序结果:', shuffledBackgroundImages);
+    return shuffledBackgroundImages;
+}
+
+// 获取当前会话的图片列表（已随机排序）
+function getBackgroundImages() {
+    return initBackgroundImages();
+}
+
+// 为了兼容现有代码，提供backgroundImages变量访问
+const backgroundImages = getBackgroundImages();
+
+// 添加节流控制，防止频繁切换背景
+let isChangingBackground = false;
+
 function changeBackground() {
+    // 如果正在切换背景或图片列表为空，则直接返回
+    if (isChangingBackground) {
+        console.log('背景切换被节流控制阻止');
+        return;
+    }
+    
     const heroSection = document.querySelector('.hero');
     const heroBg = heroSection ? heroSection.querySelector('.hero-bg') : null;
+    const backgroundImages = getBackgroundImages(); // 获取当前会话的随机排序图片列表
     
     if (heroSection && heroBg && backgroundImages && backgroundImages.length > 0) {
+        // 设置节流标志
+        isChangingBackground = true;
+        
         // 先淡出当前背景
         heroBg.style.transition = 'opacity 1s ease-in-out';
         heroBg.style.opacity = '0';
         
         // 在淡出完成后切换图片并淡入
         setTimeout(() => {
-            // 找到下一个有效的图片索引
-            let validIndex = currentBgIndex;
-            let attempts = 0;
-            const maxAttempts = backgroundImages.length;
-            
-            do {
-                validIndex = (validIndex + 1) % backgroundImages.length;
-                attempts++;
-                // 尝试预加载验证图片
-                if (BackgroundImageManager && typeof BackgroundImageManager.preloadImage === 'function') {
-                    const nextImageUrl = backgroundImages[validIndex];
-                    // 使用Promise.resolve确保即使预加载失败也能继续
-                    Promise.resolve().then(() => {
-                        return BackgroundImageManager.preloadImage(nextImageUrl)
-                            .catch(err => {
-                                console.warn(`图片 ${nextImageUrl} 预加载失败，将尝试下一张图片`, err);
-                                // 这里不reject，让循环继续寻找有效的图片
-                            });
-                    });
-                }
-            } while (attempts < maxAttempts && 
-                     BackgroundImageManager && 
-                     !BackgroundImageManager.isImageCached(backgroundImages[validIndex]));
-            
-            currentBgIndex = validIndex;
-            const nextImageUrl = backgroundImages[currentBgIndex];
-            
-            // 检查图片是否已缓存
-            if (BackgroundImageManager && BackgroundImageManager.isImageCached(nextImageUrl)) {
-                console.log(`使用缓存的背景图片: ${nextImageUrl}`);
-                heroBg.style.backgroundImage = `url('${nextImageUrl}')`;
-            } else {
-                console.log(`切换到背景图片: ${nextImageUrl}`);
-                heroBg.style.backgroundImage = `url('${nextImageUrl}')`;
+            try {
+                // 找到下一个有效的图片索引
+                let validIndex = currentBgIndex;
+                let attempts = 0;
+                const maxAttempts = backgroundImages.length;
                 
-                // 如果没有缓存，尝试预加载
-                if (BackgroundImageManager && typeof BackgroundImageManager.preloadImage === 'function') {
-                    BackgroundImageManager.preloadImage(nextImageUrl).catch(err => {
-                        console.error('预加载图片失败:', err);
-                    });
-                }
+                // 优化图片选择逻辑，避免不必要的预加载尝试
+                do {
+                    validIndex = (validIndex + 1) % backgroundImages.length;
+                    attempts++;
+                } while (attempts < maxAttempts && 
+                         BackgroundImageManager && 
+                         !BackgroundImageManager.isImageCached(backgroundImages[validIndex]));
+                
+                currentBgIndex = validIndex;
+                const nextImageUrl = backgroundImages[currentBgIndex];
+                
+                // 创建新图片对象来测试加载
+                const testImg = new Image();
+                
+                testImg.onload = () => {
+                    // 图片加载成功，应用到背景
+                    console.log(`背景图片切换成功: ${nextImageUrl}`);
+                    heroBg.style.backgroundImage = `url('${nextImageUrl}')`;
+                    heroBg.style.opacity = '1';
+                    
+                    // 缓存图片
+                    if (BackgroundImageManager) {
+                        BackgroundImageManager.cachedImages[nextImageUrl] = testImg;
+                    }
+                    
+                    // 重置失败计数
+                    resetFailureCount();
+                };
+                
+                testImg.onerror = () => {
+                    // 图片加载失败
+                    console.error(`背景图片切换失败: ${nextImageUrl}`);
+                    incrementFailureCount();
+                    
+                    // 保持当前背景或使用默认背景
+                    heroBg.style.opacity = '1';
+                };
+                
+                // 开始加载图片
+                testImg.src = nextImageUrl;
+                
+            } catch (error) {
+                console.error('背景切换过程中发生错误:', error);
+                incrementFailureCount();
+                heroBg.style.opacity = '1'; // 确保背景可见
+            } finally {
+                // 确保在动画完成后重置节流标志
+                setTimeout(() => {
+                    isChangingBackground = false;
+                }, 1000); // 与淡入动画时间保持一致
             }
-            
-            heroBg.style.opacity = '1';
         }, 1000);
+    } else {
+        // 如果没有找到必要的元素，重置节流标志
+        isChangingBackground = false;
+        incrementFailureCount();
     }
 }
 
-// 每10秒切换一次背景图片
-setInterval(changeBackground, 10000);
+// 每10秒切换一次背景图片 - 添加请求频率限制
+let backgroundIntervalId = null;
+let consecutiveFailures = 0;
+const maxConsecutiveFailures = 3;
+
+function startBackgroundRotation() {
+    // 清除可能存在的旧定时器
+    if (backgroundIntervalId) {
+        clearInterval(backgroundIntervalId);
+    }
+    
+    // 设置新的定时器
+    backgroundIntervalId = setInterval(() => {
+        // 检查连续失败次数，超过阈值则停止轮换
+        if (consecutiveFailures >= maxConsecutiveFailures) {
+            console.warn(`背景图片连续切换失败${consecutiveFailures}次，暂停自动切换`);
+            clearInterval(backgroundIntervalId);
+            backgroundIntervalId = null;
+            return;
+        }
+        
+        changeBackground();
+    }, 10000);
+}
+
+// 重置连续失败计数
+function resetFailureCount() {
+    if (consecutiveFailures > 0) {
+        console.log(`背景图片切换成功，重置失败计数(原为${consecutiveFailures})`);
+        consecutiveFailures = 0;
+    }
+}
+
+// 增加失败计数
+function incrementFailureCount() {
+    consecutiveFailures++;
+    console.warn(`背景图片切换失败，连续失败次数: ${consecutiveFailures}/${maxConsecutiveFailures}`);
+}
+
+// 初始化背景轮换
+document.addEventListener('DOMContentLoaded', () => {
+    // 延迟启动背景轮换，确保页面完全加载
+    setTimeout(startBackgroundRotation, 5000);
+});
 
 // 鼠标移动视差效果
 document.addEventListener('mousemove', (e) => {
