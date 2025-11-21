@@ -18,7 +18,7 @@ body {
 /* 跳过加载按钮样式 */
 .skip-loading-btn {
     position: fixed;
-    top: calc(50% + 100px);
+    top: calc(50% + 120px); /* 增加距离 */
     left: 50%;
     transform: translateX(-50%);
     z-index: 10000;
@@ -31,6 +31,8 @@ body {
     font-size: 1rem;
     transition: background-color 0.3s ease;
     display: none;
+}
+
 }
 
 .skip-loading-btn:hover {

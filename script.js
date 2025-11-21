@@ -1177,19 +1177,63 @@ const AppInitializer = {
                 }
 
                 const textToCopy = this.getAttribute('data-copy');
-                navigator.clipboard.writeText(textToCopy).then(() => {
-                    const originalText = this.innerHTML;
-                    this.innerHTML = '<i class="fas fa-check"></i> 已复制';
-                    this.isCopying = true;
+                
+                // 检查clipboard API是否可用
+                if (navigator.clipboard && window.isSecureContext) {
+                    // 使用现代clipboard API
+                    navigator.clipboard.writeText(textToCopy).then(() => {
+                        const originalText = this.innerHTML;
+                        this.innerHTML = '<i class="fas fa-check"></i> 已复制';
+                        this.isCopying = true;
 
-                    setTimeout(() => {
-                        this.innerHTML = originalText;
+                        setTimeout(() => {
+                            this.innerHTML = originalText;
+                            this.isCopying = false;
+                        }, 3000);
+                    }).catch(err => {
+                        console.error('复制失败: ', err);
                         this.isCopying = false;
-                    }, 3000);
-                }).catch(err => {
-                    console.error('复制失败: ', err);
-                    this.isCopying = false;
-                });
+                        // 提示用户手动复制
+                        alert('无法自动复制，请手动复制: ' + textToCopy);
+                    });
+                } else {
+                    // 降级处理：使用传统的execCommand方法
+                    try {
+                        const textArea = document.createElement("textarea");
+                        textArea.value = textToCopy;
+                        
+                        // 避免滚动到底部
+                        textArea.style.top = "0";
+                        textArea.style.left = "0";
+                        textArea.style.position = "fixed";
+                        textArea.style.opacity = "0";
+                        
+                        document.body.appendChild(textArea);
+                        textArea.focus();
+                        textArea.select();
+                        
+                        const successful = document.execCommand('copy');
+                        document.body.removeChild(textArea);
+                        
+                        if (successful) {
+                            const originalText = this.innerHTML;
+                            this.innerHTML = '<i class="fas fa-check"></i> 已复制';
+                            this.isCopying = true;
+                            
+                            setTimeout(() => {
+                                this.innerHTML = originalText;
+                                this.isCopying = false;
+                            }, 3000);
+                        } else {
+                            throw new Error('execCommand failed');
+                        }
+                    } catch (err) {
+                        console.error('复制失败: ', err);
+                        this.isCopying = false;
+                        // 提示用户手动复制
+                        alert('无法自动复制，请手动复制: ' + textToCopy);
+                    }
+                }
             });
         });
 
