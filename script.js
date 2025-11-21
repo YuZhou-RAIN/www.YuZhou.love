@@ -573,6 +573,10 @@ const finishLoading = () => {
         }
         // 添加加载完成的类
         document.body.classList.add('loaded');
+        // 初始化动画
+        if (typeof AppInitializer !== 'undefined' && typeof AppInitializer.initAnimations === 'function') {
+            AppInitializer.initAnimations();
+        }
         // 记录加载结束时间
         const loadEndTime = Date.now();
         console.log(`页面加载完成，耗时: ${loadEndTime - loadStartTime}ms`);
@@ -785,15 +789,11 @@ async function preloadAllResources() {
     } catch (error) {
         console.error('预加载过程中出现错误:', error);
         addConsoleLog('预加载过程中出现错误: ' + error.message);
-    }
-    
+    }    
     return true;
-}
 }
 
 // 启动资源加载过程
-
-async function preloadAllResources() {
     console.log('开始预加载所有资源...');
     addConsoleLog('开始预加载所有资源...');
 
