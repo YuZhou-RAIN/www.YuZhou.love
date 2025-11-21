@@ -743,12 +743,20 @@ function checkSkipButtonDisplay() {
             // 避免重复设置display
             if (skipButton.style.display !== 'block') {
                 skipButton.style.display = 'block';
+                // 添加淡入动画效果
+                setTimeout(() => {
+                    skipButton.classList.add('show');
+                }, 10);
                 console.log('显示跳过加载按钮：加载时间超过5秒且资源仍在加载');
             }
         } else {
             // 避免重复设置display
             if (skipButton.style.display !== 'none') {
-                skipButton.style.display = 'none';
+                // 添加淡出动画效果
+                skipButton.classList.remove('show');
+                setTimeout(() => {
+                    skipButton.style.display = 'none';
+                }, 500);
             }
         }
     } catch (error) {
@@ -1859,7 +1867,6 @@ function finishLoading() {
     if (loadingIndicator) {
         // 统一设置body类，确保在所有情况下都添加loaded类
         document.body.classList.remove('loading');
-        document.body.classList.add('loaded');
         
         // 如果加载界面未显示，则无需淡出动画
         if (!loadingIndicatorVisible) {
@@ -1911,6 +1918,9 @@ function finishLoading() {
             setTimeout(() => {
                 // 隐藏加载指示器
                 loadingIndicator.style.display = 'none';
+
+                // 显示页面内容
+                document.body.classList.add('loaded');
 
                 // 初始化导航
                 initNavigation();
