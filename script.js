@@ -558,20 +558,44 @@ let domCssLoaded = false;
 let backgroundImagesLoaded = false;
 let imagesLoadingCount = 0;
 
-// 启动资源加载过程
-waitForAllResources();
-    
-// 添加一个后备机制，确保即使预加载过程出现问题也能完成加载
-setTimeout(() => {
-    if (!document.body.classList.contains('loaded')) {
-        console.warn('加载过程超时，强制完成加载');
-        addConsoleLog('加载过程超时，强制完成加载');
-        finishLoading();
-    }
-}, 20000); // 20秒后强制完成加载
-});
-
 // 页面加载完成处理函数
+let imagesTotalCount = 0;
+
+// 完成加载的处理函数
+const finishLoading = () => {
+    try {
+        // 隐藏加载界面
+        if (loadingIndicatorVisible) {
+            loadingIndicator.style.opacity = '0';
+            setTimeout(() => {
+                loadingIndicator.style.display = 'none';
+            }, 300);
+        }
+        // 添加加载完成的类
+        document.body.classList.add('loaded');
+        // 记录加载结束时间
+        const loadEndTime = Date.now();
+        console.log(`页面加载完成，耗时: ${loadEndTime - loadStartTime}ms`);
+        addConsoleLog(`页面加载完成，耗时: ${loadEndTime - loadStartTime}ms`);
+    } finally {
+        // 完成加载，调用finishLoading函数
+        if (typeof finishLoading === 'function') {
+            finishLoading();
+        }
+    };
+}
+
+    // 启动资源加载过程
+    waitForAllResources();
+    
+    // 添加一个后备机制，确保即使预加载过程出现问题也能完成加载
+    setTimeout(() => {
+        if (!document.body.classList.contains('loaded')) {
+            console.warn('加载过程超时，强制完成加载');
+// 跟踪资源加载状态
+let domCssLoaded = false;
+let backgroundImagesLoaded = false;
+let imagesLoadingCount = 0;
 let imagesTotalCount = 0;
 let fontsLoadingCount = 0;
 let fontsTotalCount = 0;
@@ -582,7 +606,6 @@ let pagesTotalCount = 0;
 const consoleLog = document.getElementById('consoleLog');
 const progressFill = document.getElementById('progressFill');
 const progressText = document.getElementById('progressText');
-
 // 添加控制台日志
 function addConsoleLog(message) {
     if (consoleLog) {
@@ -614,128 +637,276 @@ async function preloadAllResources() {
     console.log('开始预加载所有资源...');
     addConsoleLog('开始预加载所有资源...');
 
-    // 图片资源列表
-    const imageResources = [
-        'images/主页背景图/1.jpg',
-        'images/主页背景图/2.jpg',
-        'images/主页背景图/3.jpg',
-        'images/主页背景图/4.jpg',
-        'images/loading.avif',
-        'images/雨州logo.svg',
-        'images/服务器特色-四象限构图/左.jpg',
-        'images/服务器特色-四象限构图/右.jpg',
-        'images/Java版加入指南.png',
-        'images/基岩版加入指南.png'
-    ];
+    try {
+        // 图片资源列表
+        const imageResources = [
+            'images/主页背景图/1.jpg',
+            'images/主页背景图/2.jpg',
+            'images/主页背景图/3.jpg',
+            'images/主页背景图/4.jpg',
+            'images/loading.avif',
+            'images/雨州logo.svg',
+            'images/服务器特色-四象限构图/左.jpg',
+            'images/服务器特色-四象限构图/右.jpg',
+            'images/Java版加入指南.png',
+            'images/基岩版加入指南.png'
+        ];
 
-    // 页面资源列表
-    const pageResources = [
-        'pages/home.html',
-        'pages/features.html',
-        'pages/join.html',
-        'pages/about.html'
-    ];
+        // 页面资源列表
+        const pageResources = [
+            'pages/home.html',
+            'pages/features.html',
+            'pages/join.html',
+            'pages/about.html'
+        ];
 
-    // 字体资源列表 - 只包含当前项目引用到的字体
-    const fontResources = [
-        'fonts/fontawesome-free-6.4.0-web/webfonts/fa-solid-900.woff2',
-        'fonts/fontawesome-free-6.4.0-web/webfonts/fa-brands-400.woff2',
-        'fonts/fontawesome-free-6.4.0-web/webfonts/fa-regular-400.woff2'
-    ];
+        // 字体资源列表 - 只包含当前项目引用到的字体
+        const fontResources = [
+            'fonts/fontawesome-free-6.4.0-web/webfonts/fa-solid-900.woff2',
+            'fonts/fontawesome-free-6.4.0-web/webfonts/fa-brands-400.woff2',
+            'fonts/fontawesome-free-6.4.0-web/webfonts/fa-regular-400.woff2'
+        ];
 
-    // 初始化计数器
-    imagesTotalCount = imageResources.length;
-    pagesTotalCount = pageResources.length;
-    fontsTotalCount = fontResources.length;
-    
-    updateProgress();
+        // 初始化计数器
+        imagesTotalCount = imageResources.length;
+        pagesTotalCount = pageResources.length;
+        fontsTotalCount = fontResources.length;
+        
+        updateProgress();
 
-    // 添加超时机制
-    const timeoutPromise = new Promise((resolve) => {
-        setTimeout(() => {
-            console.warn('预加载超时，跳过剩余资源加载');
-            addConsoleLog('预加载超时，跳过剩余资源加载');
-            resolve();
-        }, 15000); // 15秒超时
-    });
-
-    // 预加载图片
-    const imagePromises = imageResources.map(imgSrc => {
-        return new Promise((resolve) => {
-            imagesLoadingCount++;
-            const img = new Image();
-            img.onload = () => {
-                imagesLoadingCount--;
-                console.log(`图片加载完成: ${imgSrc}, 剩余: ${imagesLoadingCount}`);
-                addConsoleLog(`图片加载完成: ${imgSrc}`);
-                updateProgress();
+        // 添加超时机制
+        const timeoutPromise = new Promise((resolve) => {
+            setTimeout(() => {
+                console.warn('预加载超时，跳过剩余资源加载');
+                addConsoleLog('预加载超时，跳过剩余资源加载');
                 resolve();
-            };
-            img.onerror = () => {
-                imagesLoadingCount--;
-                console.warn(`图片加载失败: ${imgSrc}, 但继续加载其他资源`);
-                addConsoleLog(`图片加载失败: ${imgSrc}`);
-                updateProgress();
-                resolve(); // 失败时也继续
-            };
-            img.src = imgSrc;
+            }, 15000); // 15秒超时
         });
-    });
 
-    // 预加载页面
-    const pagePromises = pageResources.map(pageSrc => {
-        return new Promise((resolve) => {
-            pagesLoadingCount++;
-            fetch(pageSrc)
-                .then(() => {
-                    pagesLoadingCount--;
-                    console.log(`页面预加载完成: ${pageSrc}, 剩余: ${pagesLoadingCount}`);
-                    addConsoleLog(`页面预加载完成: ${pageSrc}`);
+        // 预加载图片
+        const imagePromises = imageResources.map(imgSrc => {
+            return new Promise((resolve) => {
+                imagesLoadingCount++;
+                const img = new Image();
+                img.onload = () => {
+                    imagesLoadingCount--;
+                    console.log(`图片加载完成: ${imgSrc}, 剩余: ${imagesLoadingCount}`);
+                    addConsoleLog(`图片加载完成: ${imgSrc}`);
                     updateProgress();
                     resolve();
-                })
-                .catch(() => {
-                    pagesLoadingCount--;
-                    console.warn(`页面预加载失败: ${pageSrc}, 但继续加载其他资源`);
-                    addConsoleLog(`页面预加载失败: ${pageSrc}`);
+                };
+                img.onerror = () => {
+                    imagesLoadingCount--;
+                    console.warn(`图片加载失败: ${imgSrc}, 但继续加载其他资源`);
+                    addConsoleLog(`图片加载失败: ${imgSrc}`);
                     updateProgress();
                     resolve(); // 失败时也继续
-                });
+                };
+                img.src = imgSrc;
+            });
         });
-    });
 
-    // 预加载字体
-    const fontPromises = fontResources.map(fontSrc => {
-        return new Promise((resolve) => {
-            fontsLoadingCount++;
-            // 使用FontFace API加载字体
-            const font = new FontFace('FontAwesome', `url(${fontSrc})`);
-            font.load()
-                .then(() => {
-                    fontsLoadingCount--;
-                    console.log(`字体加载完成: ${fontSrc}, 剩余: ${fontsLoadingCount}`);
-                    addConsoleLog(`字体加载完成: ${fontSrc}`);
+        // 预加载页面
+        const pagePromises = pageResources.map(pageSrc => {
+            return new Promise((resolve) => {
+                pagesLoadingCount++;
+                fetch(pageSrc)
+                    .then(() => {
+                        pagesLoadingCount--;
+                        console.log(`页面预加载完成: ${pageSrc}, 剩余: ${pagesLoadingCount}`);
+                        addConsoleLog(`页面预加载完成: ${pageSrc}`);
+                        updateProgress();
+                        resolve();
+                    })
+                    .catch(() => {
+                        pagesLoadingCount--;
+                        console.warn(`页面预加载失败: ${pageSrc}, 但继续加载其他资源`);
+                        addConsoleLog(`页面预加载失败: ${pageSrc}`);
+                        updateProgress();
+                        resolve(); // 失败时也继续
+                    });
+            });
+        });
+
+        // 预加载字体
+        const fontPromises = fontResources.map(fontSrc => {
+            return new Promise((resolve) => {
+                fontsLoadingCount++;
+                // 使用FontFace API加载字体
+                const font = new FontFace('FontAwesome', `url(${fontSrc})`);
+                font.load()
+                    .then(() => {
+                        fontsLoadingCount--;
+                        console.log(`字体加载完成: ${fontSrc}, 剩余: ${fontsLoadingCount}`);
+                        addConsoleLog(`字体加载完成: ${fontSrc}`);
+                        updateProgress();
+                        resolve();
+                    })
+                    .catch(() => {
+                        fontsLoadingCount--;
+                        console.warn(`字体加载失败: ${fontSrc}, 但继续加载其他资源`);
+                        addConsoleLog(`字体加载失败: ${fontSrc}`);
+                        updateProgress();
+                        resolve(); // 失败时也继续
+                    });
+            });
+        });
+
+        // 等待所有资源加载完成或超时
+        await Promise.all([
+            ...imagePromises,
+            ...pagePromises,
+            ...fontPromises,
+            timeoutPromise
+        ]);
+
+        console.log('所有资源预加载完成或超时!');
+        addConsoleLog('所有资源预加载完成或超时!');
+    } catch (error) {
+        console.error('预加载过程中出现错误:', error);
+        addConsoleLog('预加载过程中出现错误: ' + error.message);
+    }
+    
+    return true;
+}
+}
+
+// 启动资源加载过程
+
+async function preloadAllResources() {
+    console.log('开始预加载所有资源...');
+    addConsoleLog('开始预加载所有资源...');
+
+    try {
+        // 图片资源列表
+        const imageResources = [
+            'images/主页背景图/1.jpg',
+            'images/主页背景图/2.jpg',
+            'images/主页背景图/3.jpg',
+            'images/主页背景图/4.jpg',
+            'images/loading.avif',
+            'images/雨州logo.svg',
+            'images/服务器特色-四象限构图/左.jpg',
+            'images/服务器特色-四象限构图/右.jpg',
+            'images/Java版加入指南.png',
+            'images/基岩版加入指南.png'
+        ];
+
+        // 页面资源列表
+        const pageResources = [
+            'pages/home.html',
+            'pages/features.html',
+            'pages/join.html',
+            'pages/about.html'
+        ];
+
+        // 字体资源列表 - 只包含当前项目引用到的字体
+        const fontResources = [
+            'fonts/fontawesome-free-6.4.0-web/webfonts/fa-solid-900.woff2',
+            'fonts/fontawesome-free-6.4.0-web/webfonts/fa-brands-400.woff2',
+            'fonts/fontawesome-free-6.4.0-web/webfonts/fa-regular-400.woff2'
+        ];
+
+        // 初始化计数器
+        imagesTotalCount = imageResources.length;
+        pagesTotalCount = pageResources.length;
+        fontsTotalCount = fontResources.length;
+        
+        updateProgress();
+
+        // 添加超时机制
+        const timeoutPromise = new Promise((resolve) => {
+            setTimeout(() => {
+                console.warn('预加载超时，跳过剩余资源加载');
+                addConsoleLog('预加载超时，跳过剩余资源加载');
+                resolve();
+            }, 15000); // 15秒超时
+        });
+
+        // 预加载图片
+        const imagePromises = imageResources.map(imgSrc => {
+            return new Promise((resolve) => {
+                imagesLoadingCount++;
+                const img = new Image();
+                img.onload = () => {
+                    imagesLoadingCount--;
+                    console.log(`图片加载完成: ${imgSrc}, 剩余: ${imagesLoadingCount}`);
+                    addConsoleLog(`图片加载完成: ${imgSrc}`);
                     updateProgress();
                     resolve();
-                })
-                .catch(() => {
-                    fontsLoadingCount--;
-                    console.warn(`字体加载失败: ${fontSrc}, 但继续加载其他资源`);
-                    addConsoleLog(`字体加载失败: ${fontSrc}`);
+                };
+                img.onerror = () => {
+                    imagesLoadingCount--;
+                    console.warn(`图片加载失败: ${imgSrc}, 但继续加载其他资源`);
+                    addConsoleLog(`图片加载失败: ${imgSrc}`);
                     updateProgress();
                     resolve(); // 失败时也继续
-                });
+                };
+                img.src = imgSrc;
+            });
         });
-    });
 
-    // 等待所有资源加载完成或超时
-    await Promise.race([
-        Promise.all([...imagePromises, ...pagePromises, ...fontPromises]),
-        timeoutPromise
-    ]);
+        // 预加载页面
+        const pagePromises = pageResources.map(pageSrc => {
+            return new Promise((resolve) => {
+                pagesLoadingCount++;
+                fetch(pageSrc)
+                    .then(() => {
+                        pagesLoadingCount--;
+                        console.log(`页面预加载完成: ${pageSrc}, 剩余: ${pagesLoadingCount}`);
+                        addConsoleLog(`页面预加载完成: ${pageSrc}`);
+                        updateProgress();
+                        resolve();
+                    })
+                    .catch(() => {
+                        pagesLoadingCount--;
+                        console.warn(`页面预加载失败: ${pageSrc}, 但继续加载其他资源`);
+                        addConsoleLog(`页面预加载失败: ${pageSrc}`);
+                        updateProgress();
+                        resolve(); // 失败时也继续
+                    });
+            });
+        });
 
-    console.log('所有资源预加载完成或超时!');
-    addConsoleLog('所有资源预加载完成或超时!');
+        // 预加载字体
+        const fontPromises = fontResources.map(fontSrc => {
+            return new Promise((resolve) => {
+                fontsLoadingCount++;
+                // 使用FontFace API加载字体
+                const font = new FontFace('FontAwesome', `url(${fontSrc})`);
+                font.load()
+                    .then(() => {
+                        fontsLoadingCount--;
+                        console.log(`字体加载完成: ${fontSrc}, 剩余: ${fontsLoadingCount}`);
+                        addConsoleLog(`字体加载完成: ${fontSrc}`);
+                        updateProgress();
+                        resolve();
+                    })
+                    .catch(() => {
+                        fontsLoadingCount--;
+                        console.warn(`字体加载失败: ${fontSrc}, 但继续加载其他资源`);
+                        addConsoleLog(`字体加载失败: ${fontSrc}`);
+                        updateProgress();
+                        resolve(); // 失败时也继续
+                    });
+            });
+        });
+
+        // 等待所有资源加载完成或超时
+        await Promise.all([
+            ...imagePromises,
+            ...pagePromises,
+            ...fontPromises,
+            timeoutPromise
+        ]);
+
+        console.log('所有资源预加载完成或超时!');
+        addConsoleLog('所有资源预加载完成或超时!');
+    } catch (error) {
+        console.error('预加载过程中出现错误:', error);
+        addConsoleLog('预加载过程中出现错误: ' + error.message);
+    }
+    
     return true;
 }
 
@@ -871,8 +1042,6 @@ function checkSkipButtonDisplay() {
             skipButtonCheckInterval = null;
         }
     }
-}
-
 }
 
 // 初始化跳过按钮功能
@@ -1979,119 +2148,102 @@ function finishLoading() {
 
     console.log(`加载完成，总时长: ${loadDuration}ms，是否快速加载: ${isQuickLoad}`);
 
-    // 页面加载完成处理函数
-    function finishLoading() {
-        console.log('完成加载过程');
-        addConsoleLog('完成加载过程');
+    console.log('完成加载过程');
+    addConsoleLog('完成加载过程');
+    
+    // 先淡出加载指示器
+    const loadingIndicator = document.querySelector('.loading-indicator');
+    if (loadingIndicator) {
+        // 取消可能的加载界面显示定时器
+        cancelLoadingIndicator();
         
-        // 先淡出加载指示器
-        const loadingIndicator = document.querySelector('.loading-indicator');
-        if (loadingIndicator) {
-            // 取消可能的加载界面显示定时器
-            cancelLoadingIndicator();
+        // 添加完成日志
+        addConsoleLog('资源加载完成，正在初始化页面...');
+        
+        // 统一设置body类，确保在所有情况下都添加loaded类
+        document.body.classList.remove('loading');
+        
+        // 如果加载界面未显示，则无需淡出动画
+        if (!loadingIndicatorVisible) {
+            loadingIndicator.style.display = 'none';
             
-            // 添加完成日志
-            addConsoleLog('资源加载完成，正在初始化页面...');
-            
-            // 统一设置body类，确保在所有情况下都添加loaded类
-            document.body.classList.remove('loading');
-            
-            // 如果加载界面未显示，则无需淡出动画
-            if (!loadingIndicatorVisible) {
+            // 立即初始化页面
+            initNavigation();
+            addConsoleLog('页面初始化完成');
+
+            if (!AppInitializer.initialized && AppInitializer && typeof AppInitializer.init === 'function') {
+                AppInitializer.init();
+            }
+
+            // 如果不是首页，先加载页面内容，再显示页面，避免黑色闪烁
+            if (initialPageId && initialPageId !== 'home' && pageLoader && typeof pageLoader.loadPage === 'function') {
+                console.log('快速加载模式 - 预加载初始页面:', initialPageId);
+                addConsoleLog(`快速加载模式 - 预加载初始页面: ${initialPageId}`);
+                // 异步加载页面内容，完成后再显示页面
+                (async () => {
+                    // 先加载页面内容到容器中（不显示）
+                    await pageLoader.loadPage(initialPageId, true); // 第二个参数表示预加载模式
+
+                    console.log('初始页面内容加载完成，现在显示页面');
+                    addConsoleLog('初始页面内容加载完成，现在显示页面');
+
+                    // 只有在页面完全加载后才初始化动画
+                    if (AppInitializer && typeof AppInitializer.initAnimations === 'function') {
+                        console.log('快速加载模式 - 页面加载完成，开始初始化动画');
+                        addConsoleLog('快速加载模式 - 页面加载完成，开始初始化动画');
+                        AppInitializer.initAnimations();
+                    }
+                })();
+            } else {
+                // 是首页，直接显示页面内容
+
+                // 只有在页面完全加载后才初始化动画
+                if (AppInitializer && typeof AppInitializer.initAnimations === 'function') {
+                    console.log('快速加载模式 - 首页加载完成，开始初始化动画');
+                    addConsoleLog('快速加载模式 - 首页加载完成，开始初始化动画');
+                    AppInitializer.initAnimations();
+                }
+
+                if (pageLoader && typeof pageLoader.preloadPage === 'function') {
+                    pageLoader.preloadPage('features');
+                }
+            }
+
+            console.log('快速加载模式 - 页面已显示');
+            addConsoleLog('快速加载模式 - 页面已显示');
+        } else {
+            // 正常加载，播放淡出动画
+            loadingIndicator.style.opacity = '0';
+            loadingIndicator.style.transform = 'translate(-50%, -50%)'; // 移除scale(0.9)，避免突然缩小的效果
+
+            setTimeout(() => {
+                // 隐藏加载指示器
                 loadingIndicator.style.display = 'none';
-                
-                // 立即初始化页面
+
+                // 显示页面内容
+                document.body.classList.add('loaded');
+
+                // 初始化导航
                 initNavigation();
                 addConsoleLog('页面初始化完成');
 
+                // 确保AppInitializer初始化
                 if (!AppInitializer.initialized && AppInitializer && typeof AppInitializer.init === 'function') {
                     AppInitializer.init();
                 }
 
                 // 如果不是首页，先加载页面内容，再显示页面，避免黑色闪烁
                 if (initialPageId && initialPageId !== 'home' && pageLoader && typeof pageLoader.loadPage === 'function') {
-                    console.log('快速加载模式 - 预加载初始页面:', initialPageId);
-                    addConsoleLog(`快速加载模式 - 预加载初始页面: ${initialPageId}`);
-                    // 异步加载页面内容，完成后再显示页面
-                    (async () => {
-                        // 先加载页面内容到容器中（不显示）
-                        await pageLoader.loadPage(initialPageId, true); // 第二个参数表示预加载模式
+                        console.log('预加载初始页面:', initialPageId);
+                        addConsoleLog(`预加载初始页面: ${initialPageId}`);
+                        // 异步加载页面内容，完成后再显示页面
+                        (async () => {
+                            // 先加载页面内容到容器中（不显示）
+                            await pageLoader.loadPage(initialPageId, true); // 第二个参数表示预加载模式
 
-                        console.log('初始页面内容加载完成，现在显示页面');
-                        addConsoleLog('初始页面内容加载完成，现在显示页面');
-
-                        // 只有在页面完全加载后才初始化动画
-                        if (AppInitializer && typeof AppInitializer.initAnimations === 'function') {
-                            console.log('快速加载模式 - 页面加载完成，开始初始化动画');
-                            addConsoleLog('快速加载模式 - 页面加载完成，开始初始化动画');
-                            AppInitializer.initAnimations();
-                        }
-                    })();
-                } else {
-                    // 是首页，直接显示页面内容
-
-                    // 只有在页面完全加载后才初始化动画
-                    if (AppInitializer && typeof AppInitializer.initAnimations === 'function') {
-                        console.log('快速加载模式 - 首页加载完成，开始初始化动画');
-                        addConsoleLog('快速加载模式 - 首页加载完成，开始初始化动画');
-                        AppInitializer.initAnimations();
-                    }
-
-                    if (pageLoader && typeof pageLoader.preloadPage === 'function') {
-                        pageLoader.preloadPage('features');
-                    }
-                }
-
-                console.log('快速加载模式 - 页面已显示');
-                addConsoleLog('快速加载模式 - 页面已显示');
-            } else {
-                // 正常加载，播放淡出动画
-                loadingIndicator.style.opacity = '0';
-                loadingIndicator.style.transform = 'translate(-50%, -50%)'; // 移除scale(0.9)，避免突然缩小的效果
-
-                setTimeout(() => {
-                    // 隐藏加载指示器
-                    loadingIndicator.style.display = 'none';
-
-                    // 显示页面内容
-                    document.body.classList.add('loaded');
-
-                    // 初始化导航
-                    initNavigation();
-                    addConsoleLog('页面初始化完成');
-
-                    // 确保AppInitializer初始化
-                    if (!AppInitializer.initialized && AppInitializer && typeof AppInitializer.init === 'function') {
-                        AppInitializer.init();
-                    }
-
-                    // 如果不是首页，先加载页面内容，再显示页面，避免黑色闪烁
-                    if (initialPageId && initialPageId !== 'home' && pageLoader && typeof pageLoader.loadPage === 'function') {
-                            console.log('预加载初始页面:', initialPageId);
-                            addConsoleLog(`预加载初始页面: ${initialPageId}`);
-                            // 异步加载页面内容，完成后再显示页面
-                            (async () => {
-                                // 先加载页面内容到容器中（不显示）
-                                await pageLoader.loadPage(initialPageId, true); // 第二个参数表示预加载模式
-
-                                console.log('初始页面内容加载完成，现在显示页面');
-                                addConsoleLog('初始页面内容加载完成，现在显示页面');
-                                // 内容加载完成后，再显示页面
-                                document.body.classList.remove('loading');
-                                document.body.classList.add('loaded');
-
-                                console.log('正常加载模式 - 页面完全加载完成');
-                                addConsoleLog('正常加载模式 - 页面完全加载完成');
-
-                                // 只有在页面完全加载后才初始化动画
-                                if (AppInitializer && typeof AppInitializer.initAnimations === 'function') {
-                                    console.log('页面加载完成，开始初始化动画');
-                                    addConsoleLog('页面加载完成，开始初始化动画');
-                                    AppInitializer.initAnimations();
-                                }
-                            })();
-                        } else {
-                            // 是首页，直接显示页面内容
+                            console.log('初始页面内容加载完成，现在显示页面');
+                            addConsoleLog('初始页面内容加载完成，现在显示页面');
+                            // 内容加载完成后，再显示页面
                             document.body.classList.remove('loading');
                             document.body.classList.add('loaded');
 
@@ -2100,22 +2252,172 @@ function finishLoading() {
 
                             // 只有在页面完全加载后才初始化动画
                             if (AppInitializer && typeof AppInitializer.initAnimations === 'function') {
-                                console.log('首页加载完成，开始初始化动画');
-                                addConsoleLog('首页加载完成，开始初始化动画');
+                                console.log('页面加载完成，开始初始化动画');
+                                addConsoleLog('页面加载完成，开始初始化动画');
                                 AppInitializer.initAnimations();
                             }
+                        })();
+                    } else {
+                        // 是首页，直接显示页面内容
+                        document.body.classList.remove('loading');
+                        document.body.classList.add('loaded');
 
-                            if (pageLoader && typeof pageLoader.preloadPage === 'function') {
-                                // 预加载服务器特色页面
-                                pageLoader.preloadPage('features');
-                            }
+                        console.log('正常加载模式 - 页面完全加载完成');
+                        addConsoleLog('正常加载模式 - 页面完全加载完成');
+
+                        // 只有在页面完全加载后才初始化动画
+                        if (AppInitializer && typeof AppInitializer.initAnimations === 'function') {
+                            console.log('首页加载完成，开始初始化动画');
+                            addConsoleLog('首页加载完成，开始初始化动画');
+                            AppInitializer.initAnimations();
                         }
-                    }, 300); // 等待加载指示器淡出动画完成
-                }
+
+                        if (pageLoader && typeof pageLoader.preloadPage === 'function') {
+                            // 预加载服务器特色页面
+                            pageLoader.preloadPage('features');
+                        }
+                    }
+                }, 300); // 等待加载指示器淡出动画完成
             }
         }
     }
 
+    // 预加载所有资源的函数
+    async function preloadAllResources() {
+        console.log('开始预加载所有资源...');
+        addConsoleLog('开始预加载所有资源...');
+    
+        try {
+            // 图片资源列表
+            const imageResources = [
+                'images/主页背景图/1.jpg',
+                'images/主页背景图/2.jpg',
+                'images/主页背景图/3.jpg',
+                'images/主页背景图/4.jpg',
+                'images/loading.avif',
+                'images/雨州logo.svg',
+                'images/服务器特色-四象限构图/左.jpg',
+                'images/服务器特色-四象限构图/右.jpg',
+                'images/Java版加入指南.png',
+                'images/基岩版加入指南.png'
+            ];
+    
+            // 页面资源列表
+            const pageResources = [
+                'pages/home.html',
+                'pages/features.html',
+                'pages/join.html',
+                'pages/about.html'
+            ];
+    
+            // 字体资源列表 - 只包含当前项目引用到的字体
+            const fontResources = [
+                'fonts/fontawesome-free-6.4.0-web/webfonts/fa-solid-900.woff2',
+                'fonts/fontawesome-free-6.4.0-web/webfonts/fa-brands-400.woff2',
+                'fonts/fontawesome-free-6.4.0-web/webfonts/fa-regular-400.woff2'
+            ];
+    
+            // 初始化计数器
+            imagesTotalCount = imageResources.length;
+            pagesTotalCount = pageResources.length;
+            fontsTotalCount = fontResources.length;
+                
+            updateProgress();
+    
+            // 添加超时机制
+            const timeoutPromise = new Promise((resolve) => {
+                setTimeout(() => {
+                    console.warn('预加载超时，跳过剩余资源加载');
+                    addConsoleLog('预加载超时，跳过剩余资源加载');
+                    resolve();
+                }, 15000); // 15秒超时
+            });
+    
+            // 预加载图片
+            const imagePromises = imageResources.map(imgSrc => {
+                return new Promise((resolve) => {
+                    imagesLoadingCount++;
+                    const img = new Image();
+                    img.onload = () => {
+                        imagesLoadingCount--;
+                        console.log(`图片加载完成: ${imgSrc}, 剩余: ${imagesLoadingCount}`);
+                        addConsoleLog(`图片加载完成: ${imgSrc}`);
+                        updateProgress();
+                        resolve();
+                    };
+                    img.onerror = () => {
+                        imagesLoadingCount--;
+                        console.warn(`图片加载失败: ${imgSrc}, 但继续加载其他资源`);
+                        addConsoleLog(`图片加载失败: ${imgSrc}`);
+                        updateProgress();
+                        resolve(); // 失败时也继续
+                    };
+                    img.src = imgSrc;
+                });
+            });
+    
+            // 预加载页面
+            const pagePromises = pageResources.map(pageSrc => {
+                return new Promise((resolve) => {
+                    pagesLoadingCount++;
+                    fetch(pageSrc)
+                        .then(() => {
+                            pagesLoadingCount--;
+                            console.log(`页面预加载完成: ${pageSrc}, 剩余: ${pagesLoadingCount}`);
+                            addConsoleLog(`页面预加载完成: ${pageSrc}`);
+                            updateProgress();
+                            resolve();
+                        })
+                        .catch(() => {
+                            pagesLoadingCount--;
+                            console.warn(`页面预加载失败: ${pageSrc}, 但继续加载其他资源`);
+                            addConsoleLog(`页面预加载失败: ${pageSrc}`);
+                            updateProgress();
+                            resolve(); // 失败时也继续
+                        });
+                });
+            });
+    
+            // 预加载字体
+            const fontPromises = fontResources.map(fontSrc => {
+                return new Promise((resolve) => {
+                    fontsLoadingCount++;
+                    // 使用FontFace API加载字体
+                    const font = new FontFace('FontAwesome', `url(${fontSrc})`);
+                    font.load()
+                        .then(() => {
+                            fontsLoadingCount--;
+                            console.log(`字体加载完成: ${fontSrc}, 剩余: ${fontsLoadingCount}`);
+                            addConsoleLog(`字体加载完成: ${fontSrc}`);
+                            updateProgress();
+                            resolve();
+                        })
+                        .catch(() => {
+                            fontsLoadingCount--;
+                            console.warn(`字体加载失败: ${fontSrc}, 但继续加载其他资源`);
+                            addConsoleLog(`字体加载失败: ${fontSrc}`);
+                            updateProgress();
+                            resolve(); // 失败时也继续
+                        });
+                });
+            });
+    
+            // 等待所有资源加载完成或超时
+            await Promise.race([
+                Promise.all([...imagePromises, ...pagePromises, ...fontPromises]),
+                timeoutPromise
+            ]);
+    
+            console.log('所有资源预加载完成或超时!');
+            addConsoleLog('所有资源预加载完成或超时!');
+        } catch (error) {
+            console.error('预加载过程中出现错误:', error);
+            addConsoleLog('预加载过程中出现错误: ' + error.message);
+        }
+            
+        return true;
+    }
+    
     // 服务器状态模拟更新
     function updateServerStatus() {
         const playerCount = document.querySelector('.status-item:nth-child(2) .status-text');
@@ -2302,4 +2604,10 @@ function finishLoading() {
             heroBg.style.transform = `translate(${moveX1}px, ${moveY1}px)`;
             heroBgLayer.style.transform = `translate(${moveX2}px, ${moveY2}px)`;
         }
-    })
+    });
+
+    // 页面完全加载后移除事件监听器，避免内存泄漏
+    window.addEventListener('beforeunload', () => {
+        document.removeEventListener('mousemove', null);
+    });
+});
