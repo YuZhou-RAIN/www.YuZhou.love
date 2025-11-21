@@ -11,12 +11,26 @@
 <body class="loading">
         <!-- 加载指示器 -->
         <div class="loading-indicator">
-            <!-- 创建固定大小的容器来包装动画元素，确保切换时不影响文本位置 -->
-            <div class="loading-animation-container" style="width: 120px; height: 120px; margin: 0 auto 1.5rem; position: relative;">
-                <div class="loading-spinner" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></div>
-                <img id="loading-gif" src="" alt="加载动画" class="loading-gif" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%;" />
+            <div class="console-header">
+                <div class="console-dots">
+                    <div class="dot dot-red"></div>
+                    <div class="dot dot-yellow"></div>
+                    <div class="dot dot-green"></div>
+                </div>
+                <div class="console-title">雨州 Minecraft 服务器加载中...</div>
             </div>
-            <div class="loading-text">正在加载</div>
+            <div class="console-content">
+                <div class="console-log" id="consoleLog">
+                    <div class="log-line">> 正在初始化加载程序...</div>
+                    <div class="log-line">> 开始预加载资源...</div>
+                </div>
+                <div class="progress-container">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                    <div class="progress-text" id="progressText">0%</div>
+                </div>
+            </div>
         </div>
         <!-- 跳过按钮 - 移到加载指示器外部以避免布局影响 -->
         <button id="skip-loading-btn" class="skip-loading-btn">不等了，先看文字</button>
