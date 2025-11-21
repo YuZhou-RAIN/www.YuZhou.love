@@ -659,21 +659,28 @@ function setupSkipLoadingButton() {
             console.log('测试模式 - 用户点击了"不等了，先看文字"按钮，跳过图片加载');
 
             try {
-                // 先显示页面内容
-                document.body.classList.remove('loading');
-                document.body.classList.add('loaded');
-                document.body.dataset.skipLoading = 'true'; // 添加标记表示用户选择跳过加载
-
-                // 然后淡出加载指示器
+                // 首先淡出加载指示器
                 const loadingIndicator = document.querySelector('.loading-indicator');
                 if (loadingIndicator) {
                     loadingIndicator.style.opacity = '0';
                     loadingIndicator.style.transform = 'translate(-50%, -50%)'; // 移除scale(0.9)，避免突然缩小的效果
 
                     setTimeout(() => {
+                        // 隐藏加载指示器
                         loadingIndicator.style.display = 'none';
+                        
+                        // 显示页面内容
+                        document.body.classList.remove('loading');
+                        document.body.classList.add('loaded');
+                        document.body.dataset.skipLoading = 'true'; // 添加标记表示用户选择跳过加载
+                        
                         console.log('测试模式 - 加载指示器已隐藏');
                     }, 300);
+                } else {
+                    // 如果没有加载指示器，直接显示页面
+                    document.body.classList.remove('loading');
+                    document.body.classList.add('loaded');
+                    document.body.dataset.skipLoading = 'true';
                 }
 
                 // 隐藏跳过按钮
