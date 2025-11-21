@@ -577,16 +577,18 @@ const finishLoading = () => {
         const loadEndTime = Date.now();
         console.log(`页面加载完成，耗时: ${loadEndTime - loadStartTime}ms`);
         addConsoleLog(`页面加载完成，耗时: ${loadEndTime - loadStartTime}ms`);
-    } finally {
-        // 完成加载，调用finishLoading函数
-        if (typeof finishLoading === 'function') {
-            finishLoading();
-        }
-    };
+    } catch (error) {
+        console.error('finishLoading执行出错:', error);
+    }
 }
 
     // 启动资源加载过程
-    waitForAllResources();
+    // 检查waitForAllResources函数是否存在
+    if (typeof waitForAllResources === 'function') {
+        waitForAllResources();
+    } else {
+        console.warn('waitForAllResources函数未定义，将在资源加载时自动处理');
+    }
     
     // 添加一个后备机制，确保即使预加载过程出现问题也能完成加载
     setTimeout(() => {
@@ -620,11 +622,29 @@ function addConsoleLog(message) {
 // 更新进度条
 function updateProgress() {
     if (progressFill && progressText) {
-        const loaded = imagesTotalCount + pagesTotalCount + fontsTotalCount - 
-                      (imagesLoadingCount + pagesLoadingCount + fontsLoadingCount);
-        const total = imagesTotalCount + pagesTotalCount + fontsTotalCount;
+        // 确保计数器不会出现负值或NaN
+        const safeImagesTotalCount = Math.max(0, imagesTotalCount || 0);
+        const safePagesTotalCount = Math.max(0, pagesTotalCount || 0);
+        const safeFontsTotalCount = Math.max(0, fontsTotalCount || 0);
+        const safeImagesLoadingCount = Math.max(0, imagesLoadingCount || 0);
+        const safePagesLoadingCount = Math.max(0, pagesLoadingCount || 0);
+        const safeFontsLoadingCount = Math.max(0, fontsLoadingCount || 0);
         
-        const percent = total > 0 ? Math.round((loaded / total) * 100) : 0;
+        // 计算已加载资源和总资源数
+        const loaded = safeImagesTotalCount + safePagesTotalCount + safeFontsTotalCount - 
+                      (safeImagesLoadingCount + safePagesLoadingCount + safeFontsLoadingCount);
+        const total = safeImagesTotalCount + safePagesTotalCount + safeFontsTotalCount;
+        
+        // 计算百分比，确保至少显示1%的进度，以表明进度条在工作
+        let percent = 0;
+        if (total > 0) {
+            percent = Math.max(1, Math.min(99, Math.round((loaded / total) * 100)));
+        } else {
+            // 如果没有资源需要加载，显示一个模拟进度
+            const simulationTime = Date.now() - loadStartTime;
+            percent = Math.min(70, Math.round(simulationTime / 100)); // 简单的进度模拟
+        }
+        
         progressFill.style.width = `${percent}%`;
         progressText.textContent = `${percent}%`;
         
@@ -984,10 +1004,6 @@ function checkSkipButtonDisplay() {
         // 获取按钮元素
         const skipButton = document.getElementById('skip-loading-btn');
         if (!skipButton) {
-            // 只在开发时输出警告，避免循环日志
-            if (process && process.env && process.env.NODE_ENV === 'development') {
-                console.warn('跳过加载按钮未找到');
-            }
             // 确保清除定时器，避免循环
             if (skipButtonCheckInterval) {
                 clearInterval(skipButtonCheckInterval);
@@ -996,21 +1012,28 @@ function checkSkipButtonDisplay() {
             return;
         }
 
+        // 安全检查并初始化变量
+        const safeDomCssLoaded = typeof domCssLoaded !== 'undefined' ? domCssLoaded : false;
+        const safeImagesLoadingCount = typeof imagesLoadingCount !== 'undefined' ? imagesLoadingCount : 0;
+        const safeFontsLoadingCount = typeof fontsLoadingCount !== 'undefined' ? fontsLoadingCount : 0;
+        const safeImagesTotalCount = typeof imagesTotalCount !== 'undefined' ? imagesTotalCount : 0;
+        const safeLoadStartTime = typeof loadStartTime !== 'undefined' ? loadStartTime : Date.now();
+        
         // 只有在CSS、JS、HTML加载完成但图片和字体资源仍在加载时才显示按钮
-        const htmlCssJsLoaded = domCssLoaded; // HTML、CSS、JS已加载
-        const assetsStillLoading = (imagesLoadingCount > 0 || fontsLoadingCount > 0); // 图片或字体仍在加载
+        const htmlCssJsLoaded = safeDomCssLoaded; // HTML、CSS、JS已加载
+        const assetsStillLoading = (safeImagesLoadingCount > 0 || safeFontsLoadingCount > 0); // 图片或字体仍在加载
         const pageNotLoaded = !document.body.classList.contains('loaded'); // 页面还未完全加载
         
         // 增加时间限制：只有在加载超过5秒后才显示跳过按钮
         const currentTime = Date.now();
-        const elapsedTime = currentTime - loadStartTime;
+        const elapsedTime = currentTime - safeLoadStartTime;
         const loadingLongEnough = elapsedTime >= 5000; // 5秒
 
         // 优化日志输出：每2秒才输出一次状态，避免日志过多
         const currentSecond = Math.floor(elapsedTime / 2000);
         if (!window.lastLogSecond || window.lastLogSecond !== currentSecond) {
             window.lastLogSecond = currentSecond;
-            console.log(`加载状态更新 (${Math.floor(elapsedTime/1000)}秒): 图片剩余 ${imagesLoadingCount}/${imagesTotalCount}`);
+            console.log(`加载状态更新 (${Math.floor(elapsedTime/1000)}秒): 图片剩余 ${safeImagesLoadingCount}/${safeImagesTotalCount}`);
         }
 
         // 修改显示条件：加载足够长时间且满足其他条件时才显示按钮
