@@ -55,10 +55,6 @@ body:not(.loaded) footer {
     visibility: hidden;
 }
 
-body.loaded {
-    /* 页面加载完成后不需要特殊样式，内容自然显示 */
-}
-
 /* 控制台风格加载界面 */
 .loading-indicator {
     position: fixed;
