@@ -4,6 +4,33 @@
 let currentBgIndex = 0;
 let shuffledBackgroundImages = [];
 
+// 资源加载状态变量 - 移至全局作用域
+let imagesTotalCount = 0;
+let pagesTotalCount = 0;
+let fontsTotalCount = 0;
+let imagesLoadingCount = 0;
+let pagesLoadingCount = 0;
+let fontsLoadingCount = 0;
+
+// DOM和CSS加载状态
+let domCssLoaded = false;
+let backgroundImagesLoaded = false;
+
+// 加载界面显示控制
+let loadingIndicatorVisible = false;
+let showLoadingTimeout = null;
+
+// 跳过按钮检查定时器ID
+let skipButtonCheckInterval = null;
+
+// 页面加载开始时间
+const loadStartTime = Date.now();
+
+// 控制台日志元素
+let consoleLog = null;
+let progressFill = null;
+let progressText = null;
+
 // 原始背景图片列表
 const originalBackgroundImages = [
     'images/主页背景图/1.jpg',
@@ -562,10 +589,11 @@ let imagesLoadingCount = 0;
 let imagesTotalCount = 0;
 
 // 完成加载的处理函数
-const finishLoading = () => {
+function finishLoading() {
     try {
         // 隐藏加载界面
-        if (loadingIndicatorVisible) {
+        const loadingIndicator = document.querySelector('.loading-indicator');
+        if (loadingIndicatorVisible && loadingIndicator) {
             loadingIndicator.style.opacity = '0';
             setTimeout(() => {
                 loadingIndicator.style.display = 'none';
