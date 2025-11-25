@@ -1,22 +1,22 @@
-// 简化的页面加载和进度条管理
+// 现代页面加载和进度条管理
 (function() {
     // 全局变量
     let progress = 0;
     let progressInterval = null;
-    let consoleLog = null;
     let progressFill = null;
     let progressText = null;
+    let resourceCountElement = null;
+    let totalResources = 0;
+    let loadedResources = 0;
+    let skipButton = null;
     
     // 初始化函数
     function init() {
         // 获取DOM元素
-        consoleLog = document.getElementById('consoleLog');
         progressFill = document.getElementById('progressFill');
         progressText = document.getElementById('progressText');
-        
-        // 添加初始日志
-        addConsoleLog('正在初始化加载程序...');
-        addConsoleLog('开始预加载资源...');
+        resourceCountElement = document.getElementById('resourceCount');
+        skipButton = document.getElementById('skip-loading-btn');
         
         // 启动进度更新
         startProgressUpdate();
@@ -26,17 +26,11 @@
         
         // 设置跳过按钮功能
         setupSkipButton();
-    }
-    
-    // 添加控制台日志
-    function addConsoleLog(message) {
-        if (consoleLog) {
-            const logLine = document.createElement('div');
-            logLine.className = 'log-line';
-            logLine.textContent = `> ${message}`;
-            consoleLog.appendChild(logLine);
-            consoleLog.scrollTop = consoleLog.scrollHeight;
-        }
+        
+        // 3秒后显示跳过按钮
+        setTimeout(() => {
+            showSkipButton();
+        }, 3000);
     }
     
     // 更新进度条
@@ -47,8 +41,13 @@
             
             progressFill.style.width = `${progress}%`;
             progressText.textContent = `${progress}%`;
-            
-            addConsoleLog(`加载进度: ${progress}%`);
+        }
+    }
+    
+    // 更新资源计数
+    function updateResourceCount(loaded, total) {
+        if (resourceCountElement) {
+            resourceCountElement.textContent = `${loaded}/${total}`;
         }
     }
     
@@ -56,8 +55,10 @@
     function startProgressUpdate() {
         // 每500ms更新一次进度
         progressInterval = setInterval(() => {
-            // 简单的进度增长逻辑
-            progress += Math.random() * 5;
+            // 非线性进度增长逻辑，前期快，后期慢
+            const growthRate = 100 - progress;
+            const increment = Math.random() * growthRate * 0.05;
+            progress += increment;
             updateProgress(progress);
             
             // 如果进度接近100%，停止自动更新
@@ -67,7 +68,24 @@
         }, 500);
     }
     
-    // 模拟资源加载
+    // 显示跳过按钮
+    function showSkipButton() {
+        if (skipButton) {
+            skipButton.classList.add('show');
+        }
+    }
+    
+    // 隐藏跳过按钮
+    function hideSkipButton() {
+        if (skipButton) {
+            skipButton.classList.remove('show');
+            setTimeout(() => {
+                skipButton.style.display = 'none';
+            }, 600);
+        }
+    }
+    
+    // 资源加载
     function loadResources() {
         // 资源列表
         const resources = [
@@ -83,7 +101,11 @@
             'pages/about.html'
         ];
         
-        let loadedCount = 0;
+        totalResources = resources.length;
+        loadedResources = 0;
+        
+        // 初始化资源计数
+        updateResourceCount(0, totalResources);
         
         // 加载单个资源
         function loadResource(resource) {
@@ -92,15 +114,15 @@
                     // 图片资源
                     const img = new Image();
                     img.onload = () => {
-                        loadedCount++;
-                        updateProgress((loadedCount / resources.length) * 70); // 图片资源占70%进度
-                        addConsoleLog(`图片加载完成: ${resource}`);
+                        loadedResources++;
+                        updateResourceCount(loadedResources, totalResources);
+                        updateProgress((loadedResources / totalResources) * 70); // 图片资源占70%进度
                         resolve();
                     };
                     img.onerror = () => {
-                        loadedCount++;
-                        updateProgress((loadedCount / resources.length) * 70);
-                        addConsoleLog(`图片加载失败: ${resource}`);
+                        loadedResources++;
+                        updateResourceCount(loadedResources, totalResources);
+                        updateProgress((loadedResources / totalResources) * 70);
                         resolve(); // 失败时也继续
                     };
                     img.src = resource;
@@ -108,20 +130,21 @@
                     // 页面资源
                     fetch(resource)
                         .then(() => {
-                            loadedCount++;
-                            updateProgress(70 + (loadedCount / resources.length) * 30); // 页面资源占30%进度
-                            addConsoleLog(`页面预加载完成: ${resource}`);
+                            loadedResources++;
+                            updateResourceCount(loadedResources, totalResources);
+                            updateProgress(70 + (loadedResources / totalResources) * 30); // 页面资源占30%进度
                             resolve();
                         })
                         .catch(() => {
-                            loadedCount++;
-                            updateProgress(70 + (loadedCount / resources.length) * 30);
-                            addConsoleLog(`页面预加载失败: ${resource}`);
+                            loadedResources++;
+                            updateResourceCount(loadedResources, totalResources);
+                            updateProgress(70 + (loadedResources / totalResources) * 30);
                             resolve(); // 失败时也继续
                         });
                 } else {
                     // 其他资源
-                    loadedCount++;
+                    loadedResources++;
+                    updateResourceCount(loadedResources, totalResources);
                     resolve();
                 }
             });
@@ -150,42 +173,46 @@
             progressInterval = null;
         }
         
-        // 添加完成日志
-        addConsoleLog('所有资源加载完成');
-        addConsoleLog('正在初始化页面...');
-        
         // 延迟隐藏加载界面
         setTimeout(() => {
             hideLoadingIndicator();
-        }, 1000);
+        }, 800);
     }
     
     // 隐藏加载指示器
     function hideLoadingIndicator() {
         const loadingIndicator = document.querySelector('.loading-indicator');
         if (loadingIndicator) {
-            loadingIndicator.style.opacity = '0';
+            // 先淡出加载提示和进度条
+            const loadingContent = loadingIndicator.querySelector('.loading-content');
+            if (loadingContent) {
+                loadingContent.style.opacity = '0';
+                loadingContent.style.transform = 'translateY(20px)';
+                loadingContent.style.transition = 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
+            }
+            
+            // 然后淡出整个加载指示器
             setTimeout(() => {
-                loadingIndicator.style.display = 'none';
+                loadingIndicator.style.opacity = '0';
+                loadingIndicator.style.transition = 'opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
+                
+                // 隐藏跳过按钮
+                hideSkipButton();
+                
                 // 显示页面内容
-                document.body.classList.remove('loading');
-                document.body.classList.add('loaded');
-            }, 300);
-        }
-        
-        // 隐藏跳过按钮
-        const skipButton = document.getElementById('skip-loading-btn');
-        if (skipButton) {
-            skipButton.style.display = 'none';
+                setTimeout(() => {
+                    loadingIndicator.style.display = 'none';
+                    document.body.classList.remove('loading');
+                    document.body.classList.add('loaded');
+                }, 600);
+            }, 600);
         }
     }
     
     // 设置跳过按钮功能
     function setupSkipButton() {
-        const skipButton = document.getElementById('skip-loading-btn');
         if (skipButton) {
             skipButton.addEventListener('click', () => {
-                addConsoleLog('用户点击了"不等了，先看文字"按钮，跳过加载...');
                 hideLoadingIndicator();
             });
         }
