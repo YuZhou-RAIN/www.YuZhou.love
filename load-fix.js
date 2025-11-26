@@ -1,4 +1,4 @@
-// 现代页面加载和进度条管理
+// 现代页面加载和进度条管理 - 作为script.js的辅助脚本
 (function() {
     // 全局变量
     let progress = 0;
@@ -6,9 +6,8 @@
     let progressFill = null;
     let progressText = null;
     let resourceCountElement = null;
-    let totalResources = 0;
-    let loadedResources = 0;
     let skipButton = null;
+    let loadingIndicator = null;
     
     // 初始化函数
     function init() {
@@ -17,12 +16,15 @@
         progressText = document.getElementById('progressText');
         resourceCountElement = document.getElementById('resourceCount');
         skipButton = document.getElementById('skip-loading-btn');
+        loadingIndicator = document.querySelector('.loading-indicator');
+        
+        // 确保加载指示器可见
+        if (loadingIndicator) {
+            loadingIndicator.style.display = 'flex';
+        }
         
         // 启动进度更新
         startProgressUpdate();
-        
-        // 启动资源加载
-        loadResources();
         
         // 设置跳过按钮功能
         setupSkipButton();
@@ -31,6 +33,9 @@
         setTimeout(() => {
             showSkipButton();
         }, 3000);
+        
+        // 监听script.js中的finishLoading事件
+        listenForFinishLoading();
     }
     
     // 更新进度条
@@ -85,81 +90,29 @@
         }
     }
     
-    // 资源加载
-    function loadResources() {
-        // 资源列表
-        const resources = [
-            'images/主页背景图/1.jpg',
-            'images/主页背景图/2.jpg',
-            'images/主页背景图/3.jpg',
-            'images/主页背景图/4.jpg',
-            'images/loading.avif',
-            'images/雨州logo.svg',
-            'pages/home.html',
-            'pages/features.html',
-            'pages/join.html',
-            'pages/about.html'
-        ];
-        
-        totalResources = resources.length;
-        loadedResources = 0;
-        
-        // 初始化资源计数
-        updateResourceCount(0, totalResources);
-        
-        // 加载单个资源
-        function loadResource(resource) {
-            return new Promise((resolve) => {
-                if (resource.endsWith('.jpg') || resource.endsWith('.avif') || resource.endsWith('.svg')) {
-                    // 图片资源
-                    const img = new Image();
-                    img.onload = () => {
-                        loadedResources++;
-                        updateResourceCount(loadedResources, totalResources);
-                        updateProgress((loadedResources / totalResources) * 70); // 图片资源占70%进度
-                        resolve();
-                    };
-                    img.onerror = () => {
-                        loadedResources++;
-                        updateResourceCount(loadedResources, totalResources);
-                        updateProgress((loadedResources / totalResources) * 70);
-                        resolve(); // 失败时也继续
-                    };
-                    img.src = resource;
-                } else if (resource.endsWith('.html')) {
-                    // 页面资源
-                    fetch(resource)
-                        .then(() => {
-                            loadedResources++;
-                            updateResourceCount(loadedResources, totalResources);
-                            updateProgress(70 + (loadedResources / totalResources) * 30); // 页面资源占30%进度
-                            resolve();
-                        })
-                        .catch(() => {
-                            loadedResources++;
-                            updateResourceCount(loadedResources, totalResources);
-                            updateProgress(70 + (loadedResources / totalResources) * 30);
-                            resolve(); // 失败时也继续
-                        });
-                } else {
-                    // 其他资源
-                    loadedResources++;
-                    updateResourceCount(loadedResources, totalResources);
-                    resolve();
+    // 监听script.js中的finishLoading事件
+    function listenForFinishLoading() {
+        // 监听body的loaded类变化
+        const observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                if (mutation.attributeName === 'class') {
+                    if (document.body.classList.contains('loaded')) {
+                        // script.js已经完成加载，隐藏加载指示器
+                        finishLoading();
+                        observer.disconnect();
+                    }
                 }
             });
-        }
+        });
         
-        // 加载所有资源
-        Promise.all(resources.map(loadResource))
-            .then(() => {
-                // 所有资源加载完成
+        observer.observe(document.body, { attributes: true });
+        
+        // 也监听window的load事件，作为备选方案
+        window.addEventListener('load', () => {
+            if (!document.body.classList.contains('loaded')) {
                 finishLoading();
-            })
-            .catch(() => {
-                // 加载过程中出现错误，仍需完成加载
-                finishLoading();
-            });
+            }
+        });
     }
     
     // 完成加载
@@ -181,7 +134,6 @@
     
     // 隐藏加载指示器
     function hideLoadingIndicator() {
-        const loadingIndicator = document.querySelector('.loading-indicator');
         if (loadingIndicator) {
             // 先淡出加载提示和进度条
             const loadingContent = loadingIndicator.querySelector('.loading-content');
@@ -202,8 +154,6 @@
                 // 显示页面内容
                 setTimeout(() => {
                     loadingIndicator.style.display = 'none';
-                    document.body.classList.remove('loading');
-                    document.body.classList.add('loaded');
                 }, 600);
             }, 600);
         }
@@ -213,7 +163,15 @@
     function setupSkipButton() {
         if (skipButton) {
             skipButton.addEventListener('click', () => {
-                hideLoadingIndicator();
+                // 直接调用script.js中的finishLoading函数（如果存在）
+                if (typeof finishLoading === 'function') {
+                    finishLoading();
+                } else {
+                    // 否则手动完成加载
+                    document.body.classList.add('loaded');
+                    document.body.classList.remove('loading');
+                    hideLoadingIndicator();
+                }
             });
         }
     }
