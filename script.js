@@ -646,22 +646,6 @@ function finishLoading() {
     }
 }
 
-// 启动资源加载过程
-// 检查waitForAllResources函数是否存在
-if (typeof waitForAllResources === 'function') {
-    waitForAllResources();
-} else {
-    console.warn('waitForAllResources函数未定义，将在资源加载时自动处理');
-}
-
-// 显示跳过按钮
-function showSkipButton() {
-    const skipButton = document.getElementById('skip-loading-btn');
-    if (skipButton) {
-        skipButton.classList.add('show');
-    }
-}
-
 // 进度更新变量
 let progress = 0;
 let progressInterval = null;
@@ -671,16 +655,24 @@ function updateProgress(percent) {
     const progressFill = document.getElementById('progressFill');
     const progressText = document.getElementById('progressText');
     if (progressFill && progressText) {
-        // 确保进度至少为1%，不超过99%
+        // 确保进度至少为1%，不超过99% 
         progress = Math.max(1, Math.min(99, percent));
         
         progressFill.style.width = `${progress}%`;
-        progressText.textContent = `${progress}%`;
+        progressText.textContent = `${Math.round(progress)}%`;
     }
+}
+
+// 控制台日志函数
+function addConsoleLog(message) {
+    console.log(message);
 }
 
 // 启动进度更新
 function startProgressUpdate() {
+    // 立即更新一次进度，确保不是0%
+    updateProgress(1);
+    
     // 每500ms更新一次进度
     progressInterval = setInterval(() => {
         // 非线性进度增长逻辑，前期快，后期慢
@@ -697,17 +689,17 @@ function startProgressUpdate() {
 }
 
 // 在DOM加载完成后启动进度更新
-document.addEventListener('DOMContentLoaded', () => {
+window.addEventListener('DOMContentLoaded', () => {
     startProgressUpdate();
 });
 
-// 添加一个后备机制，确保即使预加载过程出现问题也能完成加载
-setTimeout(() => {
-    if (!document.body.classList.contains('loaded')) {
-        console.warn('加载过程超时，强制完成加载');
-        finishLoading();
+// 显示跳过按钮
+function showSkipButton() {
+    const skipButton = document.getElementById('skip-loading-btn');
+    if (skipButton) {
+        skipButton.classList.add('show');
     }
-}, 15000);
+}
 
 // 3秒后显示跳过按钮
 setTimeout(() => {
@@ -715,6 +707,37 @@ setTimeout(() => {
         showSkipButton();
     }
 }, 3000);
+
+// 简化的资源加载逻辑
+async function loadResources() {
+    try {
+        // 调用预加载所有资源的函数
+        await preloadAllResources();
+        
+        // 加载完成后调用finishLoading
+        finishLoading();
+    } catch (error) {
+        console.error('资源加载失败:', error);
+        // 即使加载失败也调用finishLoading
+        finishLoading();
+    }
+}
+
+// 启动资源加载
+window.addEventListener('DOMContentLoaded', () => {
+    loadResources();
+});
+
+// 添加一个后备机制，确保即使资源加载过程出现问题也能完成加载
+setTimeout(() => {
+    if (!document.body.classList.contains('loaded')) {
+        console.warn('加载过程超时，强制完成加载');
+        finishLoading();
+    }
+}, 8000);
+
+// 确保finishLoading函数能被调用
+window.finishLoading = finishLoading;
 
 
 
@@ -754,11 +777,11 @@ setTimeout(() => {
                 ];
 
                 // 初始化计数器
-                imagesTotalCount = imageResources.length;
-                pagesTotalCount = pageResources.length;
-                fontsTotalCount = fontResources.length;
+        imagesTotalCount = imageResources.length;
+        pagesTotalCount = pageResources.length;
+        fontsTotalCount = fontResources.length;
 
-                updateProgress();
+        updateProgress(1);
 
                 // 添加超时机制
                 const timeoutPromise = new Promise((resolve) => {
@@ -778,14 +801,22 @@ setTimeout(() => {
                             imagesLoadingCount--;
                             console.log(`图片加载完成: ${imgSrc}, 剩余: ${imagesLoadingCount}`);
                             addConsoleLog(`图片加载完成: ${imgSrc}`);
-                            updateProgress();
+                            // 计算当前进度
+                            const loaded = (imagesTotalCount - imagesLoadingCount) + (pagesTotalCount - pagesLoadingCount) + (fontsTotalCount - fontsLoadingCount);
+                            const total = imagesTotalCount + pagesTotalCount + fontsTotalCount;
+                            const currentProgress = (loaded / total) * 100;
+                            updateProgress(currentProgress);
                             resolve();
                         };
                         img.onerror = () => {
                             imagesLoadingCount--;
                             console.warn(`图片加载失败: ${imgSrc}, 但继续加载其他资源`);
                             addConsoleLog(`图片加载失败: ${imgSrc}`);
-                            updateProgress();
+                            // 计算当前进度
+                            const loaded = (imagesTotalCount - imagesLoadingCount) + (pagesTotalCount - pagesLoadingCount) + (fontsTotalCount - fontsLoadingCount);
+                            const total = imagesTotalCount + pagesTotalCount + fontsTotalCount;
+                            const currentProgress = (loaded / total) * 100;
+                            updateProgress(currentProgress);
                             resolve(); // 失败时也继续
                         };
                         img.src = imgSrc;
@@ -795,20 +826,28 @@ setTimeout(() => {
                 // 预加载页面
                 const pagePromises = pageResources.map(pageSrc => {
                     return new Promise((resolve) => {
-                        pagesLoadingCount++;
+                        pagesLoadingCount++; 
                         fetch(pageSrc)
                             .then(() => {
                                 pagesLoadingCount--;
                                 console.log(`页面预加载完成: ${pageSrc}, 剩余: ${pagesLoadingCount}`);
                                 addConsoleLog(`页面预加载完成: ${pageSrc}`);
-                                updateProgress();
+                                // 计算当前进度
+                                const loaded = (imagesTotalCount - imagesLoadingCount) + (pagesTotalCount - pagesLoadingCount) + (fontsTotalCount - fontsLoadingCount);
+                                const total = imagesTotalCount + pagesTotalCount + fontsTotalCount;
+                                const currentProgress = (loaded / total) * 100;
+                                updateProgress(currentProgress);
                                 resolve();
                             })
                             .catch(() => {
                                 pagesLoadingCount--;
                                 console.warn(`页面预加载失败: ${pageSrc}, 但继续加载其他资源`);
                                 addConsoleLog(`页面预加载失败: ${pageSrc}`);
-                                updateProgress();
+                                // 计算当前进度
+                                const loaded = (imagesTotalCount - imagesLoadingCount) + (pagesTotalCount - pagesLoadingCount) + (fontsTotalCount - fontsLoadingCount);
+                                const total = imagesTotalCount + pagesTotalCount + fontsTotalCount;
+                                const currentProgress = (loaded / total) * 100;
+                                updateProgress(currentProgress);
                                 resolve(); // 失败时也继续
                             });
                     });
@@ -817,7 +856,7 @@ setTimeout(() => {
                 // 预加载字体
                 const fontPromises = fontResources.map(fontSrc => {
                     return new Promise((resolve) => {
-                        fontsLoadingCount++;
+                        fontsLoadingCount++; 
                         // 使用FontFace API加载字体
                         const font = new FontFace('FontAwesome', `url(${fontSrc})`);
                         font.load()
@@ -825,14 +864,22 @@ setTimeout(() => {
                                 fontsLoadingCount--;
                                 console.log(`字体加载完成: ${fontSrc}, 剩余: ${fontsLoadingCount}`);
                                 addConsoleLog(`字体加载完成: ${fontSrc}`);
-                                updateProgress();
+                                // 计算当前进度
+                                const loaded = (imagesTotalCount - imagesLoadingCount) + (pagesTotalCount - pagesLoadingCount) + (fontsTotalCount - fontsLoadingCount);
+                                const total = imagesTotalCount + pagesTotalCount + fontsTotalCount;
+                                const currentProgress = (loaded / total) * 100;
+                                updateProgress(currentProgress);
                                 resolve();
                             })
                             .catch(() => {
                                 fontsLoadingCount--;
                                 console.warn(`字体加载失败: ${fontSrc}, 但继续加载其他资源`);
                                 addConsoleLog(`字体加载失败: ${fontSrc}`);
-                                updateProgress();
+                                // 计算当前进度
+                                const loaded = (imagesTotalCount - imagesLoadingCount) + (pagesTotalCount - pagesLoadingCount) + (fontsTotalCount - fontsLoadingCount);
+                                const total = imagesTotalCount + pagesTotalCount + fontsTotalCount;
+                                const currentProgress = (loaded / total) * 100;
+                                updateProgress(currentProgress);
                                 resolve(); // 失败时也继续
                             });
                     });
@@ -863,24 +910,29 @@ setTimeout(() => {
             console.warn('waitForAllResources函数未定义，将在资源加载时自动处理');
         }
 
-        // 添加一个后备机制，确保即使预加载过程出现问题也能完成加载
-        setTimeout(() => {
-            if (!document.body.classList.contains('loaded')) {
-                console.warn('加载过程超时，强制完成加载');
+        // 设置跳过加载按钮功能 - 移至全局作用域
+function setupSkipLoadingButton() {
+    const skipButton = document.getElementById('skip-loading-btn');
 
-                // 设置跳过加载按钮功能
-                function setupSkipLoadingButton() {
-                    const skipButton = document.getElementById('skip-loading-btn');
+    if (skipButton) {
+        skipButton.addEventListener('click', function () {
+            console.log('用户点击了"不等了，先看文字"按钮，跳过加载');
+            finishLoading();
+        });
+    } else {
+        console.warn('跳过加载按钮未找到');
+    }
+}
 
-                    if (skipButton) {
-                        skipButton.addEventListener('click', function () {
-                            console.log('用户点击了"不等了，先看文字"按钮，跳过加载');
-                            finishLoading();
-                        });
-                    } else {
-                        console.warn('跳过加载按钮未找到');
-                    }
-                }
+// 确保在DOM加载完成后初始化跳过按钮
+window.addEventListener('DOMContentLoaded', () => {
+    setupSkipLoadingButton();
+});
+
+// 添加一个后备机制，确保即使预加载过程出现问题也能完成加载
+setTimeout(() => {
+    if (!document.body.classList.contains('loaded')) {
+        console.warn('加载过程超时，强制完成加载');
 
                 // 检查是否需要显示跳过按钮 - 彻底修复循环问题
                 async function checkSkipButtonDisplay() {
