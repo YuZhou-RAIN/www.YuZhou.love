@@ -32,6 +32,15 @@ let progressFill = null;
 let progressText = null;
 let resourceCountElement = null;
 
+// 初始化变量，确保所有变量都有正确的初始值
+console.log('初始化加载状态变量');
+console.log('imagesTotalCount:', imagesTotalCount);
+console.log('pagesTotalCount:', pagesTotalCount);
+console.log('fontsTotalCount:', fontsTotalCount);
+console.log('imagesLoadingCount:', imagesLoadingCount);
+console.log('pagesLoadingCount:', pagesLoadingCount);
+console.log('fontsLoadingCount:', fontsLoadingCount);
+
 // 原始背景图片列表
 const originalBackgroundImages = [
     'images/主页背景图/1.jpg',
@@ -652,15 +661,31 @@ let progressInterval = null;
 
 // 更新进度条
 function updateProgress(percent) {
-    const progressFill = document.getElementById('progressFill');
-    const progressText = document.getElementById('progressText');
     if (progressFill && progressText) {
-        // 确保进度至少为1%，不超过99% 
-        progress = Math.max(1, Math.min(99, percent));
+        // 确保进度不超过99%，但允许为0%，真实反映加载状态
+        progress = Math.min(99, percent);
         
         progressFill.style.width = `${progress}%`;
         progressText.textContent = `${Math.round(progress)}%`;
     }
+}
+
+// 更新资源计数显示
+function updateResourceCount() {
+    if (resourceCountElement) {
+        const loaded = (imagesTotalCount - imagesLoadingCount) + (pagesTotalCount - pagesLoadingCount) + (fontsTotalCount - fontsLoadingCount);
+        const total = imagesTotalCount + pagesTotalCount + fontsTotalCount;
+        resourceCountElement.textContent = `${loaded}/${total}`;
+    }
+}
+
+// 同时更新进度和资源计数
+function updateProgressAndResourceCount() {
+    const loaded = (imagesTotalCount - imagesLoadingCount) + (pagesTotalCount - pagesLoadingCount) + (fontsTotalCount - fontsLoadingCount);
+    const total = imagesTotalCount + pagesTotalCount + fontsTotalCount;
+    const currentProgress = (loaded / total) * 100;
+    updateProgress(currentProgress);
+    updateResourceCount();
 }
 
 // 控制台日志函数
@@ -670,15 +695,30 @@ function addConsoleLog(message) {
 
 // 启动进度更新
 function startProgressUpdate() {
-    // 立即更新一次进度，确保不是0%
-    updateProgress(1);
+    // 立即更新一次进度，显示真实的0%状态
+    updateProgress(0);
     
     // 每500ms更新一次进度
     progressInterval = setInterval(() => {
-        // 非线性进度增长逻辑，前期快，后期慢
-        const growthRate = 100 - progress;
-        const increment = Math.random() * growthRate * 0.05;
-        progress += increment;
+        // 非线性进度增长逻辑，只有在资源加载较慢时才会生效
+        // 真实进度由资源加载事件驱动，这里只是辅助，避免进度条长时间不动
+        const loaded = (imagesTotalCount - imagesLoadingCount) + (pagesTotalCount - pagesLoadingCount) + (fontsTotalCount - fontsLoadingCount);
+        const total = imagesTotalCount + pagesTotalCount + fontsTotalCount;
+        const realProgress = total > 0 ? (loaded / total) * 100 : 0;
+        
+        // 如果真实进度已经超过当前进度，使用真实进度
+        if (realProgress > progress) {
+            progress = realProgress;
+        } else if (realProgress < progress - 10) {
+            // 如果真实进度比当前进度低很多，调整到真实进度
+            progress = realProgress;
+        } else {
+            // 否则，缓慢增长，提供更好的用户体验
+            const growthRate = 100 - progress;
+            const increment = Math.random() * growthRate * 0.02;
+            progress += increment;
+        }
+        
         updateProgress(progress);
         
         // 如果进度接近100%，停止自动更新
@@ -690,6 +730,12 @@ function startProgressUpdate() {
 
 // 在DOM加载完成后启动进度更新
 window.addEventListener('DOMContentLoaded', () => {
+    // 初始化DOM元素引用
+    progressFill = document.getElementById('progressFill');
+    progressText = document.getElementById('progressText');
+    resourceCountElement = document.getElementById('resourceCount');
+    
+    // 启动进度更新
     startProgressUpdate();
 });
 
@@ -711,14 +757,16 @@ setTimeout(() => {
 // 简化的资源加载逻辑
 async function loadResources() {
     try {
+        console.log('开始资源加载流程');
         // 调用预加载所有资源的函数
         await preloadAllResources();
         
+        console.log('所有资源预加载完成，调用finishLoading');
         // 加载完成后调用finishLoading
         finishLoading();
     } catch (error) {
-        console.error('资源加载失败:', error);
-        // 即使加载失败也调用finishLoading
+        console.error('资源加载过程中发生错误:', error);
+        // 即使加载失败也调用finishLoading，避免加载界面永久停留
         finishLoading();
     }
 }
@@ -739,168 +787,152 @@ setTimeout(() => {
 // 确保finishLoading函数能被调用
 window.finishLoading = finishLoading;
 
+// 预加载所有资源的函数 - 移到全局作用域
+async function preloadAllResources() {
+    console.log('开始预加载所有资源...');
+    addConsoleLog('开始预加载所有资源...');
 
+    try {
+        // 图片资源列表
+        const imageResources = [
+            'images/主页背景图/1.jpg',
+            'images/主页背景图/2.jpg',
+            'images/主页背景图/3.jpg',
+            'images/主页背景图/4.jpg',
+            'images/loading.avif',
+            'images/雨州logo.svg',
+            'images/服务器特色-四象限构图/左.jpg',
+            'images/服务器特色-四象限构图/右.jpg',
+            'images/Java版加入指南.png',
+            'images/基岩版加入指南.png'
+        ];
 
-        // 预加载所有资源的函数
-        async function preloadAllResources() {
-            console.log('开始预加载所有资源...');
-            addConsoleLog('开始预加载所有资源...');
+        // 页面资源列表
+        const pageResources = [
+            'pages/home.html',
+            'pages/features.html',
+            'pages/join.html',
+            'pages/about.html'
+        ];
 
-            try {
-                // 图片资源列表
-                const imageResources = [
-                    'images/主页背景图/1.jpg',
-                    'images/主页背景图/2.jpg',
-                    'images/主页背景图/3.jpg',
-                    'images/主页背景图/4.jpg',
-                    'images/loading.avif',
-                    'images/雨州logo.svg',
-                    'images/服务器特色-四象限构图/左.jpg',
-                    'images/服务器特色-四象限构图/右.jpg',
-                    'images/Java版加入指南.png',
-                    'images/基岩版加入指南.png'
-                ];
+        // 字体资源列表 - 只包含当前项目引用到的字体
+        const fontResources = [
+            'fonts/fontawesome-free-6.4.0-web/webfonts/fa-solid-900.woff2',
+            'fonts/fontawesome-free-6.4.0-web/webfonts/fa-brands-400.woff2',
+            'fonts/fontawesome-free-6.4.0-web/webfonts/fa-regular-400.woff2'
+        ];
 
-                // 页面资源列表
-                const pageResources = [
-                    'pages/home.html',
-                    'pages/features.html',
-                    'pages/join.html',
-                    'pages/about.html'
-                ];
-
-                // 字体资源列表 - 只包含当前项目引用到的字体
-                const fontResources = [
-                    'fonts/fontawesome-free-6.4.0-web/webfonts/fa-solid-900.woff2',
-                    'fonts/fontawesome-free-6.4.0-web/webfonts/fa-brands-400.woff2',
-                    'fonts/fontawesome-free-6.4.0-web/webfonts/fa-regular-400.woff2'
-                ];
-
-                // 初始化计数器
+        // 初始化计数器
         imagesTotalCount = imageResources.length;
         pagesTotalCount = pageResources.length;
         fontsTotalCount = fontResources.length;
 
-        updateProgress(1);
+        // 更新资源计数显示
+        updateResourceCount();
+        
+        // 立即更新一次进度
+        updateProgress(0);
 
-                // 添加超时机制
-                const timeoutPromise = new Promise((resolve) => {
-                    setTimeout(() => {
-                        console.warn('预加载超时，跳过剩余资源加载');
-                        addConsoleLog('预加载超时，跳过剩余资源加载');
+        // 添加超时机制
+        const timeoutPromise = new Promise((resolve) => {
+            setTimeout(() => {
+                console.warn('预加载超时，跳过剩余资源加载');
+                addConsoleLog('预加载超时，跳过剩余资源加载');
+                resolve();
+            }, 15000); // 15秒超时
+        });
+
+        // 预加载图片
+        const imagePromises = imageResources.map(imgSrc => {
+            return new Promise((resolve) => {
+                imagesLoadingCount++;
+                const img = new Image();
+                img.onload = () => {
+                    imagesLoadingCount--;
+                    console.log(`图片加载完成: ${imgSrc}, 剩余: ${imagesLoadingCount}`);
+                    addConsoleLog(`图片加载完成: ${imgSrc}`);
+                    // 计算当前进度
+                    updateProgressAndResourceCount();
+                    resolve();
+                };
+                img.onerror = () => {
+                    imagesLoadingCount--;
+                    console.warn(`图片加载失败: ${imgSrc}, 但继续加载其他资源`);
+                    addConsoleLog(`图片加载失败: ${imgSrc}`);
+                    // 计算当前进度
+                    updateProgressAndResourceCount();
+                    resolve(); // 失败时也继续
+                };
+                img.src = imgSrc;
+            });
+        });
+
+        // 预加载页面
+        const pagePromises = pageResources.map(pageSrc => {
+            return new Promise((resolve) => {
+                pagesLoadingCount++; 
+                fetch(pageSrc)
+                    .then(() => {
+                        pagesLoadingCount--;
+                        console.log(`页面预加载完成: ${pageSrc}, 剩余: ${pagesLoadingCount}`);
+                        addConsoleLog(`页面预加载完成: ${pageSrc}`);
+                        // 计算当前进度
+                        updateProgressAndResourceCount();
                         resolve();
-                    }, 15000); // 15秒超时
-                });
-
-                // 预加载图片
-                const imagePromises = imageResources.map(imgSrc => {
-                    return new Promise((resolve) => {
-                        imagesLoadingCount++;
-                        const img = new Image();
-                        img.onload = () => {
-                            imagesLoadingCount--;
-                            console.log(`图片加载完成: ${imgSrc}, 剩余: ${imagesLoadingCount}`);
-                            addConsoleLog(`图片加载完成: ${imgSrc}`);
-                            // 计算当前进度
-                            const loaded = (imagesTotalCount - imagesLoadingCount) + (pagesTotalCount - pagesLoadingCount) + (fontsTotalCount - fontsLoadingCount);
-                            const total = imagesTotalCount + pagesTotalCount + fontsTotalCount;
-                            const currentProgress = (loaded / total) * 100;
-                            updateProgress(currentProgress);
-                            resolve();
-                        };
-                        img.onerror = () => {
-                            imagesLoadingCount--;
-                            console.warn(`图片加载失败: ${imgSrc}, 但继续加载其他资源`);
-                            addConsoleLog(`图片加载失败: ${imgSrc}`);
-                            // 计算当前进度
-                            const loaded = (imagesTotalCount - imagesLoadingCount) + (pagesTotalCount - pagesLoadingCount) + (fontsTotalCount - fontsLoadingCount);
-                            const total = imagesTotalCount + pagesTotalCount + fontsTotalCount;
-                            const currentProgress = (loaded / total) * 100;
-                            updateProgress(currentProgress);
-                            resolve(); // 失败时也继续
-                        };
-                        img.src = imgSrc;
+                    })
+                    .catch(() => {
+                        pagesLoadingCount--;
+                        console.warn(`页面预加载失败: ${pageSrc}, 但继续加载其他资源`);
+                        addConsoleLog(`页面预加载失败: ${pageSrc}`);
+                        // 计算当前进度
+                        updateProgressAndResourceCount();
+                        resolve(); // 失败时也继续
                     });
-                });
+            });
+        });
 
-                // 预加载页面
-                const pagePromises = pageResources.map(pageSrc => {
-                    return new Promise((resolve) => {
-                        pagesLoadingCount++; 
-                        fetch(pageSrc)
-                            .then(() => {
-                                pagesLoadingCount--;
-                                console.log(`页面预加载完成: ${pageSrc}, 剩余: ${pagesLoadingCount}`);
-                                addConsoleLog(`页面预加载完成: ${pageSrc}`);
-                                // 计算当前进度
-                                const loaded = (imagesTotalCount - imagesLoadingCount) + (pagesTotalCount - pagesLoadingCount) + (fontsTotalCount - fontsLoadingCount);
-                                const total = imagesTotalCount + pagesTotalCount + fontsTotalCount;
-                                const currentProgress = (loaded / total) * 100;
-                                updateProgress(currentProgress);
-                                resolve();
-                            })
-                            .catch(() => {
-                                pagesLoadingCount--;
-                                console.warn(`页面预加载失败: ${pageSrc}, 但继续加载其他资源`);
-                                addConsoleLog(`页面预加载失败: ${pageSrc}`);
-                                // 计算当前进度
-                                const loaded = (imagesTotalCount - imagesLoadingCount) + (pagesTotalCount - pagesLoadingCount) + (fontsTotalCount - fontsLoadingCount);
-                                const total = imagesTotalCount + pagesTotalCount + fontsTotalCount;
-                                const currentProgress = (loaded / total) * 100;
-                                updateProgress(currentProgress);
-                                resolve(); // 失败时也继续
-                            });
+        // 预加载字体
+        const fontPromises = fontResources.map(fontSrc => {
+            return new Promise((resolve) => {
+                fontsLoadingCount++; 
+                // 使用FontFace API加载字体
+                const font = new FontFace('FontAwesome', `url(${fontSrc})`);
+                font.load()
+                    .then(() => {
+                        fontsLoadingCount--;
+                        console.log(`字体加载完成: ${fontSrc}, 剩余: ${fontsLoadingCount}`);
+                        addConsoleLog(`字体加载完成: ${fontSrc}`);
+                        // 计算当前进度
+                        updateProgressAndResourceCount();
+                        resolve();
+                    })
+                    .catch(() => {
+                        fontsLoadingCount--;
+                        console.warn(`字体加载失败: ${fontSrc}, 但继续加载其他资源`);
+                        addConsoleLog(`字体加载失败: ${fontSrc}`);
+                        // 计算当前进度
+                        updateProgressAndResourceCount();
+                        resolve(); // 失败时也继续
                     });
-                });
+            });
+        });
 
-                // 预加载字体
-                const fontPromises = fontResources.map(fontSrc => {
-                    return new Promise((resolve) => {
-                        fontsLoadingCount++; 
-                        // 使用FontFace API加载字体
-                        const font = new FontFace('FontAwesome', `url(${fontSrc})`);
-                        font.load()
-                            .then(() => {
-                                fontsLoadingCount--;
-                                console.log(`字体加载完成: ${fontSrc}, 剩余: ${fontsLoadingCount}`);
-                                addConsoleLog(`字体加载完成: ${fontSrc}`);
-                                // 计算当前进度
-                                const loaded = (imagesTotalCount - imagesLoadingCount) + (pagesTotalCount - pagesLoadingCount) + (fontsTotalCount - fontsLoadingCount);
-                                const total = imagesTotalCount + pagesTotalCount + fontsTotalCount;
-                                const currentProgress = (loaded / total) * 100;
-                                updateProgress(currentProgress);
-                                resolve();
-                            })
-                            .catch(() => {
-                                fontsLoadingCount--;
-                                console.warn(`字体加载失败: ${fontSrc}, 但继续加载其他资源`);
-                                addConsoleLog(`字体加载失败: ${fontSrc}`);
-                                // 计算当前进度
-                                const loaded = (imagesTotalCount - imagesLoadingCount) + (pagesTotalCount - pagesLoadingCount) + (fontsTotalCount - fontsLoadingCount);
-                                const total = imagesTotalCount + pagesTotalCount + fontsTotalCount;
-                                const currentProgress = (loaded / total) * 100;
-                                updateProgress(currentProgress);
-                                resolve(); // 失败时也继续
-                            });
-                    });
-                });
+        // 等待所有资源加载完成或超时
+        await Promise.all([
+            ...imagePromises,
+            ...pagePromises,
+            ...fontPromises,
+            timeoutPromise
+        ]);
 
-                // 等待所有资源加载完成或超时
-                await Promise.all([
-                    ...imagePromises,
-                    ...pagePromises,
-                    ...fontPromises,
-                    timeoutPromise
-                ]);
-
-                console.log('所有资源预加载完成或超时!');
-                addConsoleLog('所有资源预加载完成或超时!');
-            } catch (error) {
-                console.error('预加载过程中出现错误:', error);
-                addConsoleLog('预加载过程中出现错误: ' + error.message);
-            }
-            return true;
-        }
+        console.log('所有资源预加载完成或超时!');
+        addConsoleLog('所有资源预加载完成或超时!');
+    } catch (error) {
+        console.error('预加载过程中出现错误:', error);
+        addConsoleLog('预加载过程中出现错误: ' + error.message);
+    }
+    return true;
+}
 
         // 启动资源加载过程
         // 检查waitForAllResources函数是否存在
