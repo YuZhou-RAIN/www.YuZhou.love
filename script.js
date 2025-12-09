@@ -432,7 +432,13 @@ function finishLoading() {
                 }
                 
                 setTimeout(() => {
+                    // 先初始化英雄区背景
+                    initHeroBackground();
+                    
+                    // 然后隐藏加载指示器
                     loadingIndicator.style.display = 'none';
+                    
+                    // 添加loaded类，显示页面内容
                     document.body.classList.add('loaded');
                     
                     if (typeof AppInitializer !== 'undefined' && typeof AppInitializer.initAnimations === 'function') {
@@ -634,13 +640,7 @@ async function preloadAllResources() {
         updateResourceCount();
         updateProgress(0);
         
-        const timeoutPromise = new Promise((resolve) => {
-            setTimeout(() => {
-                console.warn('预加载超时，跳过剩余资源加载');
-                addConsoleLog('预加载超时，跳过剩余资源加载');
-                resolve();
-            }, 15000);
-        });
+        // 移除超时机制，确保所有资源都加载完成
         
         const imagePromises = imageResources.map(imgSrc => {
             return new Promise((resolve) => {
@@ -707,15 +707,15 @@ async function preloadAllResources() {
             });
         });
         
+        // 等待所有资源加载完成
         await Promise.all([
             ...imagePromises,
             ...pagePromises,
-            ...fontPromises,
-            timeoutPromise
+            ...fontPromises
         ]);
         
-        console.log('所有资源预加载完成或超时!');
-        addConsoleLog('所有资源预加载完成或超时!');
+        console.log('所有资源预加载完成!');
+        addConsoleLog('所有资源预加载完成!');
     } catch (error) {
         console.error('预加载过程中出现错误:', error);
         addConsoleLog('预加载过程中出现错误: ' + error.message);
@@ -739,10 +739,32 @@ async function loadResources() {
 // 背景初始化
 function resetBackgroundInitialization() {
     console.log('重置背景初始化');
+    // 重置背景状态
+    const heroBg = document.querySelector('.hero-bg');
+    if (heroBg) {
+        heroBg.style.backgroundImage = '';
+        heroBg.style.opacity = '0';
+    }
 }
 
 function initHeroBackground() {
     console.log('初始化英雄区背景');
+    // 获取英雄区背景元素
+    const heroBg = document.querySelector('.hero-bg');
+    if (heroBg) {
+        // 随机选择一张背景图片
+        const backgroundImages = getBackgroundImages();
+        if (backgroundImages && backgroundImages.length > 0) {
+            // 确保图片已加载完成
+            const randomIndex = Math.floor(Math.random() * backgroundImages.length);
+            const bgImage = backgroundImages[randomIndex];
+            
+            // 应用背景图片
+            heroBg.style.backgroundImage = `url('${bgImage}')`;
+            heroBg.style.opacity = '1';
+            console.log(`已应用背景图片: ${bgImage}`);
+        }
+    }
 }
 
 // DOM加载完成后初始化
