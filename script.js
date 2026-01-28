@@ -294,7 +294,74 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // 5. 如果没有资源，添加虚拟资源保证动画
+    // 5. 追踪CSS背景图片
+    const bgImageUrls = new Set();
+    
+    // 从所有样式表中提取背景图片URL
+    try {
+        Array.from(document.styleSheets).forEach(sheet => {
+            try {
+                Array.from(sheet.cssRules || []).forEach(rule => {
+                    if (rule.style) {
+                        const bgImage = rule.style.backgroundImage || rule.style.background;
+                        if (bgImage) {
+                            const matches = bgImage.match(/url\(["']?([^"')]+)["']?\)/g);
+                            if (matches) {
+                                matches.forEach(match => {
+                                    const url = match.replace(/url\(["']?([^"')]+)["']?\)/, '$1');
+                                    if (url && !url.startsWith('data:')) {
+                                        bgImageUrls.add(url);
+                                    }
+                                });
+                            }
+                        }
+                    }
+                });
+            } catch (e) {
+                // 跨域样式表可能无法访问，忽略错误
+            }
+        });
+    } catch (e) {
+        console.log('无法解析CSS背景图片');
+    }
+    
+    // 同时检查内联样式
+    document.querySelectorAll('*').forEach(el => {
+        const style = el.getAttribute('style');
+        if (style) {
+            const matches = style.match(/url\(["']?([^"')]+)["']?\)/g);
+            if (matches) {
+                matches.forEach(match => {
+                    const url = match.replace(/url\(["']?([^"')]+)["']?\)/, '$1');
+                    if (url && !url.startsWith('data:')) {
+                        bgImageUrls.add(url);
+                    }
+                });
+            }
+        }
+    });
+    
+    // 预加载并追踪CSS背景图片
+    bgImageUrls.forEach((url, index) => {
+        const resource = preciseLoader.addResource(`bg-image-${index}`, 'background-image', 2);
+        
+        const img = new Image();
+        const promise = new Promise((resolve) => {
+            img.onload = () => {
+                preciseLoader.markLoaded(resource.id);
+                resolve();
+            };
+            img.onerror = () => {
+                preciseLoader.markLoaded(resource.id);
+                resolve();
+            };
+        });
+        
+        img.src = url;
+        resourcePromises.push(promise);
+    });
+
+    // 6. 如果没有资源，添加虚拟资源保证动画
     if (preciseLoader.resources.length === 0) {
         for (let i = 0; i < 10; i++) {
             preciseLoader.addResource(`virtual-${i}`, 'virtual', 1);
