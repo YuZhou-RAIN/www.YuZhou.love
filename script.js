@@ -78,6 +78,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const bar = document.getElementById('loadingBar');
     const percent = document.getElementById('loadingPercent');
     const info = document.getElementById('loadingInfo');
+    const horizontalBar = document.getElementById('loadingBarHorizontal');
     
     const timer = setInterval(() => {
         // 递增进度 - 模拟真实加载
@@ -97,7 +98,24 @@ document.addEventListener('DOMContentLoaded', () => {
         if (progress >= 100) {
             progress = 100;
             clearInterval(timer);
-            setTimeout(hideLoading, 500);
+            
+            // 添加水平展开动画
+            if (horizontalBar) {
+                setTimeout(() => {
+                    horizontalBar.style.width = '100%';
+                    
+                    // 水平展开完成后，开始向右移动消失
+                    setTimeout(() => {
+                        horizontalBar.style.transition = 'width 2s ease-out';
+                        horizontalBar.style.width = '120%'; // 向右延伸
+                        setTimeout(() => {
+                            hideLoading(); // 隐藏加载界面
+                        }, 2000);
+                    }, 1500);
+                }, 200);
+            } else {
+                setTimeout(hideLoading, 500);
+            }
         }
         
         // 更新进度条高度（从上到下）
@@ -107,11 +125,11 @@ document.addEventListener('DOMContentLoaded', () => {
         if (percent) percent.textContent = Math.floor(progress) + '%';
         
         // 更新进度信息位置（跟随进度条头部/底端）
-        // 进度条从top:5vh开始，高度90vh
+        // 进度条顶天立地，从top:0开始，高度100vh
         if (info) {
-            const trackHeight = window.innerHeight * 0.9; // 90vh
+            const trackHeight = window.innerHeight; // 100vh
             const currentPos = (progress / 100) * trackHeight;
-            info.style.top = `calc(5vh + ${currentPos}px)`;
+            info.style.top = `${currentPos}px`;
         }
     }, 60);
 
