@@ -73,24 +73,23 @@ function hideLoading() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    // 垂直进度条动画
+    // 垂直进度条动画 - 从上到下
     let progress = 0;
     const bar = document.getElementById('loadingBar');
     const percent = document.getElementById('loadingPercent');
     const info = document.getElementById('loadingInfo');
-    const trackHeight = 300; // 进度条轨道高度
     
     const timer = setInterval(() => {
-        // 递增进度 - 模拟真实加载：开始快，中间慢，最后快
+        // 递增进度 - 模拟真实加载
         let increment;
         if (progress < 30) {
-            increment = Math.random() * 12 + 8; // 快
+            increment = Math.random() * 10 + 5;
         } else if (progress < 70) {
-            increment = Math.random() * 6 + 2;  // 慢
+            increment = Math.random() * 5 + 2;
         } else if (progress < 90) {
-            increment = Math.random() * 4 + 1;  // 很慢
+            increment = Math.random() * 3 + 1;
         } else {
-            increment = Math.random() * 8 + 4;  // 最后冲刺
+            increment = Math.random() * 6 + 3;
         }
         
         progress += increment;
@@ -98,21 +97,23 @@ document.addEventListener('DOMContentLoaded', () => {
         if (progress >= 100) {
             progress = 100;
             clearInterval(timer);
-            setTimeout(hideLoading, 600);
+            setTimeout(hideLoading, 500);
         }
         
-        // 更新进度条高度（从下到上）
+        // 更新进度条高度（从上到下）
         if (bar) bar.style.height = progress + '%';
         
         // 更新百分比文字
         if (percent) percent.textContent = Math.floor(progress) + '%';
         
-        // 更新进度信息位置（跟随进度条顶端）
+        // 更新进度信息位置（跟随进度条头部/底端）
+        // 进度条从top:10vh开始，高度80vh
         if (info) {
-            const bottomPos = (progress / 100) * trackHeight;
-            info.style.bottom = bottomPos + 'px';
+            const trackHeight = window.innerHeight * 0.8; // 80vh
+            const currentPos = (progress / 100) * trackHeight;
+            info.style.top = `calc(10vh + ${currentPos}px)`;
         }
-    }, 80);
+    }, 60);
 
     // 导航切换
     const navLinks = document.querySelectorAll('.sidebar-link[data-page], .footer-links a[data-page]');
