@@ -72,8 +72,58 @@ function hideLoading() {
     }
 }
 
+// 真实资源加载进度追踪
+class ResourceLoader {
+    constructor() {
+        this.totalResources = 0;
+        this.loadedResources = 0;
+        this.progress = 0;
+        this.callbacks = [];
+        this.startTime = Date.now();
+        this.minLoadTime = 1500; // 最小加载时间1.5秒，保证动画可见性
+    }
+
+    onProgress(callback) {
+        this.callbacks.push(callback);
+    }
+
+    updateProgress() {
+        // 计算基于真实资源加载的进度
+        let resourceProgress = this.totalResources > 0 
+            ? (this.loadedResources / this.totalResources) * 100 
+            : 0;
+        
+        // 计算基于时间的最小进度，保证动画流畅
+        const elapsedTime = Date.now() - this.startTime;
+        const timeProgress = Math.min((elapsedTime / this.minLoadTime) * 100, 100);
+        
+        // 取两者的较小值，确保资源加载主导，但时间保证最小进度
+        this.progress = Math.max(resourceProgress, Math.min(timeProgress, resourceProgress + 30));
+        
+        // 触发回调
+        this.callbacks.forEach(cb => cb(this.progress));
+    }
+
+    addResource() {
+        this.totalResources++;
+        this.updateProgress();
+    }
+
+    resourceLoaded() {
+        this.loadedResources++;
+        this.updateProgress();
+    }
+
+    isComplete() {
+        return this.loadedResources >= this.totalResources && this.totalResources > 0;
+    }
+}
+
+// 初始化资源加载器
+const resourceLoader = new ResourceLoader();
+
 document.addEventListener('DOMContentLoaded', () => {
-    // 垂直进度条动画 - 从上到下
+    // 垂直进度条动画 - 从上到下（真实资源加载）
     let progress = 0;
     const bar = document.getElementById('loadingBar');
     const percent = document.getElementById('loadingPercent');
@@ -81,95 +131,147 @@ document.addEventListener('DOMContentLoaded', () => {
     const horizontalBar = document.getElementById('loadingBarHorizontal');
 
     // 计算横向动画时长：保持速度一致，但设置最小时长保证可感知性
-    // 目标：3388px宽度时0.5秒，速度 = 3388/0.5 = 6776px/秒
-    // 公式：时长 = 当前宽度 / 6776，但不小于最小值
     const screenWidth = window.innerWidth;
-    const minDuration = 0.35; // 最小动画时长0.35秒，保证小屏幕动画可感知
-    const calculatedDuration = screenWidth / 6776; // 根据屏幕宽度动态计算
-    const horizontalDuration = Math.max(calculatedDuration, minDuration); // 取较大值
-    const horizontalDurationMs = Math.round(horizontalDuration * 1000); // 转换为毫秒
+    const minDuration = 0.35;
+    const calculatedDuration = screenWidth / 6776;
+    const horizontalDuration = Math.max(calculatedDuration, minDuration);
+    const horizontalDurationMs = Math.round(horizontalDuration * 1000);
 
     // 动态设置CSS过渡时长
     if (horizontalBar) {
         horizontalBar.style.transition = `width ${horizontalDuration}s cubic-bezier(0.42, 0, 1, 1), left ${horizontalDuration}s cubic-bezier(0.42, 0, 1, 1)`;
     }
 
-    // 初始化文字位置在顶部（跟随进度条头部）
+    // 初始化文字位置在顶部
     if (info) {
         info.style.bottom = `${window.innerHeight}px`;
     }
 
-    const timer = setInterval(() => {
-        // 递增进度 - 模拟真实加载
-        let increment;
-        if (progress < 30) {
-            increment = Math.random() * 10 + 5;
-        } else if (progress < 70) {
-            increment = Math.random() * 5 + 2;
-        } else if (progress < 90) {
-            increment = Math.random() * 3 + 1;
-        } else {
-            increment = Math.random() * 6 + 3;
+    // 追踪所有需要加载的资源
+    const trackableResources = [];
+    
+    // 收集所有图片资源
+    document.querySelectorAll('img').forEach(img => {
+        if (img.src && !img.complete) {
+            resourceLoader.addResource();
+            trackableResources.push({
+                element: img,
+                type: 'image',
+                src: img.src
+            });
         }
-
-        progress += increment;
-
-        if (progress >= 100) {
-            progress = 100;
-            clearInterval(timer);
-
-            // 添加水平展开动画
-            if (horizontalBar) {
-                // 纵向进度条达到100%后，等待0.3秒再开始横向进度条
-                setTimeout(() => {
-                    horizontalBar.style.width = '100%';
-
-                    // 等待水平进度条完全展开后，再隐藏背景遮罩、垂直进度条和进度信息
-                    setTimeout(() => {
-                        const loadingScreen = document.getElementById('loadingScreen');
-                        if (loadingScreen) {
-                            loadingScreen.classList.add('background-hidden');
-                        }
-                        // 立即隐藏进度信息
-                        if (info) {
-                            info.style.opacity = '0';
-                        }
-                    }, horizontalDurationMs); // 使用动态计算的时长
-
-                    // 水平展开完成后，等待0.3秒间隔再开始退场
-                    setTimeout(() => {
-                        // 添加退场类，使用继承速度并继续加速的动画
-                        horizontalBar.classList.add('exiting');
-                        // 计算退场距离（120% - 0% = 120%宽度）
-                        // 退场时间基于距离和速度，但使用更快的加速度
-                        const exitDuration = horizontalDuration * 0.6; // 退场更快，约60%的时长
-                        horizontalBar.style.transition = `left ${exitDuration}s cubic-bezier(0, 0, 0.3, 1)`;
-                        horizontalBar.style.left = '120%';
-                        setTimeout(() => {
-                            hideLoading(); // 隐藏加载界面
-                        }, Math.round(exitDuration * 1000));
-                    }, horizontalDurationMs + 300); // 使用动态计算的时长 + 0.3秒间隔
-                }, 300); // 纵向进度条达到100%后等待0.3秒
-            } else {
-                setTimeout(hideLoading, 500);
+    });
+    
+    // 收集所有CSS字体资源（通过检查字体加载）
+    if (document.fonts) {
+        document.fonts.forEach(font => {
+            if (font.status === 'loading') {
+                resourceLoader.addResource();
+                trackableResources.push({
+                    element: font,
+                    type: 'font'
+                });
             }
-        }
+        });
+    }
 
+    // 监听资源加载完成
+    trackableResources.forEach(resource => {
+        if (resource.type === 'image') {
+            resource.element.addEventListener('load', () => {
+                resourceLoader.resourceLoaded();
+            });
+            resource.element.addEventListener('error', () => {
+                resourceLoader.resourceLoaded(); // 错误也算加载完成
+            });
+        }
+    });
+
+    // 监听字体加载完成
+    if (document.fonts) {
+        document.fonts.ready.then(() => {
+            // 字体全部加载完成
+            resourceLoader.updateProgress();
+        });
+    }
+
+    // 如果没有可追踪的资源，添加一个虚拟资源保证动画
+    if (resourceLoader.totalResources === 0) {
+        resourceLoader.addResource();
+        setTimeout(() => {
+            resourceLoader.resourceLoaded();
+        }, 1000);
+    }
+
+    // 监听真实进度更新
+    resourceLoader.onProgress((realProgress) => {
+        progress = Math.min(realProgress, 100);
+        
         // 更新进度条高度（从上到下）
         if (bar) bar.style.height = progress + '%';
-
+        
         // 更新百分比文字
         if (percent) percent.textContent = Math.floor(progress) + '%';
-
+        
         // 更新进度信息位置（跟随进度条头部/底端）
-        // 进度条从顶部开始，文字从顶部开始向下移动
         if (info) {
-            const trackHeight = window.innerHeight; // 100vh
+            const trackHeight = window.innerHeight;
             const currentPos = (progress / 100) * trackHeight;
-            // 文字从顶部开始，向下移动，跟随进度条头部
-            info.style.bottom = `${trackHeight - currentPos}px`;
+            // 设置底部位置，但限制最小距离屏幕底部20px
+            const bottomPos = Math.max(trackHeight - currentPos, 20);
+            info.style.bottom = `${bottomPos}px`;
         }
-    }, 60);
+        
+        // 检查是否完成
+        if (progress >= 100 && resourceLoader.isComplete()) {
+            completeLoading();
+        }
+    });
+
+    // 完成加载处理
+    function completeLoading() {
+        progress = 100;
+        
+        // 添加水平展开动画
+        if (horizontalBar) {
+            // 纵向进度条达到100%后，等待0.3秒再开始横向进度条
+            setTimeout(() => {
+                horizontalBar.style.width = '100%';
+
+                // 等待水平进度条完全展开后，再隐藏背景遮罩、垂直进度条和进度信息
+                setTimeout(() => {
+                    const loadingScreen = document.getElementById('loadingScreen');
+                    if (loadingScreen) {
+                        loadingScreen.classList.add('background-hidden');
+                    }
+                    // 立即隐藏进度信息
+                    if (info) {
+                        info.style.opacity = '0';
+                    }
+                }, horizontalDurationMs);
+
+                // 水平展开完成后，等待0.3秒间隔再开始退场
+                setTimeout(() => {
+                    horizontalBar.classList.add('exiting');
+                    const exitDuration = horizontalDuration * 0.6;
+                    horizontalBar.style.transition = `left ${exitDuration}s cubic-bezier(0, 0, 0.3, 1)`;
+                    horizontalBar.style.left = '120%';
+                    setTimeout(() => {
+                        hideLoading();
+                    }, Math.round(exitDuration * 1000));
+                }, horizontalDurationMs + 300);
+            }, 300);
+        } else {
+            setTimeout(hideLoading, 500);
+        }
+    }
+
+    // 备用：如果真实加载太慢，最多等待8秒后强制完成
+    setTimeout(() => {
+        if (progress < 100) {
+            completeLoading();
+        }
+    }, 8000);
 
     // 导航切换
     const navLinks = document.querySelectorAll('.sidebar-link[data-page], .footer-links a[data-page]');
