@@ -120,6 +120,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // 添加水平展开动画
             if (horizontalBar) {
+                // 纵向进度条达到100%后，等待0.3秒再开始横向进度条
                 setTimeout(() => {
                     horizontalBar.style.width = '100%';
 
@@ -135,7 +136,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         }
                     }, horizontalDurationMs); // 使用动态计算的时长
 
-                    // 水平展开完成后，立即向右移动消失
+                    // 水平展开完成后，等待0.3秒间隔再开始退场
                     setTimeout(() => {
                         // 添加退场类，使用继承速度并继续加速的动画
                         horizontalBar.classList.add('exiting');
@@ -147,8 +148,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         setTimeout(() => {
                             hideLoading(); // 隐藏加载界面
                         }, Math.round(exitDuration * 1000));
-                    }, horizontalDurationMs); // 使用动态计算的时长
-                }, 200);
+                    }, horizontalDurationMs + 300); // 使用动态计算的时长 + 0.3秒间隔
+                }, 300); // 纵向进度条达到100%后等待0.3秒
             } else {
                 setTimeout(hideLoading, 500);
             }
