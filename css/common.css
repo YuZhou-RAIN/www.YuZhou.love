@@ -273,7 +273,7 @@ body {
     top: 0;
     width: 100%;
     height: 0%;
-    background: linear-gradient(to right, var(--primary) 0%, #00ffff 50%, var(--primary) 100%);
+    background: #45CDF3; /* 纯青色 */
     border-radius: 0; /* 无圆角，长方形 */
     transition: height 0.2s cubic-bezier(0.25, 0.1, 0.25, 1), opacity 0.3s ease-out;
     box-shadow:
@@ -342,7 +342,7 @@ body {
     top: 0;
     height: 100%;
     width: 0%;
-    background: linear-gradient(to right, var(--primary) 0%, #00ffff 50%, var(--primary) 100%);
+    background: #45CDF3; /* 纯青色 */
     transition: width 1.5s cubic-bezier(0.25, 0.1, 0.25, 1), left 2s cubic-bezier(0.25, 0.1, 0.25, 1);
     box-shadow:
         0 0 20px var(--primary),
@@ -359,7 +359,7 @@ body {
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    background: linear-gradient(90deg, transparent, rgba(69, 205, 243, 0.15), transparent);
     animation: horizontalGlow 2s infinite;
 }
 
