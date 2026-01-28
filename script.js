@@ -102,23 +102,21 @@ document.addEventListener('DOMContentLoaded', () => {
             // 添加水平展开动画
             if (horizontalBar) {
                 setTimeout(() => {
+                    // 水平进度条开始展开时，立即隐藏背景遮罩和垂直进度条
+                    const loadingScreen = document.getElementById('loadingScreen');
+                    if (loadingScreen) {
+                        loadingScreen.classList.add('background-hidden');
+                    }
+                    
                     horizontalBar.style.width = '100%';
 
-                    // 等待水平进度条完全展开后，再隐藏背景遮罩和垂直进度条
-                    setTimeout(() => {
-                        const loadingScreen = document.getElementById('loadingScreen');
-                        if (loadingScreen) {
-                            loadingScreen.classList.add('background-hidden');
-                        }
-                    }, 800); // 等待800ms，让水平进度条完全展开
-
-                    // 水平展开完成后，立即向右移动消失（去掉等待）
+                    // 水平展开完成后，立即向右移动消失
                     setTimeout(() => {
                         horizontalBar.style.left = '120%';
                         setTimeout(() => {
                             hideLoading(); // 隐藏加载界面
                         }, 2000);
-                    }, 800); // 与上面同时等待800ms，然后立即开始向右移动
+                    }, 800); // 等待800ms，然后立即开始向右移动
                 }, 200);
             } else {
                 setTimeout(hideLoading, 500);
