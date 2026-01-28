@@ -278,7 +278,7 @@ body {
     box-shadow:
         0 0 20px rgba(69, 205, 243, 0.4),
         0 0 40px rgba(69, 205, 243, 0.2);
-    transition: height 0.2s cubic-bezier(0.25, 0.1, 0.25, 1), opacity 0.3s ease-out;
+    transition: height 0.2s cubic-bezier(0.25, 0.1, 0.25, 1); /* 移除opacity transition */
 }
 
 /* 移除进度条底端的光点（头部） */
@@ -290,9 +290,10 @@ body {
 .loading-info {
     position: fixed;
     left: 20px; /* 贴近加粗后的进度条右侧 */
-    top: 0; /* 从顶部开始 */
+    top: auto; /* 取消固定顶部 */
+    bottom: 0; /* 从底部开始 */
     transform: translateY(0);
-    transition: top 0.2s cubic-bezier(0.25, 0.1, 0.25, 1);
+    transition: bottom 0.2s cubic-bezier(0.25, 0.1, 0.25, 1);
     display: flex;
     flex-direction: column;
     gap: 5px;

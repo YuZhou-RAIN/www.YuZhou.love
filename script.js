@@ -79,7 +79,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const percent = document.getElementById('loadingPercent');
     const info = document.getElementById('loadingInfo');
     const horizontalBar = document.getElementById('loadingBarHorizontal');
-    
+
+    // 初始化文字位置在顶部
+    if (info) {
+        info.style.bottom = `${window.innerHeight}px`;
+    }
+
     const timer = setInterval(() => {
         // 递增进度 - 模拟真实加载
         let increment;
@@ -102,21 +107,23 @@ document.addEventListener('DOMContentLoaded', () => {
             // 添加水平展开动画
             if (horizontalBar) {
                 setTimeout(() => {
-                    // 水平进度条开始展开时，立即隐藏背景遮罩和垂直进度条
-                    const loadingScreen = document.getElementById('loadingScreen');
-                    if (loadingScreen) {
-                        loadingScreen.classList.add('background-hidden');
-                    }
-                    
                     horizontalBar.style.width = '100%';
 
-                    // 水平展开完成后，立即向右移动消失
+                    // 等待水平进度条完全展开后，再隐藏背景遮罩和垂直进度条
+                    setTimeout(() => {
+                        const loadingScreen = document.getElementById('loadingScreen');
+                        if (loadingScreen) {
+                            loadingScreen.classList.add('background-hidden');
+                        }
+                    }, 800); // 等待800ms，让水平进度条完全展开
+
+                    // 水平展开完成后，立即向右移动消失（去掉等待）
                     setTimeout(() => {
                         horizontalBar.style.left = '120%';
                         setTimeout(() => {
                             hideLoading(); // 隐藏加载界面
                         }, 2000);
-                    }, 800); // 等待800ms，然后立即开始向右移动
+                    }, 800); // 与上面同时等待800ms，然后立即开始向右移动
                 }, 200);
             } else {
                 setTimeout(hideLoading, 500);
@@ -130,12 +137,12 @@ document.addEventListener('DOMContentLoaded', () => {
         if (percent) percent.textContent = Math.floor(progress) + '%';
         
         // 更新进度信息位置（跟随进度条头部/底端）
-        // 进度条从顶部开始，文字跟随进度条底部
+        // 进度条从顶部开始，文字从底部开始向上移动
         if (info) {
             const trackHeight = window.innerHeight; // 100vh
             const currentPos = (progress / 100) * trackHeight;
-            // 文字从顶部开始，跟随进度条底部移动
-            info.style.top = `${currentPos}px`;
+            // 文字从底部开始，向上移动，跟随进度条底部
+            info.style.bottom = `${trackHeight - currentPos}px`;
         }
     }, 60);
 
