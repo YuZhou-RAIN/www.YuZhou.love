@@ -80,11 +80,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const info = document.getElementById('loadingInfo');
     const horizontalBar = document.getElementById('loadingBarHorizontal');
 
-    // 计算横向动画时长：保持速度一致
+    // 计算横向动画时长：保持速度一致，但设置最小时长保证可感知性
     // 目标：3388px宽度时0.5秒，速度 = 3388/0.5 = 6776px/秒
-    // 公式：时长 = 当前宽度 / 6776
+    // 公式：时长 = 当前宽度 / 6776，但不小于最小值
     const screenWidth = window.innerWidth;
-    const horizontalDuration = screenWidth / 6776; // 根据屏幕宽度动态计算
+    const minDuration = 0.35; // 最小动画时长0.35秒，保证小屏幕动画可感知
+    const calculatedDuration = screenWidth / 6776; // 根据屏幕宽度动态计算
+    const horizontalDuration = Math.max(calculatedDuration, minDuration); // 取较大值
     const horizontalDurationMs = Math.round(horizontalDuration * 1000); // 转换为毫秒
 
     // 动态设置CSS过渡时长
