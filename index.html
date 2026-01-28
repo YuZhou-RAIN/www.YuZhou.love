@@ -10,98 +10,66 @@
     <link rel="stylesheet" href="fonts/fontawesome-free-6.4.0-web/css/all.min.css">
 </head>
 <body>
-    <!-- 加载指示器 -->
-    <div class="loading-indicator" id="loadingIndicator">
-        <div class="loading-content">
-            <img src="images/loading.avif" alt="Loading" class="loading-logo">
-            <h2 class="loading-title">雨州 Minecraft 服务器</h2>
-            <p class="loading-subtitle">正在加载资源...</p>
-            
-            <div class="progress-container">
-                <div class="progress-bar">
-                    <div class="progress-fill" id="progressFill"></div>
-                </div>
-                <div class="progress-text" id="progressText">0%</div>
-            </div>
-            
-            <div class="loading-stats">
-                <div class="stat-item">
-                    <div class="stat-label">已加载资源</div>
-                    <div class="stat-value" id="resourceCount">0/0</div>
-                </div>
-            </div>
-            
-            <button id="skip-loading-btn" class="btn btn-secondary" style="display: none;">
-                不等了，先看文字
-            </button>
+    <!-- 加载界面 -->
+    <div class="loading-screen" id="loadingScreen">
+        <img src="images/雨州logo.svg" alt="Loading" class="loading-logo">
+        <div class="loading-bar">
+            <div class="loading-progress" id="loadingProgress"></div>
         </div>
     </div>
 
-    <!-- 导航栏 -->
-    <nav class="navbar">
-        <div class="container">
-            <div class="nav-container">
-                <!-- 左侧：Logo -->
-                <a href="/" class="nav-logo" data-page="home">
-                    <img src="images/雨州logo.svg" alt="雨州Minecraft">
-                    <span class="nav-logo-text">雨州 Minecraft</span>
-                </a>
-
-                <!-- 中间：菜单 -->
-                <ul class="nav-menu">
-                    <li><a href="/" class="nav-link active" data-page="home">首页</a></li>
-                    <li><a href="/features" class="nav-link" data-page="features">特色</a></li>
-                    <li><a href="/join" class="nav-link" data-page="join">加入</a></li>
-                    <li><a href="/about" class="nav-link" data-page="about">关于</a></li>
-                </ul>
-
-                <!-- 右侧：按钮 -->
-                <div class="nav-action">
-                    <button class="copy-btn" onclick="copyIP()">
-                        <i class="fas fa-copy"></i>
-                        <span>复制IP</span>
-                    </button>
-                </div>
-
-                <!-- 移动端汉堡菜单 -->
-                <div class="hamburger" onclick="toggleMenu()">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </div>
-            </div>
+    <!-- 侧边导航栏 -->
+    <aside class="sidebar">
+        <a href="/" class="nav-logo" data-page="home">
+            <img src="images/雨州logo.svg" alt="雨州Minecraft" class="sidebar-logo">
+        </a>
+        
+        <nav class="sidebar-nav">
+            <a href="/" class="sidebar-link active" data-page="home" title="首页">
+                <i class="fas fa-home"></i>
+            </a>
+            <a href="/features" class="sidebar-link" data-page="features" title="特色">
+                <i class="fas fa-star"></i>
+            </a>
+            <a href="/join" class="sidebar-link" data-page="join" title="加入">
+                <i class="fas fa-gamepad"></i>
+            </a>
+            <a href="/about" class="sidebar-link" data-page="about" title="关于">
+                <i class="fas fa-info-circle"></i>
+            </a>
+        </nav>
+        
+        <div class="sidebar-action">
+            <button class="sidebar-btn" onclick="copyIP()" title="复制服务器IP">
+                <i class="fas fa-copy"></i>
+            </button>
         </div>
-    </nav>
+    </aside>
 
-    <!-- 页面切换过渡层 -->
-    <div class="page-transition" id="pageTransition"></div>
+    <!-- 顶部栏 -->
+    <header class="topbar">
+        <div class="topbar-title">雨州 Minecraft 服务器</div>
+        <div class="topbar-actions">
+            <span class="tag">
+                <i class="fas fa-circle" style="font-size: 8px; color: #00ff88;"></i>
+                在线运行中
+            </span>
+        </div>
+    </header>
 
-    <main id="main-content">
-        <!-- 页面内容将通过JavaScript动态加载 -->
+    <!-- 主内容区 -->
+    <main class="main-content" id="mainContent">
+        <!-- 页面内容将通过JS加载 -->
     </main>
 
     <!-- 页脚 -->
-    <footer>
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <h3>雨州 Minecraft</h3>
-                    <p>致力于提供稳定、有趣的游戏体验</p>
-                    <p>服务器地址: mc.yuzhou.love</p>
-                </div>
-                <div class="footer-section">
-                    <h3>快速链接</h3>
-                    <ul class="footer-links">
-                        <li><a href="/" data-page="home">首页</a></li>
-                        <li><a href="/features" data-page="features">特色</a></li>
-                        <li><a href="/join" data-page="join">加入</a></li>
-                        <li><a href="/about" data-page="about">关于</a></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p>&copy; 2025 雨州 Minecraft 服务器 | 版本 1.20.1</p>
-            </div>
+    <footer class="footer">
+        <div>&copy; 2025 雨州 Minecraft 服务器</div>
+        <div class="footer-links">
+            <a href="/" data-page="home">首页</a>
+            <a href="/features" data-page="features">特色</a>
+            <a href="/join" data-page="join">加入</a>
+            <a href="/about" data-page="about">关于</a>
         </div>
     </footer>
 

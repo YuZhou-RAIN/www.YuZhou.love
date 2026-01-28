@@ -1,35 +1,36 @@
 <link rel="stylesheet" href="../css/common.css">
 <link rel="stylesheet" href="../css/page.css">
 <div id="about-content" class="page-content">
-    <section class="page-header">
-        <div class="container">
-            <h1 class="page-title">关于我们</h1>
+    <section class="page-hero">
+        <div class="page-hero-content">
+            <div class="page-hero-tag">ABOUT</div>
+            <h1 class="page-hero-title">关于我们</h1>
+            <p class="page-hero-desc">联系我们，加入社区</p>
         </div>
     </section>
 
-    <section class="features">
-        <div class="container">
-            <div class="features-grid">
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-server"></i>
-                    </div>
-                    <h3>服务器地址</h3>
-                    <p>mc.yuzhou.love</p>
-                    <button class="btn btn-primary" onclick="copyIP()" style="margin-top: 15px;">
-                        <i class="fas fa-copy"></i> 复制地址
-                    </button>
+    <section class="page-section">
+        <h2 class="section-title-sm">联系方式</h2>
+        <div class="contact-grid">
+            <div class="contact-card">
+                <div class="contact-icon">
+                    <i class="fas fa-server"></i>
                 </div>
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fab fa-qq"></i>
-                    </div>
-                    <h3>QQ交流群</h3>
-                    <p>823557774</p>
-                    <button class="btn btn-primary" onclick="copyQQ()" style="margin-top: 15px;">
-                        <i class="fas fa-copy"></i> 复制群号
-                    </button>
+                <h3>服务器地址</h3>
+                <div class="value">mc.yuzhou.love</div>
+                <button class="btn btn-primary" onclick="copyIP()">
+                    <i class="fas fa-copy"></i> 复制地址
+                </button>
+            </div>
+            <div class="contact-card">
+                <div class="contact-icon" style="background: linear-gradient(135deg, rgba(255, 107, 107, 0.2), rgba(238, 90, 90, 0.1));">
+                    <i class="fab fa-qq" style="color: var(--secondary);"></i>
                 </div>
+                <h3>QQ交流群</h3>
+                <div class="value" style="color: var(--secondary);">823557774</div>
+                <button class="btn btn-primary" onclick="copyQQ()" style="background: var(--gradient-2);">
+                    <i class="fas fa-copy"></i> 复制群号
+                </button>
             </div>
         </div>
     </section>

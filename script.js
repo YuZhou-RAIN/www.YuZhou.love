@@ -1,35 +1,111 @@
-// 雨州Minecraft - 完整版JS
+// 雨州Minecraft - 现代化JS
 
-let shuffledBg=[],imagesTotal=0,imagesLoading=0,loadStart=Date.now();
-const bgImages=['images/主页背景图/1.jpg','images/主页背景图/2.jpg','images/主页背景图/3.jpg','images/主页背景图/4.jpg'];
+let loadedPages = new Set();
 
-function shuffleBg(){if(shuffledBg.length)return shuffledBg;const a=[...bgImages];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}shuffledBg=a;return a}
-function copyText(t,m='已复制！'){if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(t).then(()=>showNotify(m))}else{const ta=document.createElement('textarea');ta.value=t;ta.style.cssText='position:fixed;left:-9999px;top:-9999px;opacity:0';document.body.appendChild(ta);try{ta.select();document.execCommand('copy')?showNotify(m):showNotify('复制失败：'+t)}catch(e){showNotify('复制失败：'+t)}document.body.removeChild(ta)}}
-function copyIP(){copyText('mc.yuzhou.love','服务器IP已复制！')}
-function copyQQ(){copyText('823557774','QQ群号已复制！')}
-function showNotify(m){const n=document.createElement('div');n.textContent=m;n.style.cssText='position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#45CDF3;color:#fff;padding:12px 24px;border-radius:8px;z-index:10000;opacity:0;transition:opacity .3s';document.body.appendChild(n);setTimeout(()=>n.style.opacity=1,10);setTimeout(()=>{n.style.opacity=0;setTimeout(()=>n.remove(),300)},2500)}
-function toggleMenu(){document.querySelector('.nav-menu').classList.toggle('active')}
+function copyText(text, msg = '已复制到剪贴板！') {
+    if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(text).then(() => showToast(msg));
+    } else {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.cssText = 'position:fixed;left:-9999px;top:-9999px';
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy') ? showToast(msg) : showToast('复制失败');
+        document.body.removeChild(ta);
+    }
+}
 
-class PageLoader{constructor(){this.loaded=new Set();this.promises=new Map()}
-async load(id){if(this.loaded.has(id)){const c=document.getElementById(id+'-content');if(c){document.querySelector('#main-content').innerHTML='';document.querySelector('#main-content').appendChild(c);c.classList.add('active')}return c}
-if(this.promises.has(id))return this.promises.get(id);
-const p=fetch(`pages/${id}.html`).then(r=>r.text()).then(html=>{const parser=new DOMParser(),doc=parser.parseFromString(html,'text/html');let c=doc.querySelector('.page-content');if(!c){c=document.createElement('div');c.innerHTML=html}
-const m=document.querySelector('#main-content');if(m){m.innerHTML='';c.id=id+'-content';c.className='page-content active';m.appendChild(c)}
-this.loaded.add(id);return c}).catch(()=>{const e=document.createElement('div');e.id=id+'-content';e.className='page-content active';e.innerHTML='<div class="container" style="padding-top:100px"><h1>页面加载失败</h1></div>';document.querySelector('#main-content')?.appendChild(e);return e}).finally(()=>this.promises.delete(id));this.promises.set(id,p);return p}}
-const pageLoader=new PageLoader();
+function copyIP() { copyText('mc.yuzhou.love', '服务器IP已复制！'); }
+function copyQQ() { copyText('823557774', 'QQ群号已复制！'); }
 
-function finishLoad(){const l=document.querySelector('.loading-indicator');if(l){l.style.opacity='0';setTimeout(()=>{l.style.display='none';document.body.classList.add('loaded')},300)}}
-function updateProgress(p){const f=document.getElementById('progressFill'),t=document.getElementById('progressText');if(f)f.style.width=p+'%';if(t)t.textContent=Math.round(p)+'%'}
+function showToast(msg) {
+    const t = document.createElement('div');
+    t.textContent = msg;
+    t.style.cssText = 'position:fixed;top:100px;left:50%;transform:translateX(-50%);background:rgba(0,212,255,0.9);color:#fff;padding:12px 24px;border-radius:8px;z-index:10000;animation:slideDown 0.3s';
+    document.body.appendChild(t);
+    setTimeout(() => { t.style.opacity = '0'; t.style.transition = '0.3s'; setTimeout(() => t.remove(), 300); }, 2500);
+}
 
-async function preload(){const imgs=['images/主页背景图/1.jpg','images/主页背景图/2.jpg','images/主页背景图/3.jpg','images/主页背景图/4.jpg','images/loading.avif','images/雨州logo.svg'];
-imagesTotal=imgs.length;
-await Promise.all(imgs.map(src=>new Promise(r=>{imagesLoading++;const i=new Image();i.onload=i.onerror=()=>{imagesLoading--;updateProgress(((imagesTotal-imagesLoading)/imagesTotal)*100);r()};i.src=src})));
-finishLoad()}
+async function loadPage(id) {
+    if (loadedPages.has(id)) {
+        const content = document.getElementById(id + '-content');
+        if (content) {
+            document.getElementById('mainContent').innerHTML = '';
+            document.getElementById('mainContent').appendChild(content);
+            content.classList.add('active');
+        }
+        return;
+    }
 
-document.addEventListener('DOMContentLoaded',()=>{preload();
-const navLinks=document.querySelectorAll('.nav-link[data-page], .nav-logo[data-page], .footer-links a[data-page]');
-navLinks.forEach(link=>link.addEventListener('click',async(e)=>{e.preventDefault();const id=link.getAttribute('data-page');document.querySelector('.nav-menu')?.classList.remove('active');
-try{await pageLoader.load(id)}catch(err){showNotify('加载失败')}
-navLinks.forEach(l=>l.classList.remove('active'));document.querySelectorAll(`[data-page="${id}"]`).forEach(l=>l.classList.add('active'));window.scrollTo(0,0)}));
-(async()=>{const path=window.location.pathname.replace(/^\//,'')||'home';await pageLoader.load(path);document.querySelectorAll(`[data-page="${path}"]`).forEach(l=>l.classList.add('active'))})();
-setTimeout(()=>!document.body.classList.contains('loaded')&&finishLoad(),5000)});
+    try {
+        const res = await fetch(`pages/${id}.html`);
+        const html = await res.text();
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+        let content = doc.querySelector('.page-content');
+        
+        if (!content) {
+            content = document.createElement('div');
+            content.innerHTML = html;
+        }
+        
+        content.id = id + '-content';
+        content.className = 'page-content active';
+        
+        const main = document.getElementById('mainContent');
+        main.innerHTML = '';
+        main.appendChild(content);
+        
+        loadedPages.add(id);
+    } catch (err) {
+        document.getElementById('mainContent').innerHTML = '<div class="page-content active" style="padding:150px 40px;text-align:center"><h1>加载失败</h1></div>';
+    }
+}
+
+function hideLoading() {
+    const loading = document.getElementById('loadingScreen');
+    if (loading) {
+        loading.style.opacity = '0';
+        loading.style.transition = 'opacity 0.5s';
+        setTimeout(() => loading.style.display = 'none', 500);
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    // 模拟加载进度
+    let progress = 0;
+    const bar = document.getElementById('loadingProgress');
+    const timer = setInterval(() => {
+        progress += Math.random() * 30;
+        if (progress >= 100) {
+            progress = 100;
+            clearInterval(timer);
+            setTimeout(hideLoading, 300);
+        }
+        if (bar) bar.style.width = progress + '%';
+    }, 200);
+
+    // 导航切换
+    const navLinks = document.querySelectorAll('.sidebar-link[data-page], .footer-links a[data-page]');
+    navLinks.forEach(link => {
+        link.addEventListener('click', async (e) => {
+            e.preventDefault();
+            const id = link.getAttribute('data-page');
+            
+            navLinks.forEach(l => l.classList.remove('active'));
+            document.querySelectorAll(`[data-page="${id}"]`).forEach(l => l.classList.add('active'));
+            
+            await loadPage(id);
+            window.scrollTo(0, 0);
+        });
+    });
+
+    // 加载初始页面
+    const path = window.location.pathname.replace(/^\//, '') || 'home';
+    const validPages = { home: 'home', features: 'features', join: 'join', about: 'about' };
+    const pageId = validPages[path] || 'home';
+    
+    loadPage(pageId);
+    document.querySelectorAll(`[data-page="${pageId}"]`).forEach(l => l.classList.add('active'));
+});
