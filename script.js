@@ -412,7 +412,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function completeLoading() {
         // 确保进度显示100%
         if (bar) bar.style.height = '100%';
-        if (percent) percent.textContent = '100%';
+        if (percent) percent.textContent = '100';
         
         // 纵向进度条达到100%后，等待0.3秒再开始横向进度条
         setTimeout(() => {

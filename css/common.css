@@ -261,7 +261,7 @@ body {
     left: 0; /* 完全贴近左侧边缘 */
     top: 0; /* 顶部对齐 */
     bottom: 0; /* 底部对齐 */
-    width: 50px; /* 加粗进度条轨道到50px */
+    width: 35px; /* 进度条轨道宽度35px */
     background: transparent; /* 与背景一致 */
     border-radius: 0; /* 无圆角 */
 }
@@ -271,7 +271,7 @@ body {
     position: absolute;
     left: 0;
     top: 0;
-    width: 50px; /* 固定50px宽度 */
+    width: 35px; /* 固定35px宽度 */
     height: 0%;
     background: #45CDF3; /* 纯青色 */
     border-radius: 0; /* 无圆角，长方形 */
@@ -289,7 +289,7 @@ body {
 /* 进度信息 - 贴进度条右侧，跟随移动 */
 .loading-info {
     position: fixed;
-    left: 60px; /* 贴近50px进度条右侧，留10px间距 */
+    left: 45px; /* 贴近35px进度条右侧，留10px间距 */
     top: auto;
     bottom: 100vh; /* 初始在屏幕顶部 */
     transform: translateY(0);
@@ -351,7 +351,7 @@ body {
 /* 水平展开动画 - 进度条跑满后向右蔓延 */
 .loading-bar-horizontal {
     position: absolute;
-    left: 50px; /* 从50px进度条右侧开始 */
+    left: 35px; /* 从35px进度条右侧开始 */
     top: 0;
     height: 100%;
     width: 0%;
