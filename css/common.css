@@ -274,8 +274,8 @@ body {
     height: 0%;
     background: linear-gradient(to bottom, var(--primary) 0%, #00ffff 50%, var(--primary) 100%);
     border-radius: 0 2px 2px 0; /* 只保留右侧圆角 */
-    transition: height 0.2s ease-out;
-    box-shadow: 
+    transition: height 0.2s cubic-bezier(0.25, 0.1, 0.25, 1);
+    box-shadow:
         0 0 10px var(--primary),
         0 0 20px var(--primary-glow),
         0 0 40px rgba(0, 212, 255, 0.4);
@@ -292,7 +292,7 @@ body {
     left: 15px; /* 贴近进度条右侧 */
     top: 0; /* 顶部对齐 */
     transform: translateY(0);
-    transition: top 0.2s ease-out;
+    transition: top 0.2s cubic-bezier(0.25, 0.1, 0.25, 1);
     display: flex;
     flex-direction: column;
     gap: 5px;
@@ -342,12 +342,29 @@ body {
     height: 100%;
     width: 0%;
     background: linear-gradient(to right, var(--primary) 0%, #00ffff 50%, var(--primary) 100%);
-    transition: width 1.5s ease-out;
+    transition: width 1.5s cubic-bezier(0.25, 0.1, 0.25, 1), left 2s cubic-bezier(0.25, 0.1, 0.25, 1);
     box-shadow:
         0 0 20px var(--primary),
         0 0 40px var(--primary-glow),
         0 0 80px rgba(0, 212, 255, 0.6);
     z-index: 2;
+}
+
+/* 水平展开时的发光效果 */
+.loading-bar-horizontal::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    animation: horizontalGlow 2s infinite;
+}
+
+@keyframes horizontalGlow {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 0.8; }
 }
 
 /* 水平展开时的发光效果 */

@@ -104,10 +104,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 setTimeout(() => {
                     horizontalBar.style.width = '100%';
                     
-                    // 水平展开完成后，开始向右移动消失
+                    // 水平展开完成后，从左到右移动消失
                     setTimeout(() => {
-                        horizontalBar.style.transition = 'width 2s ease-out';
-                        horizontalBar.style.width = '120%'; // 向右延伸
+                        horizontalBar.style.left = '120%'; // 向右移动消失
                         setTimeout(() => {
                             hideLoading(); // 隐藏加载界面
                         }, 2000);
