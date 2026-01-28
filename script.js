@@ -80,7 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const info = document.getElementById('loadingInfo');
     const horizontalBar = document.getElementById('loadingBarHorizontal');
 
-    // 初始化文字位置在顶部
+    // 初始化文字位置在顶部（跟随进度条头部）
     if (info) {
         info.style.bottom = `${window.innerHeight}px`;
     }
@@ -97,9 +97,9 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             increment = Math.random() * 6 + 3;
         }
-        
+
         progress += increment;
-        
+
         if (progress >= 100) {
             progress = 100;
             clearInterval(timer);
@@ -109,11 +109,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 setTimeout(() => {
                     horizontalBar.style.width = '100%';
 
-                    // 等待水平进度条完全展开后，再隐藏背景遮罩和垂直进度条
+                    // 等待水平进度条完全展开后，再隐藏背景遮罩、垂直进度条和进度信息
                     setTimeout(() => {
                         const loadingScreen = document.getElementById('loadingScreen');
                         if (loadingScreen) {
                             loadingScreen.classList.add('background-hidden');
+                        }
+                        // 立即隐藏进度信息
+                        if (info) {
+                            info.style.opacity = '0';
                         }
                     }, 800); // 等待800ms，让水平进度条完全展开
 
@@ -129,19 +133,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 setTimeout(hideLoading, 500);
             }
         }
-        
+
         // 更新进度条高度（从上到下）
         if (bar) bar.style.height = progress + '%';
-        
+
         // 更新百分比文字
         if (percent) percent.textContent = Math.floor(progress) + '%';
-        
+
         // 更新进度信息位置（跟随进度条头部/底端）
-        // 进度条从顶部开始，文字从底部开始向上移动
+        // 进度条从顶部开始，文字从顶部开始向下移动
         if (info) {
             const trackHeight = window.innerHeight; // 100vh
             const currentPos = (progress / 100) * trackHeight;
-            // 文字从底部开始，向上移动，跟随进度条底部
+            // 文字从顶部开始，向下移动，跟随进度条头部
             info.style.bottom = `${trackHeight - currentPos}px`;
         }
     }, 60);
