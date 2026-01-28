@@ -12,9 +12,20 @@
 <body>
     <!-- 加载界面 -->
     <div class="loading-screen" id="loadingScreen">
-        <img src="images/雨州logo.svg" alt="Loading" class="loading-logo">
-        <div class="loading-bar">
-            <div class="loading-progress" id="loadingProgress"></div>
+        <div class="loading-container">
+            <!-- 垂直进度条 -->
+            <div class="loading-track">
+                <div class="loading-bar-vertical" id="loadingBar"></div>
+            </div>
+            
+            <!-- 进度信息 - 跟随进度移动 -->
+            <div class="loading-info" id="loadingInfo">
+                <div class="loading-percent" id="loadingPercent">0%</div>
+                <div class="loading-status">Uploading……</div>
+            </div>
+            
+            <!-- Logo背景 -->
+            <img src="images/雨州logo.svg" alt="" class="loading-logo">
         </div>
     </div>
 

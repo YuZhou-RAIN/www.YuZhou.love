@@ -73,18 +73,46 @@ function hideLoading() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    // 模拟加载进度
+    // 垂直进度条动画
     let progress = 0;
-    const bar = document.getElementById('loadingProgress');
+    const bar = document.getElementById('loadingBar');
+    const percent = document.getElementById('loadingPercent');
+    const info = document.getElementById('loadingInfo');
+    const trackHeight = 300; // 进度条轨道高度
+    
     const timer = setInterval(() => {
-        progress += Math.random() * 30;
+        // 递增进度 - 模拟真实加载：开始快，中间慢，最后快
+        let increment;
+        if (progress < 30) {
+            increment = Math.random() * 12 + 8; // 快
+        } else if (progress < 70) {
+            increment = Math.random() * 6 + 2;  // 慢
+        } else if (progress < 90) {
+            increment = Math.random() * 4 + 1;  // 很慢
+        } else {
+            increment = Math.random() * 8 + 4;  // 最后冲刺
+        }
+        
+        progress += increment;
+        
         if (progress >= 100) {
             progress = 100;
             clearInterval(timer);
-            setTimeout(hideLoading, 300);
+            setTimeout(hideLoading, 600);
         }
-        if (bar) bar.style.width = progress + '%';
-    }, 200);
+        
+        // 更新进度条高度（从下到上）
+        if (bar) bar.style.height = progress + '%';
+        
+        // 更新百分比文字
+        if (percent) percent.textContent = Math.floor(progress) + '%';
+        
+        // 更新进度信息位置（跟随进度条顶端）
+        if (info) {
+            const bottomPos = (progress / 100) * trackHeight;
+            info.style.bottom = bottomPos + 'px';
+        }
+    }, 80);
 
     // 导航切换
     const navLinks = document.querySelectorAll('.sidebar-link[data-page], .footer-links a[data-page]');

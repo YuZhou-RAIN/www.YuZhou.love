@@ -246,50 +246,121 @@ body {
     color: var(--primary);
 }
 
-/* ===== 加载界面 ===== */
+/* ===== 加载界面 - 垂直进度条 ===== */
 .loading-screen {
     position: fixed;
     inset: 0;
     background: var(--bg);
+    z-index: 9999;
     display: flex;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
-    z-index: 9999;
-    gap: 30px;
 }
 
-.loading-logo {
-    width: 100px;
-    height: 100px;
-    animation: pulse-glow 2s infinite;
+.loading-container {
+    position: relative;
+    width: 300px;
+    height: 400px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding-left: 80px;
 }
 
-@keyframes pulse-glow {
-    0%, 100% { 
-        transform: scale(1);
-        filter: drop-shadow(0 0 20px var(--primary-glow));
-    }
-    50% { 
-        transform: scale(1.05);
-        filter: drop-shadow(0 0 40px var(--primary-glow));
-    }
-}
-
-.loading-bar {
-    width: 200px;
-    height: 3px;
-    background: rgba(255, 255, 255, 0.1);
+/* 垂直进度条轨道 */
+.loading-track {
+    position: absolute;
+    left: 40px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 6px;
+    height: 300px;
+    background: rgba(255, 255, 255, 0.03);
     border-radius: 3px;
-    overflow: hidden;
+    overflow: visible;
 }
 
-.loading-progress {
-    height: 100%;
-    background: var(--gradient-1);
-    width: 0%;
-    transition: width 0.3s;
-    box-shadow: 0 0 10px var(--primary-glow);
+/* 发光的进度条 */
+.loading-bar-vertical {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 0%;
+    background: linear-gradient(to top, var(--primary), #00ffff, #fff);
+    border-radius: 3px;
+    transition: height 0.3s ease-out;
+    box-shadow: 
+        0 0 15px var(--primary),
+        0 0 30px var(--primary-glow),
+        0 0 60px rgba(0, 212, 255, 0.3),
+        0 0 100px rgba(0, 212, 255, 0.1);
+}
+
+/* 进度条顶端的光点 */
+.loading-bar-vertical::after {
+    content: '';
+    position: absolute;
+    top: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 20px;
+    height: 20px;
+    background: radial-gradient(circle, #fff 0%, var(--primary) 50%, transparent 70%);
+    border-radius: 50%;
+    box-shadow: 
+        0 0 20px #fff,
+        0 0 40px var(--primary),
+        0 0 60px var(--primary),
+        0 0 80px var(--primary-glow);
+}
+
+/* 进度信息容器 - 跟随进度移动 */
+.loading-info {
+    position: absolute;
+    left: 65px;
+    transform: translateY(50%);
+    transition: bottom 0.3s ease-out;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding-left: 20px;
+    border-left: 2px solid rgba(0, 212, 255, 0.2);
+}
+
+/* 进度百分比 */
+.loading-percent {
+    font-size: 3rem;
+    font-weight: 800;
+    color: var(--primary);
+    text-shadow: 
+        0 0 10px var(--primary-glow),
+        0 0 30px var(--primary-glow);
+    font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
+    letter-spacing: -1px;
+    line-height: 1;
+}
+
+/* 上传状态文字 */
+.loading-status {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.25);
+    font-weight: 500;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    font-family: 'SF Mono', monospace;
+}
+
+/* Logo */
+.loading-logo {
+    position: absolute;
+    right: 40px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 120px;
+    height: 120px;
+    opacity: 0.1;
+    filter: drop-shadow(0 0 30px var(--primary-glow));
 }
 
 /* ===== 页脚 ===== */
