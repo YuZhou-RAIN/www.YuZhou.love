@@ -137,10 +137,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
                     // 水平展开完成后，立即向右移动消失
                     setTimeout(() => {
+                        // 添加退场类，使用继承速度并继续加速的动画
+                        horizontalBar.classList.add('exiting');
+                        // 计算退场距离（120% - 0% = 120%宽度）
+                        // 退场时间基于距离和速度，但使用更快的加速度
+                        const exitDuration = horizontalDuration * 0.6; // 退场更快，约60%的时长
+                        horizontalBar.style.transition = `left ${exitDuration}s cubic-bezier(0, 0, 0.3, 1)`;
                         horizontalBar.style.left = '120%';
                         setTimeout(() => {
                             hideLoading(); // 隐藏加载界面
-                        }, 2000);
+                        }, Math.round(exitDuration * 1000));
                     }, horizontalDurationMs); // 使用动态计算的时长
                 }, 200);
             } else {

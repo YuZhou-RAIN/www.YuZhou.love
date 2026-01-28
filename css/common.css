@@ -347,8 +347,15 @@ body {
     box-shadow:
         0 0 30px rgba(69, 205, 243, 0.5),
         0 0 60px rgba(69, 205, 243, 0.3);
-    /* transition时长由JavaScript动态设置，保持速度一致 */
+    /* 出场动画：从慢到快 cubic-bezier(0.42, 0, 1, 1) */
+    /* 退场动画继承速度并继续加速，由JavaScript动态设置 */
     z-index: 2;
+}
+
+/* 退场状态：继承出场速度并继续加速 */
+.loading-bar-horizontal.exiting {
+    /* 使用 ease-out 让动画从出场结束速度开始，然后继续加速 */
+    transition-timing-function: cubic-bezier(0, 0, 0.58, 1) !important;
 }
 
 /* 水平展开动画完成，隐藏背景遮罩和垂直进度条 */
