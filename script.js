@@ -104,21 +104,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 setTimeout(() => {
                     horizontalBar.style.width = '100%';
 
-                    // 水平展开完成后，隐藏背景遮罩
-                    setTimeout(() => {
-                        const loadingScreen = document.getElementById('loadingScreen');
-                        if (loadingScreen) {
-                            loadingScreen.classList.add('background-hidden');
-                        }
+                    // 水平进度条铺满时，立即隐藏背景遮罩和垂直进度条
+                    const loadingScreen = document.getElementById('loadingScreen');
+                    if (loadingScreen) {
+                        loadingScreen.classList.add('background-hidden');
+                    }
 
-                        // 从左到右移动消失
+                    // 水平展开完成后，从左到右移动消失
+                    setTimeout(() => {
+                        horizontalBar.style.left = '120%'; // 向右移动消失
                         setTimeout(() => {
-                            horizontalBar.style.left = '120%'; // 向右移动消失
-                            setTimeout(() => {
-                                hideLoading(); // 隐藏加载界面
-                            }, 2000);
-                        }, 100);
-                    }, 1500);
+                            hideLoading(); // 隐藏加载界面
+                        }, 2000);
+                    }, 800);
                 }, 200);
             } else {
                 setTimeout(hideLoading, 500);

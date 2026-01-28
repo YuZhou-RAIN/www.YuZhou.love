@@ -337,7 +337,7 @@ body {
 /* 水平展开动画 - 进度条跑满后向右蔓延 */
 .loading-bar-horizontal {
     position: absolute;
-    left: 12px; /* 从垂直进度条右侧开始 */
+    left: 0; /* 从屏幕最左侧开始，覆盖纵向进度条 */
     top: 0;
     height: 100%;
     width: 0%;
@@ -355,8 +355,7 @@ body {
 }
 
 .loading-screen.background-hidden .loading-bar-vertical {
-    opacity: 0;
-    transition: opacity 0.3s ease-out;
+    opacity: 0; /* 直接消失，无动画 */
 }
 
 /* 水平展开时的发光动画 */
