@@ -383,8 +383,8 @@ document.addEventListener('DOMContentLoaded', () => {
         // 更新进度条
         if (bar) bar.style.height = `${smoothProgress}%`;
         
-        // 更新百分比文字
-        if (percent) percent.textContent = `${Math.floor(smoothProgress)}%`;
+        // 更新百分比文字（只显示数字，%符号由CSS伪元素添加）
+        if (percent) percent.textContent = Math.floor(smoothProgress);
         
         // 更新进度信息位置
         if (info) {
