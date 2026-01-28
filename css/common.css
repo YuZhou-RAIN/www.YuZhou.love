@@ -290,17 +290,14 @@ body {
 .loading-info {
     position: fixed;
     left: 20px; /* 贴近加粗后的进度条右侧 */
-    top: 0; /* 顶部对齐 */
+    top: auto; /* 取消固定顶部 */
+    bottom: 0; /* 从底部开始 */
     transform: translateY(0);
-    transition: top 0.2s cubic-bezier(0.25, 0.1, 0.25, 1);
+    transition: bottom 0.2s cubic-bezier(0.25, 0.1, 0.25, 1);
     display: flex;
     flex-direction: column;
     gap: 5px;
     align-items: flex-start;
-    padding-top: 10px;
-    padding-bottom: 10px;
-    height: calc(100% - 20px); /* 留出上下边距 */
-    justify-content: flex-end; /* 文字靠底部对齐 */
 }
 
 /* 进度百分比 */
