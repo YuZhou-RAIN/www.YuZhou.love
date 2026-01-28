@@ -500,9 +500,20 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // 加载初始页面
-    const path = window.location.pathname.replace(/^\//, '') || 'home';
-    const validPages = { home: 'home', features: 'features', join: 'join', about: 'about' };
-    const pageId = validPages[path] || 'home';
+    // 优先检查sessionStorage中是否有GitHub Pages路由重定向保存的路径
+    let pageId = 'home';
+    const savedRoute = sessionStorage.getItem('gh-pages-route');
+    
+    if (savedRoute) {
+        // 清除保存的路由，避免刷新时重复加载
+        sessionStorage.removeItem('gh-pages-route');
+        const validPages = { home: 'home', features: 'features', join: 'join', about: 'about' };
+        pageId = validPages[savedRoute] || 'home';
+    } else {
+        const path = window.location.pathname.replace(/^\//, '') || 'home';
+        const validPages = { home: 'home', features: 'features', join: 'join', about: 'about' };
+        pageId = validPages[path] || 'home';
+    }
     
     loadPage(pageId);
     document.querySelectorAll(`[data-page="${pageId}"]`).forEach(l => l.classList.add('active'));
