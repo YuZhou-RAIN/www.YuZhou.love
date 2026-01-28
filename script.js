@@ -98,18 +98,26 @@ document.addEventListener('DOMContentLoaded', () => {
         if (progress >= 100) {
             progress = 100;
             clearInterval(timer);
-            
+
             // 添加水平展开动画
             if (horizontalBar) {
                 setTimeout(() => {
                     horizontalBar.style.width = '100%';
-                    
-                    // 水平展开完成后，从左到右移动消失
+
+                    // 水平展开完成后，隐藏背景遮罩
                     setTimeout(() => {
-                        horizontalBar.style.left = '120%'; // 向右移动消失
+                        const loadingScreen = document.getElementById('loadingScreen');
+                        if (loadingScreen) {
+                            loadingScreen.classList.add('background-hidden');
+                        }
+
+                        // 从左到右移动消失
                         setTimeout(() => {
-                            hideLoading(); // 隐藏加载界面
-                        }, 2000);
+                            horizontalBar.style.left = '120%'; // 向右移动消失
+                            setTimeout(() => {
+                                hideLoading(); // 隐藏加载界面
+                            }, 2000);
+                        }, 100);
                     }, 1500);
                 }, 200);
             } else {

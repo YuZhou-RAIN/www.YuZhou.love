@@ -252,17 +252,18 @@ body {
     inset: 0;
     background: var(--bg);
     z-index: 9999;
+    transition: opacity 0.5s ease-out;
 }
 
 /* 进度条轨道 - 顶天立地，无空隙 */
 .loading-track {
     position: fixed;
-    left: 1px; /* 完全贴近左侧，无空隙 */
+    left: 0; /* 完全贴近左侧边缘 */
     top: 0; /* 顶部对齐 */
     bottom: 0; /* 底部对齐 */
-    width: 4px;
+    width: 12px; /* 加粗进度条轨道 */
     background: rgba(255, 255, 255, 0.05);
-    border-radius: 2px;
+    border-radius: 0; /* 无圆角 */
 }
 
 /* 发光的进度条 - 从上到下增长 */
@@ -273,7 +274,7 @@ body {
     width: 100%;
     height: 0%;
     background: linear-gradient(to bottom, var(--primary) 0%, #00ffff 50%, var(--primary) 100%);
-    border-radius: 0 2px 2px 0; /* 只保留右侧圆角 */
+    border-radius: 0; /* 无圆角，长方形 */
     transition: height 0.2s cubic-bezier(0.25, 0.1, 0.25, 1);
     box-shadow:
         0 0 10px var(--primary),
@@ -289,7 +290,7 @@ body {
 /* 进度信息 - 贴进度条右侧，跟随移动 */
 .loading-info {
     position: fixed;
-    left: 15px; /* 贴近进度条右侧 */
+    left: 20px; /* 贴近加粗后的进度条右侧 */
     top: 0; /* 顶部对齐 */
     transform: translateY(0);
     transition: top 0.2s cubic-bezier(0.25, 0.1, 0.25, 1);
@@ -337,7 +338,7 @@ body {
 /* 水平展开动画 - 进度条跑满后向右蔓延 */
 .loading-bar-horizontal {
     position: absolute;
-    left: 4px; /* 从垂直进度条右侧开始 */
+    left: 12px; /* 从垂直进度条右侧开始 */
     top: 0;
     height: 100%;
     width: 0%;
@@ -362,6 +363,11 @@ body {
     animation: horizontalGlow 2s infinite;
 }
 
+/* 水平展开动画完成，隐藏背景遮罩 */
+.loading-screen.background-hidden {
+    background: transparent !important;
+}
+
 @keyframes horizontalGlow {
     0%, 100% { opacity: 0.3; }
     50% { opacity: 0.8; }
@@ -377,6 +383,11 @@ body {
     bottom: 0;
     background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
     animation: horizontalGlow 2s infinite;
+}
+
+/* 水平展开动画完成，隐藏背景遮罩 */
+.loading-screen.background-hidden {
+    background: transparent !important;
 }
 
 @keyframes horizontalGlow {
