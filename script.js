@@ -72,170 +72,284 @@ function hideLoading() {
     }
 }
 
-// 真实资源加载进度追踪
-class ResourceLoader {
+// 平滑进度动画管理器 - 解决缓存情况下瞬间加载的问题
+class SmoothProgress {
     constructor() {
-        this.totalResources = 0;
-        this.loadedResources = 0;
-        this.progress = 0;
+        this.targetProgress = 0;
+        this.currentProgress = 0;
+        this.animationId = null;
         this.callbacks = [];
-        this.startTime = Date.now();
-        this.minLoadTime = 1500; // 最小加载时间1.5秒，保证动画可见性
+        this.isComplete = false;
     }
 
-    onProgress(callback) {
+    onUpdate(callback) {
         this.callbacks.push(callback);
     }
 
-    updateProgress() {
-        // 计算基于真实资源加载的进度
-        let resourceProgress = this.totalResources > 0 
-            ? (this.loadedResources / this.totalResources) * 100 
-            : 0;
-        
-        // 计算基于时间的最小进度，保证动画流畅
-        const elapsedTime = Date.now() - this.startTime;
-        const timeProgress = Math.min((elapsedTime / this.minLoadTime) * 100, 100);
-        
-        // 取两者的较小值，确保资源加载主导，但时间保证最小进度
-        this.progress = Math.max(resourceProgress, Math.min(timeProgress, resourceProgress + 30));
-        
-        // 触发回调
-        this.callbacks.forEach(cb => cb(this.progress));
+    setTarget(target) {
+        this.targetProgress = Math.min(target, 100);
+        if (!this.animationId) {
+            this.animate();
+        }
     }
 
-    addResource() {
-        this.totalResources++;
-        this.updateProgress();
+    animate() {
+        const step = () => {
+            if (this.isComplete) return;
+
+            // 平滑插值：当前进度向目标进度靠近
+            const diff = this.targetProgress - this.currentProgress;
+            
+            if (Math.abs(diff) < 0.1) {
+                this.currentProgress = this.targetProgress;
+            } else {
+                // 使用缓动系数，让动画更自然
+                this.currentProgress += diff * 0.08;
+            }
+
+            // 触发回调
+            this.callbacks.forEach(cb => cb(this.currentProgress));
+
+            // 继续动画或停止
+            if (Math.abs(this.targetProgress - this.currentProgress) > 0.01 || this.targetProgress < 100) {
+                this.animationId = requestAnimationFrame(step);
+            } else {
+                this.animationId = null;
+            }
+        };
+        
+        this.animationId = requestAnimationFrame(step);
     }
 
-    resourceLoaded() {
-        this.loadedResources++;
-        this.updateProgress();
-    }
-
-    isComplete() {
-        return this.loadedResources >= this.totalResources && this.totalResources > 0;
+    complete() {
+        this.isComplete = true;
+        if (this.animationId) {
+            cancelAnimationFrame(this.animationId);
+        }
+        this.currentProgress = 100;
+        this.callbacks.forEach(cb => cb(100));
     }
 }
 
-// 初始化资源加载器
-const resourceLoader = new ResourceLoader();
+// 精细资源加载器 - 精确追踪每个资源
+class PreciseResourceLoader {
+    constructor() {
+        this.resources = [];
+        this.loadedCount = 0;
+        this.totalWeight = 0;
+        this.smoothProgress = new SmoothProgress();
+    }
+
+    // 添加资源，每个资源有独立的权重
+    addResource(name, type, weight = 1) {
+        const resource = {
+            name,
+            type,
+            weight,
+            loaded: false,
+            id: this.resources.length
+        };
+        this.resources.push(resource);
+        this.totalWeight += weight;
+        return resource;
+    }
+
+    // 标记资源加载完成
+    markLoaded(resourceId) {
+        const resource = this.resources.find(r => r.id === resourceId);
+        if (resource && !resource.loaded) {
+            resource.loaded = true;
+            this.loadedCount++;
+            this.updateProgress();
+        }
+    }
+
+    // 计算当前进度（基于权重）
+    updateProgress() {
+        let loadedWeight = 0;
+        this.resources.forEach(r => {
+            if (r.loaded) loadedWeight += r.weight;
+        });
+        
+        const progress = this.totalWeight > 0 
+            ? (loadedWeight / this.totalWeight) * 100 
+            : 0;
+        
+        this.smoothProgress.setTarget(progress);
+    }
+
+    // 获取平滑进度管理器
+    getProgressManager() {
+        return this.smoothProgress;
+    }
+
+    // 是否全部完成
+    isAllLoaded() {
+        return this.resources.every(r => r.loaded);
+    }
+
+    // 强制完成（备用）
+    forceComplete() {
+        this.resources.forEach(r => r.loaded = true);
+        this.smoothProgress.complete();
+    }
+}
+
+// 初始化精确资源加载器
+const preciseLoader = new PreciseResourceLoader();
 
 document.addEventListener('DOMContentLoaded', () => {
-    // 垂直进度条动画 - 从上到下（真实资源加载）
-    let progress = 0;
     const bar = document.getElementById('loadingBar');
     const percent = document.getElementById('loadingPercent');
     const info = document.getElementById('loadingInfo');
     const horizontalBar = document.getElementById('loadingBarHorizontal');
+    let loadingCompleted = false;
 
-    // 计算横向动画时长：保持速度一致，但设置最小时长保证可感知性
+    // 计算横向动画时长
     const screenWidth = window.innerWidth;
     const minDuration = 0.35;
     const calculatedDuration = screenWidth / 6776;
     const horizontalDuration = Math.max(calculatedDuration, minDuration);
     const horizontalDurationMs = Math.round(horizontalDuration * 1000);
 
-    // 动态设置CSS过渡时长
     if (horizontalBar) {
         horizontalBar.style.transition = `width ${horizontalDuration}s cubic-bezier(0.42, 0, 1, 1), left ${horizontalDuration}s cubic-bezier(0.42, 0, 1, 1)`;
     }
 
-    // 初始化文字位置在顶部
     if (info) {
         info.style.bottom = `${window.innerHeight}px`;
     }
 
-    // 追踪所有需要加载的资源
-    const trackableResources = [];
-    
-    // 收集所有图片资源
-    document.querySelectorAll('img').forEach(img => {
-        if (img.src && !img.complete) {
-            resourceLoader.addResource();
-            trackableResources.push({
-                element: img,
-                type: 'image',
-                src: img.src
-            });
-        }
-    });
-    
-    // 收集所有CSS字体资源（通过检查字体加载）
-    if (document.fonts) {
-        document.fonts.forEach(font => {
-            if (font.status === 'loading') {
-                resourceLoader.addResource();
-                trackableResources.push({
-                    element: font,
-                    type: 'font'
-                });
+    // 收集并注册所有资源
+    const resourcePromises = [];
+
+    // 1. 图片资源 - 每张图片独立计算
+    const images = Array.from(document.querySelectorAll('img')).filter(img => img.src && !img.complete);
+    images.forEach((img, index) => {
+        const resource = preciseLoader.addResource(`img-${index}`, 'image', 1);
+        
+        const promise = new Promise((resolve) => {
+            const onLoad = () => {
+                preciseLoader.markLoaded(resource.id);
+                resolve();
+            };
+            
+            if (img.complete) {
+                onLoad();
+            } else {
+                img.addEventListener('load', onLoad, { once: true });
+                img.addEventListener('error', onLoad, { once: true });
             }
         });
-    }
-
-    // 监听资源加载完成
-    trackableResources.forEach(resource => {
-        if (resource.type === 'image') {
-            resource.element.addEventListener('load', () => {
-                resourceLoader.resourceLoaded();
-            });
-            resource.element.addEventListener('error', () => {
-                resourceLoader.resourceLoaded(); // 错误也算加载完成
-            });
-        }
+        
+        resourcePromises.push(promise);
     });
 
-    // 监听字体加载完成
+    // 2. 字体资源 - 每个字体家族独立计算
     if (document.fonts) {
-        document.fonts.ready.then(() => {
-            // 字体全部加载完成
-            resourceLoader.updateProgress();
+        const fontFamilies = new Set();
+        document.fonts.forEach(font => fontFamilies.add(font.family));
+        
+        fontFamilies.forEach(fontFamily => {
+            const resource = preciseLoader.addResource(`font-${fontFamily}`, 'font', 2);
+            
+            const promise = document.fonts.load(`1em "${fontFamily}"`).then(() => {
+                preciseLoader.markLoaded(resource.id);
+            }).catch(() => {
+                preciseLoader.markLoaded(resource.id);
+            });
+            
+            resourcePromises.push(promise);
         });
     }
 
-    // 如果没有可追踪的资源，添加一个虚拟资源保证动画
-    if (resourceLoader.totalResources === 0) {
-        resourceLoader.addResource();
-        setTimeout(() => {
-            resourceLoader.resourceLoaded();
-        }, 1000);
+    // 3. CSS样式表资源
+    const stylesheets = Array.from(document.styleSheets).filter(s => s.href);
+    stylesheets.forEach((_, index) => {
+        const resource = preciseLoader.addResource(`css-${index}`, 'stylesheet', 1);
+        
+        // CSS通常已加载，标记为完成
+        preciseLoader.markLoaded(resource.id);
+    });
+
+    // 4. 脚本资源（动态加载的）
+    const scripts = Array.from(document.querySelectorAll('script[src]'));
+    scripts.forEach((script, index) => {
+        const resource = preciseLoader.addResource(`script-${index}`, 'script', 1);
+        
+        if (script.readyState === 'complete' || script.readyState === 'loaded') {
+            preciseLoader.markLoaded(resource.id);
+        } else {
+            const promise = new Promise((resolve) => {
+                script.addEventListener('load', () => {
+                    preciseLoader.markLoaded(resource.id);
+                    resolve();
+                }, { once: true });
+                script.addEventListener('error', () => {
+                    preciseLoader.markLoaded(resource.id);
+                    resolve();
+                }, { once: true });
+            });
+            resourcePromises.push(promise);
+        }
+    });
+
+    // 5. 如果没有资源，添加虚拟资源保证动画
+    if (preciseLoader.resources.length === 0) {
+        for (let i = 0; i < 10; i++) {
+            preciseLoader.addResource(`virtual-${i}`, 'virtual', 1);
+        }
+        // 逐步加载虚拟资源
+        let virtualIndex = 0;
+        const virtualInterval = setInterval(() => {
+            if (virtualIndex < preciseLoader.resources.length) {
+                preciseLoader.markLoaded(preciseLoader.resources[virtualIndex].id);
+                virtualIndex++;
+            } else {
+                clearInterval(virtualInterval);
+            }
+        }, 150);
     }
 
-    // 监听真实进度更新
-    resourceLoader.onProgress((realProgress) => {
-        progress = Math.min(realProgress, 100);
-        
-        // 更新进度条高度（从上到下）
-        if (bar) bar.style.height = progress + '%';
+    // 监听平滑进度更新
+    preciseLoader.getProgressManager().onUpdate((smoothProgress) => {
+        // 更新进度条
+        if (bar) bar.style.height = `${smoothProgress}%`;
         
         // 更新百分比文字
-        if (percent) percent.textContent = Math.floor(progress) + '%';
+        if (percent) percent.textContent = `${Math.floor(smoothProgress)}%`;
         
-        // 更新进度信息位置（跟随进度条头部/底端）
+        // 更新进度信息位置
         if (info) {
             const trackHeight = window.innerHeight;
-            const currentPos = (progress / 100) * trackHeight;
-            // 设置底部位置，但限制最小距离屏幕底部20px
+            const currentPos = (smoothProgress / 100) * trackHeight;
+            // 限制最小距离屏幕底部20px
             const bottomPos = Math.max(trackHeight - currentPos, 20);
             info.style.bottom = `${bottomPos}px`;
         }
         
-        // 检查是否完成
-        if (progress >= 100 && resourceLoader.isComplete()) {
+        // 检查是否完成（100%且所有资源加载完成）
+        if (smoothProgress >= 99.9 && preciseLoader.isAllLoaded() && !loadingCompleted) {
+            loadingCompleted = true;
             completeLoading();
         }
     });
 
+    // 等待所有资源加载完成
+    Promise.all(resourcePromises).then(() => {
+        // 所有资源已加载，平滑过渡到100%
+        preciseLoader.getProgressManager().setTarget(100);
+    });
+
     // 完成加载处理
     function completeLoading() {
-        progress = 100;
+        // 确保进度显示100%
+        if (bar) bar.style.height = '100%';
+        if (percent) percent.textContent = '100%';
         
-        // 添加水平展开动画
-        if (horizontalBar) {
-            // 纵向进度条达到100%后，等待0.3秒再开始横向进度条
-            setTimeout(() => {
+        // 纵向进度条达到100%后，等待0.3秒再开始横向进度条
+        setTimeout(() => {
+            if (horizontalBar) {
                 horizontalBar.style.width = '100%';
 
                 // 等待水平进度条完全展开后，再隐藏背景遮罩、垂直进度条和进度信息
@@ -244,7 +358,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (loadingScreen) {
                         loadingScreen.classList.add('background-hidden');
                     }
-                    // 立即隐藏进度信息
                     if (info) {
                         info.style.opacity = '0';
                     }
@@ -260,18 +373,18 @@ document.addEventListener('DOMContentLoaded', () => {
                         hideLoading();
                     }, Math.round(exitDuration * 1000));
                 }, horizontalDurationMs + 300);
-            }, 300);
-        } else {
-            setTimeout(hideLoading, 500);
-        }
+            } else {
+                hideLoading();
+            }
+        }, 300);
     }
 
-    // 备用：如果真实加载太慢，最多等待8秒后强制完成
+    // 备用：最多等待6秒后强制完成
     setTimeout(() => {
-        if (progress < 100) {
-            completeLoading();
+        if (!loadingCompleted) {
+            preciseLoader.forceComplete();
         }
-    }, 8000);
+    }, 6000);
 
     // 导航切换
     const navLinks = document.querySelectorAll('.sidebar-link[data-page], .footer-links a[data-page]');
