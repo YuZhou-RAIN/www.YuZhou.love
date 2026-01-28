@@ -290,10 +290,9 @@ body {
 .loading-info {
     position: fixed;
     left: 20px; /* 贴近加粗后的进度条右侧 */
-    top: auto; /* 取消固定顶部 */
-    bottom: 0; /* 从底部开始 */
+    top: 0; /* 从顶部开始 */
     transform: translateY(0);
-    transition: bottom 0.2s cubic-bezier(0.25, 0.1, 0.25, 1);
+    transition: top 0.2s cubic-bezier(0.25, 0.1, 0.25, 1);
     display: flex;
     flex-direction: column;
     gap: 5px;

@@ -132,12 +132,12 @@ document.addEventListener('DOMContentLoaded', () => {
         if (percent) percent.textContent = Math.floor(progress) + '%';
         
         // 更新进度信息位置（跟随进度条头部/底端）
-        // 进度条从顶部开始，文字从底部开始向上移动
+        // 进度条从顶部开始，文字跟随进度条底部
         if (info) {
             const trackHeight = window.innerHeight; // 100vh
             const currentPos = (progress / 100) * trackHeight;
-            // 文字从底部开始，向上移动，跟随进度条底部
-            info.style.bottom = `${trackHeight - currentPos}px`;
+            // 文字从顶部开始，跟随进度条底部移动
+            info.style.top = `${currentPos}px`;
         }
     }, 60);
 
