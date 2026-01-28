@@ -271,7 +271,7 @@ body {
     position: absolute;
     left: 0;
     top: 0;
-    width: 100%;
+    width: 50px; /* 固定50px宽度 */
     height: 0%;
     background: #45CDF3; /* 纯青色 */
     border-radius: 0; /* 无圆角，长方形 */
@@ -316,14 +316,14 @@ body {
     align-items: flex-start;
 }
 
-/* 百分比符号 - 更小，靠下对齐 */
+/* 百分比符号 - 更小，靠下对齐，加粗 */
 .loading-percent::after {
     content: '%';
     font-size: 1.2rem;
-    font-weight: 600;
+    font-weight: 700;
     margin-left: 0.1em;
     margin-top: 1.6em;
-    opacity: 0.8;
+    opacity: 0.9;
 }
 
 /* 上传状态文字 */
