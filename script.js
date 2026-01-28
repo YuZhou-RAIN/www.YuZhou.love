@@ -110,15 +110,15 @@ document.addEventListener('DOMContentLoaded', () => {
                         if (loadingScreen) {
                             loadingScreen.classList.add('background-hidden');
                         }
-
-                        // 水平展开完成后，从左到右移动消失
-                        setTimeout(() => {
-                            horizontalBar.style.left = '120%'; // 向右移动消失
-                            setTimeout(() => {
-                                hideLoading(); // 隐藏加载界面
-                            }, 2000);
-                        }, 800);
                     }, 800); // 等待800ms，让水平进度条完全展开
+
+                    // 水平展开完成后，立即向右移动消失（去掉等待）
+                    setTimeout(() => {
+                        horizontalBar.style.left = '120%';
+                        setTimeout(() => {
+                            hideLoading(); // 隐藏加载界面
+                        }, 2000);
+                    }, 800); // 与上面同时等待800ms，然后立即开始向右移动
                 }, 200);
             } else {
                 setTimeout(hideLoading, 500);
