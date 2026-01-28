@@ -471,12 +471,32 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             const id = link.getAttribute('data-page');
             
+            // 更新URL，不刷新页面
+            if (id === 'home') {
+                history.pushState({ page: id }, '', '/');
+            } else {
+                history.pushState({ page: id }, '', `/${id}`);
+            }
+            
             navLinks.forEach(l => l.classList.remove('active'));
             document.querySelectorAll(`[data-page="${id}"]`).forEach(l => l.classList.add('active'));
             
             await loadPage(id);
             window.scrollTo(0, 0);
         });
+    });
+
+    // 监听浏览器前进/后退按钮
+    window.addEventListener('popstate', (e) => {
+        const path = window.location.pathname.replace(/^\//, '') || 'home';
+        const validPages = { home: 'home', features: 'features', join: 'join', about: 'about' };
+        const pageId = validPages[path] || 'home';
+        
+        navLinks.forEach(l => l.classList.remove('active'));
+        document.querySelectorAll(`[data-page="${pageId}"]`).forEach(l => l.classList.add('active'));
+        
+        loadPage(pageId);
+        window.scrollTo(0, 0);
     });
 
     // 加载初始页面
