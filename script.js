@@ -68,7 +68,13 @@ function hideLoading() {
     if (loading) {
         loading.style.opacity = '0';
         loading.style.transition = 'opacity 0.5s';
-        setTimeout(() => loading.style.display = 'none', 500);
+        setTimeout(() => {
+            loading.style.display = 'none';
+            // 恢复页面滚动
+            document.body.classList.remove('loading');
+            // 确保页面回到顶部
+            window.scrollTo(0, 0);
+        }, 500);
     }
 }
 
@@ -199,6 +205,11 @@ class PreciseResourceLoader {
 const preciseLoader = new PreciseResourceLoader();
 
 document.addEventListener('DOMContentLoaded', () => {
+    // 禁止页面滚动，防止加载期间用户滚动
+    document.body.classList.add('loading');
+    // 确保页面在顶部开始
+    window.scrollTo(0, 0);
+
     const bar = document.getElementById('loadingBar');
     const percent = document.getElementById('loadingPercent');
     const info = document.getElementById('loadingInfo');

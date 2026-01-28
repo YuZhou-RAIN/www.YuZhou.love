@@ -255,6 +255,12 @@ body {
     transition: opacity 0.5s ease-out;
 }
 
+/* 加载期间禁止页面滚动 */
+body.loading {
+    overflow: hidden;
+    height: 100vh;
+}
+
 /* 进度条轨道 - 顶天立地，无空隙 */
 .loading-track {
     position: fixed;
