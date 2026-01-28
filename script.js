@@ -500,18 +500,16 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // 加载初始页面
-    // 优先检查sessionStorage中是否有GitHub Pages路由重定向保存的路径
+    // 直接从URL路径加载页面，支持直接访问路径
     let pageId = 'home';
-    const savedRoute = sessionStorage.getItem('gh-pages-route');
+    const path = window.location.pathname.replace(/^\//, '') || 'home';
+    const validPages = { home: 'home', features: 'features', join: 'join', about: 'about' };
+    const repoPrefix = '/www.yuzhou.love';
     
-    if (savedRoute) {
-        // 清除保存的路由，避免刷新时重复加载
-        sessionStorage.removeItem('gh-pages-route');
-        const validPages = { home: 'home', features: 'features', join: 'join', about: 'about' };
-        pageId = validPages[savedRoute] || 'home';
+    // 提取页面标识（去掉仓库名前缀）
+    if (path.startsWith(repoPrefix)) {
+        pageId = path.slice(repoPrefix.length);
     } else {
-        const path = window.location.pathname.replace(/^\//, '') || 'home';
-        const validPages = { home: 'home', features: 'features', join: 'join', about: 'about' };
         pageId = validPages[path] || 'home';
     }
     

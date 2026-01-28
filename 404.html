@@ -4,8 +4,8 @@
     <meta charset="utf-8">
     <title>雨州 Minecraft 服务器</title>
     <script>
-        // GitHub Pages SPA 路由支持
-        // 将路径信息保存到sessionStorage，然后重定向到首页
+        // GitHub Pages SPA 深由支持
+        // 直接更新URL到路径，不重定向
         const path = window.location.pathname;
         const repo = '/www.yuzhou.love'; // 你的仓库名
         
@@ -18,13 +18,10 @@
         // 去掉开头的斜杠
         pagePath = pagePath.replace(/^\//, '');
         
-        // 保存要加载的页面到sessionStorage
+        // 如果不是首页，更新URL到完整路径
         if (pagePath && pagePath !== 'index.html') {
-            sessionStorage.setItem('gh-pages-route', pagePath);
+            window.history.replaceState({ page: pagePath }, '', `${repo}/${pagePath}`);
         }
-        
-        // 重定向到首页
-        window.location.href = '/www.yuzhou.love/';
     </script>
 </head>
 <body>
