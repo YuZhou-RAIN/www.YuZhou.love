@@ -20,7 +20,7 @@
         
         // 如果不是首页，更新URL到完整路径
         if (pagePath && pagePath !== 'index.html') {
-            window.history.replaceState({ page: pagePath }, '', `${repo}/${pagePath}`);
+            window.history.replaceState({ page: pagePath }, '', `/${pagePath}`);
         }
     </script>
 </head>
