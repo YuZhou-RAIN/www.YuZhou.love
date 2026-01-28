@@ -119,7 +119,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         if (info) {
                             info.style.opacity = '0';
                         }
-                    }, 800); // 等待800ms，让水平进度条完全展开
+                    }, 500); // 等待500ms，让水平进度条完全展开
 
                     // 水平展开完成后，立即向右移动消失（去掉等待）
                     setTimeout(() => {
@@ -127,7 +127,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         setTimeout(() => {
                             hideLoading(); // 隐藏加载界面
                         }, 2000);
-                    }, 800); // 与上面同时等待800ms，然后立即开始向右移动
+                    }, 500); // 与上面同时等待500ms，然后立即开始向右移动
                 }, 200);
             } else {
                 setTimeout(hideLoading, 500);
