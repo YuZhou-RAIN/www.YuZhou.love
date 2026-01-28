@@ -12,12 +12,13 @@
 <body>
     <!-- 加载界面 -->
     <div class="loading-screen" id="loadingScreen">
+        <!-- 水平展开的进度条 - 独立元素，可覆盖全屏 -->
+        <div class="loading-bar-horizontal" id="loadingBarHorizontal"></div>
+        
         <div class="loading-container">
             <!-- 垂直进度条 -->
             <div class="loading-track">
                 <div class="loading-bar-vertical" id="loadingBar"></div>
-                <!-- 水平展开的进度条 -->
-                <div class="loading-bar-horizontal" id="loadingBarHorizontal"></div>
             </div>
             
             <!-- 进度信息 - 跟随进度移动 -->
