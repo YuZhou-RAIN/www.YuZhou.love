@@ -80,6 +80,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const info = document.getElementById('loadingInfo');
     const horizontalBar = document.getElementById('loadingBarHorizontal');
 
+    // 计算横向动画时长：保持速度一致
+    // 目标：3388px宽度时0.5秒，速度 = 3388/0.5 = 6776px/秒
+    // 公式：时长 = 当前宽度 / 6776
+    const screenWidth = window.innerWidth;
+    const horizontalDuration = screenWidth / 6776; // 根据屏幕宽度动态计算
+    const horizontalDurationMs = Math.round(horizontalDuration * 1000); // 转换为毫秒
+
+    // 动态设置CSS过渡时长
+    if (horizontalBar) {
+        horizontalBar.style.transition = `width ${horizontalDuration}s cubic-bezier(0.42, 0, 1, 1), left ${horizontalDuration}s cubic-bezier(0.42, 0, 1, 1)`;
+    }
+
     // 初始化文字位置在顶部（跟随进度条头部）
     if (info) {
         info.style.bottom = `${window.innerHeight}px`;
@@ -119,15 +131,15 @@ document.addEventListener('DOMContentLoaded', () => {
                         if (info) {
                             info.style.opacity = '0';
                         }
-                    }, 500); // 等待500ms，让水平进度条完全展开
+                    }, horizontalDurationMs); // 使用动态计算的时长
 
-                    // 水平展开完成后，立即向右移动消失（去掉等待）
+                    // 水平展开完成后，立即向右移动消失
                     setTimeout(() => {
                         horizontalBar.style.left = '120%';
                         setTimeout(() => {
                             hideLoading(); // 隐藏加载界面
                         }, 2000);
-                    }, 500); // 与上面同时等待500ms，然后立即开始向右移动
+                    }, horizontalDurationMs); // 使用动态计算的时长
                 }, 200);
             } else {
                 setTimeout(hideLoading, 500);
