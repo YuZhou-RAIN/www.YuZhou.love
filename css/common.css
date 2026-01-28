@@ -291,7 +291,7 @@ body {
     position: fixed;
     left: 20px; /* 贴近加粗后的进度条右侧 */
     top: auto;
-    bottom: 0;
+    bottom: 100vh; /* 初始在屏幕顶部 */
     transform: translateY(0);
     transition: bottom 0.2s cubic-bezier(0.25, 0.1, 0.25, 1), opacity 0.15s ease-out;
     display: flex;
