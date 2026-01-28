@@ -254,12 +254,12 @@ body {
     z-index: 9999;
 }
 
-/* 进度条轨道 - 贴左侧 */
+/* 进度条轨道 - 完全贴近左侧 */
 .loading-track {
     position: fixed;
-    left: 40px;
-    top: 10vh;
-    bottom: 10vh;
+    left: 1px; /* 完全贴近左侧 */
+    top: 5vh; /* 从屏幕上方5%开始 */
+    height: 90vh; /* 占据屏幕90%高度 */
     width: 4px;
     background: rgba(255, 255, 255, 0.05);
     border-radius: 2px;
@@ -302,8 +302,8 @@ body {
 /* 进度信息 - 贴进度条头部，跟随移动 */
 .loading-info {
     position: fixed;
-    left: 70px;
-    top: 10vh;
+    left: 15px; /* 贴近进度条右侧 */
+    top: 5vh; /* 从屏幕上方5%开始 */
     transform: translateY(0);
     transition: top 0.2s ease-out;
     display: flex;

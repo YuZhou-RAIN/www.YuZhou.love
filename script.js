@@ -107,11 +107,11 @@ document.addEventListener('DOMContentLoaded', () => {
         if (percent) percent.textContent = Math.floor(progress) + '%';
         
         // 更新进度信息位置（跟随进度条头部/底端）
-        // 进度条从top:10vh开始，高度80vh
+        // 进度条从top:5vh开始，高度90vh
         if (info) {
-            const trackHeight = window.innerHeight * 0.8; // 80vh
+            const trackHeight = window.innerHeight * 0.9; // 90vh
             const currentPos = (progress / 100) * trackHeight;
-            info.style.top = `calc(10vh + ${currentPos}px)`;
+            info.style.top = `calc(5vh + ${currentPos}px)`;
         }
     }, 60);
 
