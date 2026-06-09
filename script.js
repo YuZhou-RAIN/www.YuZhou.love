@@ -500,6 +500,24 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // 加载初始页面
+    // 处理 GitHub Pages SPA 重定向
+    const redirectPath = sessionStorage.getItem('yuzhouRedirectPath');
+    if (redirectPath) {
+        sessionStorage.removeItem('yuzhouRedirectPath');
+        const validPages = { home: 'home', features: 'features', join: 'join', about: 'about' };
+        let pageId = validPages[redirectPath] || 'home';
+        
+        if (pageId === 'home') {
+            history.replaceState({ page: pageId }, '', '/');
+        } else {
+            history.replaceState({ page: pageId }, '', `/${pageId}`);
+        }
+        
+        loadPage(pageId);
+        document.querySelectorAll(`[data-page="${pageId}"]`).forEach(l => l.classList.add('active'));
+        return;
+    }
+    
     // 直接从URL路径加载页面，支持直接访问路径
     let pageId = 'home';
     const path = window.location.pathname.replace(/^\//, '') || 'home';

@@ -93,6 +93,39 @@
     gap: 25px;
 }
 
+/* 加入指南图文布局 */
+.join-layout {
+    display: flex;
+    align-items: flex-start;
+    gap: 40px;
+}
+
+.join-layout .steps-grid {
+    flex: 1;
+    min-width: 0;
+}
+
+.join-image {
+    flex: 1;
+    min-width: 0;
+    position: sticky;
+    top: 100px;
+}
+
+.join-image img {
+    width: 100%;
+    height: auto;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.3);
+    display: block;
+}
+
+/* 基岩版图片在左，步骤在右 */
+.join-layout-reverse {
+    flex-direction: row-reverse;
+}
+
 .step-card {
     background: var(--bg-card);
     border: 1px solid var(--border);
@@ -260,6 +293,19 @@
 }
 
 /* 响应式 */
+@media (max-width: 1024px) {
+    .join-layout,
+    .join-layout-reverse {
+        flex-direction: column;
+    }
+
+    .join-image {
+        position: static;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+}
+
 @media (max-width: 768px) {
     .page-hero {
         padding: 120px 20px 40px;

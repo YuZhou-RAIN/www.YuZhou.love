@@ -5,26 +5,23 @@
     <title>雨州 Minecraft 服务器</title>
     <script>
         // GitHub Pages SPA 深由支持
-        // 直接更新URL到路径，不重定向
         const path = window.location.pathname;
-        const repo = '/www.yuzhou.love'; // 你的仓库名
+        const repo = '/www.yuzhou.love';
         
-        // 提取页面路径（去掉仓库名）
         let pagePath = path;
         if (path.startsWith(repo)) {
             pagePath = path.slice(repo.length);
         }
         
-        // 去掉开头的斜杠
         pagePath = pagePath.replace(/^\//, '');
         
-        // 如果不是首页，更新URL到完整路径
         if (pagePath && pagePath !== 'index.html') {
-            window.history.replaceState({ page: pagePath }, '', `/${pagePath}`);
+            sessionStorage.setItem('yuzhouRedirectPath', pagePath);
         }
+        
+        window.location.replace('/');
     </script>
 </head>
 <body>
-    <p>正在跳转...</p>
 </body>
 </html>
