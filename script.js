@@ -28,13 +28,12 @@ function showToast(msg) {
 }
 
 async function loadPage(id) {
+    const main = document.getElementById('mainContent');
+
     if (loadedPages.has(id)) {
+        document.querySelectorAll('.page-content').forEach(el => el.classList.remove('active'));
         const content = document.getElementById(id + '-content');
-        if (content) {
-            document.getElementById('mainContent').innerHTML = '';
-            document.getElementById('mainContent').appendChild(content);
-            content.classList.add('active');
-        }
+        if (content) content.classList.add('active');
         return;
     }
 
@@ -51,15 +50,15 @@ async function loadPage(id) {
         }
         
         content.id = id + '-content';
-        content.className = 'page-content active';
+        content.className = 'page-content';
         
-        const main = document.getElementById('mainContent');
-        main.innerHTML = '';
+        document.querySelectorAll('.page-content').forEach(el => el.classList.remove('active'));
         main.appendChild(content);
+        content.classList.add('active');
         
         loadedPages.add(id);
     } catch (err) {
-        document.getElementById('mainContent').innerHTML = '<div class="page-content active" style="padding:150px 40px;text-align:center"><h1>加载失败</h1></div>';
+        main.innerHTML = '<div class="page-content active" style="padding:150px 40px;text-align:center"><h1>加载失败</h1></div>';
     }
 }
 
@@ -102,132 +101,6 @@ function updateThemeIcon() {
     btn.innerHTML = isDark ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
 }
 
-// 平滑进度动画管理器 - 解决缓存情况下瞬间加载的问题
-class SmoothProgress {
-    constructor() {
-        this.targetProgress = 0;
-        this.currentProgress = 0;
-        this.animationId = null;
-        this.callbacks = [];
-        this.isComplete = false;
-    }
-
-    onUpdate(callback) {
-        this.callbacks.push(callback);
-    }
-
-    setTarget(target) {
-        this.targetProgress = Math.min(target, 100);
-        if (!this.animationId) {
-            this.animate();
-        }
-    }
-
-    animate() {
-        const step = () => {
-            if (this.isComplete) return;
-
-            // 平滑插值：当前进度向目标进度靠近
-            const diff = this.targetProgress - this.currentProgress;
-            
-            if (Math.abs(diff) < 0.1) {
-                this.currentProgress = this.targetProgress;
-            } else {
-                // 使用缓动系数，让动画更自然
-                this.currentProgress += diff * 0.08;
-            }
-
-            // 触发回调
-            this.callbacks.forEach(cb => cb(this.currentProgress));
-
-            // 继续动画或停止
-            if (Math.abs(this.targetProgress - this.currentProgress) > 0.01 || this.targetProgress < 100) {
-                this.animationId = requestAnimationFrame(step);
-            } else {
-                this.animationId = null;
-            }
-        };
-        
-        this.animationId = requestAnimationFrame(step);
-    }
-
-    complete() {
-        this.isComplete = true;
-        if (this.animationId) {
-            cancelAnimationFrame(this.animationId);
-        }
-        this.currentProgress = 100;
-        this.callbacks.forEach(cb => cb(100));
-    }
-}
-
-// 精细资源加载器 - 精确追踪每个资源
-class PreciseResourceLoader {
-    constructor() {
-        this.resources = [];
-        this.loadedCount = 0;
-        this.totalWeight = 0;
-        this.smoothProgress = new SmoothProgress();
-    }
-
-    // 添加资源，每个资源有独立的权重
-    addResource(name, type, weight = 1) {
-        const resource = {
-            name,
-            type,
-            weight,
-            loaded: false,
-            id: this.resources.length
-        };
-        this.resources.push(resource);
-        this.totalWeight += weight;
-        return resource;
-    }
-
-    // 标记资源加载完成
-    markLoaded(resourceId) {
-        const resource = this.resources.find(r => r.id === resourceId);
-        if (resource && !resource.loaded) {
-            resource.loaded = true;
-            this.loadedCount++;
-            this.updateProgress();
-        }
-    }
-
-    // 计算当前进度（基于权重）
-    updateProgress() {
-        let loadedWeight = 0;
-        this.resources.forEach(r => {
-            if (r.loaded) loadedWeight += r.weight;
-        });
-        
-        const progress = this.totalWeight > 0 
-            ? (loadedWeight / this.totalWeight) * 100 
-            : 0;
-        
-        this.smoothProgress.setTarget(progress);
-    }
-
-    // 获取平滑进度管理器
-    getProgressManager() {
-        return this.smoothProgress;
-    }
-
-    // 是否全部完成
-    isAllLoaded() {
-        return this.resources.every(r => r.loaded);
-    }
-
-    // 强制完成（备用）
-    forceComplete() {
-        this.resources.forEach(r => r.loaded = true);
-        this.smoothProgress.complete();
-    }
-}
-
-// 初始化精确资源加载器
-const preciseLoader = new PreciseResourceLoader();
-
 document.addEventListener('DOMContentLoaded', () => {
     // 初始化主题
     initTheme();
@@ -238,231 +111,78 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // 禁止页面滚动，防止加载期间用户滚动
     document.body.classList.add('loading');
-    // 确保页面在顶部开始
     window.scrollTo(0, 0);
 
     const bar = document.getElementById('loadingBar');
     const percent = document.getElementById('loadingPercent');
-    let loadingCompleted = false;
+    const startTime = Date.now();
+    const MIN_LOADING_MS = 400;
+    const MAX_LOADING_MS = 4000;
 
-    // 收集并注册所有资源
-    const resourcePromises = [];
+    let pending = 0;
+    let loaded = 0;
 
-    // 1. 图片资源 - 每张图片独立计算
-    const images = Array.from(document.querySelectorAll('img')).filter(img => img.src && !img.complete);
-    images.forEach((img, index) => {
-        const resource = preciseLoader.addResource(`img-${index}`, 'image', 1);
-        
-        const promise = new Promise((resolve) => {
-            const onLoad = () => {
-                preciseLoader.markLoaded(resource.id);
-                resolve();
-            };
-            
-            if (img.complete) {
-                onLoad();
-            } else {
-                img.addEventListener('load', onLoad, { once: true });
-                img.addEventListener('error', onLoad, { once: true });
-            }
-        });
-        
-        resourcePromises.push(promise);
+    function onProgress() {
+        loaded++;
+        const pct = pending > 0 ? Math.round(loaded / pending * 100) : 100;
+        if (bar) bar.style.width = pct + '%';
+        if (percent) percent.textContent = pct;
+        if (loaded >= pending) finishLoading();
+    }
+
+    function finishLoading() {
+        const elapsed = Date.now() - startTime;
+        const wait = Math.max(0, MIN_LOADING_MS - elapsed);
+        setTimeout(hideLoading, wait);
+    }
+
+    // 追踪初始 HTML 中的图片
+    const imgs = Array.from(document.querySelectorAll('img')).filter(img => img.src);
+    pending += imgs.length;
+    imgs.forEach(img => {
+        if (img.complete) { onProgress(); }
+        else { img.addEventListener('load', onProgress, { once: true });
+               img.addEventListener('error', onProgress, { once: true }); }
     });
 
-    // 2. 字体资源 - 每个字体家族独立计算
+    // 追踪字体
     if (document.fonts) {
-        const fontFamilies = new Set();
-        document.fonts.forEach(font => fontFamilies.add(font.family));
-        
-        fontFamilies.forEach(fontFamily => {
-            const resource = preciseLoader.addResource(`font-${fontFamily}`, 'font', 2);
-            
-            const promise = document.fonts.load(`1em "${fontFamily}"`).then(() => {
-                preciseLoader.markLoaded(resource.id);
-            }).catch(() => {
-                preciseLoader.markLoaded(resource.id);
-            });
-            
-            resourcePromises.push(promise);
-        });
+        pending++;
+        document.fonts.ready.then(onProgress);
     }
 
-    // 3. CSS样式表资源
-    const stylesheets = Array.from(document.styleSheets).filter(s => s.href);
-    stylesheets.forEach((_, index) => {
-        const resource = preciseLoader.addResource(`css-${index}`, 'stylesheet', 1);
-        
-        // CSS通常已加载，标记为完成
-        preciseLoader.markLoaded(resource.id);
-    });
+    // 无资源时直接完成
+    if (pending === 0) finishLoading();
 
-    // 4. 脚本资源（动态加载的）
-    const scripts = Array.from(document.querySelectorAll('script[src]'));
-    scripts.forEach((script, index) => {
-        const resource = preciseLoader.addResource(`script-${index}`, 'script', 1);
+    // 后备超时
+    setTimeout(hideLoading, MAX_LOADING_MS);
+
+    // 导航切换（事件代理，支持动态插入的元素）
+    document.addEventListener('click', (e) => {
+        const link = e.target.closest('[data-page]');
+        if (!link) return;
+        e.preventDefault();
+        const id = link.getAttribute('data-page');
         
-        if (script.readyState === 'complete' || script.readyState === 'loaded') {
-            preciseLoader.markLoaded(resource.id);
+        if (id === 'home') {
+            history.pushState({ page: id }, '', '/');
         } else {
-            const promise = new Promise((resolve) => {
-                script.addEventListener('load', () => {
-                    preciseLoader.markLoaded(resource.id);
-                    resolve();
-                }, { once: true });
-                script.addEventListener('error', () => {
-                    preciseLoader.markLoaded(resource.id);
-                    resolve();
-                }, { once: true });
-            });
-            resourcePromises.push(promise);
+            history.pushState({ page: id }, '', `/${id}`);
         }
-    });
-
-    // 5. 追踪CSS背景图片
-    const bgImageUrls = new Set();
-    
-    // 从所有样式表中提取背景图片URL
-    try {
-        Array.from(document.styleSheets).forEach(sheet => {
-            try {
-                Array.from(sheet.cssRules || []).forEach(rule => {
-                    if (rule.style) {
-                        const bgImage = rule.style.backgroundImage || rule.style.background;
-                        if (bgImage) {
-                            const matches = bgImage.match(/url\(["']?([^"')]+)["']?\)/g);
-                            if (matches) {
-                                matches.forEach(match => {
-                                    const url = match.replace(/url\(["']?([^"')]+)["']?\)/, '$1');
-                                    if (url && !url.startsWith('data:')) {
-                                        bgImageUrls.add(url);
-                                    }
-                                });
-                            }
-                        }
-                    }
-                });
-            } catch (e) {
-                // 跨域样式表可能无法访问，忽略错误
-            }
-        });
-    } catch (e) {
-        console.log('无法解析CSS背景图片');
-    }
-    
-    // 同时检查内联样式
-    document.querySelectorAll('*').forEach(el => {
-        const style = el.getAttribute('style');
-        if (style) {
-            const matches = style.match(/url\(["']?([^"')]+)["']?\)/g);
-            if (matches) {
-                matches.forEach(match => {
-                    const url = match.replace(/url\(["']?([^"')]+)["']?\)/, '$1');
-                    if (url && !url.startsWith('data:')) {
-                        bgImageUrls.add(url);
-                    }
-                });
-            }
-        }
-    });
-    
-    // 预加载并追踪CSS背景图片
-    bgImageUrls.forEach((url, index) => {
-        const resource = preciseLoader.addResource(`bg-image-${index}`, 'background-image', 2);
         
-        const img = new Image();
-        const promise = new Promise((resolve) => {
-            img.onload = () => {
-                preciseLoader.markLoaded(resource.id);
-                resolve();
-            };
-            img.onerror = () => {
-                preciseLoader.markLoaded(resource.id);
-                resolve();
-            };
-        });
+        document.querySelectorAll('[data-page].active').forEach(l => l.classList.remove('active'));
+        document.querySelectorAll(`[data-page="${id}"]`).forEach(l => l.classList.add('active'));
         
-        img.src = url;
-        resourcePromises.push(promise);
-    });
-
-    // 6. 如果没有资源，添加虚拟资源保证动画
-    if (preciseLoader.resources.length === 0) {
-        for (let i = 0; i < 10; i++) {
-            preciseLoader.addResource(`virtual-${i}`, 'virtual', 1);
-        }
-        // 逐步加载虚拟资源
-        let virtualIndex = 0;
-        const virtualInterval = setInterval(() => {
-            if (virtualIndex < preciseLoader.resources.length) {
-                preciseLoader.markLoaded(preciseLoader.resources[virtualIndex].id);
-                virtualIndex++;
-            } else {
-                clearInterval(virtualInterval);
-            }
-        }, 150);
-    }
-
-    // 监听平滑进度更新
-    preciseLoader.getProgressManager().onUpdate((smoothProgress) => {
-        if (bar) bar.style.width = `${smoothProgress}%`;
-        if (percent) percent.textContent = Math.floor(smoothProgress);
-        
-        if (smoothProgress >= 99.9 && preciseLoader.isAllLoaded() && !loadingCompleted) {
-            loadingCompleted = true;
-            completeLoading();
-        }
-    });
-
-    // 等待所有资源加载完成
-    Promise.all(resourcePromises).then(() => {
-        // 所有资源已加载，平滑过渡到100%
-        preciseLoader.getProgressManager().setTarget(100);
-    });
-
-    // 完成加载处理
-    function completeLoading() {
-        if (bar) bar.style.width = '100%';
-        if (percent) percent.textContent = '100';
-        setTimeout(hideLoading, 400);
-    }
-
-    // 备用：最多等待6秒后强制完成
-    setTimeout(() => {
-        if (!loadingCompleted) {
-            preciseLoader.forceComplete();
-        }
-    }, 6000);
-
-    // 导航切换
-    const navLinks = document.querySelectorAll('.sidebar-link[data-page], .footer-links a[data-page]');
-    navLinks.forEach(link => {
-        link.addEventListener('click', async (e) => {
-            e.preventDefault();
-            const id = link.getAttribute('data-page');
-            
-            // 更新URL，不刷新页面
-            if (id === 'home') {
-                history.pushState({ page: id }, '', '/');
-            } else {
-                history.pushState({ page: id }, '', `/${id}`);
-            }
-            
-            navLinks.forEach(l => l.classList.remove('active'));
-            document.querySelectorAll(`[data-page="${id}"]`).forEach(l => l.classList.add('active'));
-            
-            await loadPage(id);
-            window.scrollTo(0, 0);
-        });
+        loadPage(id).then(() => window.scrollTo(0, 0));
     });
 
     // 监听浏览器前进/后退按钮
-    window.addEventListener('popstate', (e) => {
+    window.addEventListener('popstate', () => {
         const path = window.location.pathname.replace(/^\//, '') || 'home';
         const validPages = { home: 'home', features: 'features', join: 'join', about: 'about' };
         const pageId = validPages[path] || 'home';
         
-        navLinks.forEach(l => l.classList.remove('active'));
+        document.querySelectorAll('[data-page].active').forEach(l => l.classList.remove('active'));
         document.querySelectorAll(`[data-page="${pageId}"]`).forEach(l => l.classList.add('active'));
         
         loadPage(pageId);
