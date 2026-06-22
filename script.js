@@ -22,7 +22,7 @@ function copyQQ() { copyText('823557774', 'QQ群号已复制！'); }
 function showToast(msg) {
     const t = document.createElement('div');
     t.textContent = msg;
-    t.style.cssText = 'position:fixed;top:100px;left:50%;transform:translateX(-50%);background:rgba(0,212,255,0.9);color:#fff;padding:12px 24px;border-radius:8px;z-index:10000;animation:slideDown 0.3s';
+    t.style.cssText = 'position:fixed;top:100px;left:50%;transform:translateX(-50%);background:#0078d4;color:#fff;padding:12px 24px;border-radius:6px;z-index:10000;box-shadow:0 4px 12px rgba(0,0,0,0.15)';
     document.body.appendChild(t);
     setTimeout(() => { t.style.opacity = '0'; t.style.transition = '0.3s'; setTimeout(() => t.remove(), 300); }, 2500);
 }
@@ -66,16 +66,40 @@ async function loadPage(id) {
 function hideLoading() {
     const loading = document.getElementById('loadingScreen');
     if (loading) {
-        loading.style.opacity = '0';
-        loading.style.transition = 'opacity 0.5s';
-        setTimeout(() => {
-            loading.style.display = 'none';
-            // 恢复页面滚动
-            document.body.classList.remove('loading');
-            // 确保页面回到顶部
-            window.scrollTo(0, 0);
-        }, 500);
+        loading.classList.remove('active');
+        document.body.classList.remove('loading');
+        window.scrollTo(0, 0);
     }
+}
+
+function initTheme() {
+    const saved = localStorage.getItem('yuzhouTheme');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+    if (saved === 'dark' || (!saved && prefersDark)) {
+        document.documentElement.dataset.theme = 'dark';
+    }
+
+    updateThemeIcon();
+}
+
+function toggleTheme() {
+    const isDark = document.documentElement.dataset.theme === 'dark';
+    if (isDark) {
+        delete document.documentElement.dataset.theme;
+        localStorage.setItem('yuzhouTheme', 'light');
+    } else {
+        document.documentElement.dataset.theme = 'dark';
+        localStorage.setItem('yuzhouTheme', 'dark');
+    }
+    updateThemeIcon();
+}
+
+function updateThemeIcon() {
+    const btn = document.getElementById('themeToggle');
+    if (!btn) return;
+    const isDark = document.documentElement.dataset.theme === 'dark';
+    btn.innerHTML = isDark ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
 }
 
 // 平滑进度动画管理器 - 解决缓存情况下瞬间加载的问题
@@ -205,6 +229,13 @@ class PreciseResourceLoader {
 const preciseLoader = new PreciseResourceLoader();
 
 document.addEventListener('DOMContentLoaded', () => {
+    // 初始化主题
+    initTheme();
+    
+    // 主题切换
+    const themeBtn = document.getElementById('themeToggle');
+    if (themeBtn) themeBtn.addEventListener('click', toggleTheme);
+    
     // 禁止页面滚动，防止加载期间用户滚动
     document.body.classList.add('loading');
     // 确保页面在顶部开始
@@ -212,24 +243,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const bar = document.getElementById('loadingBar');
     const percent = document.getElementById('loadingPercent');
-    const info = document.getElementById('loadingInfo');
-    const horizontalBar = document.getElementById('loadingBarHorizontal');
     let loadingCompleted = false;
-
-    // 计算横向动画时长
-    const screenWidth = window.innerWidth;
-    const minDuration = 0.35;
-    const calculatedDuration = screenWidth / 6776;
-    const horizontalDuration = Math.max(calculatedDuration, minDuration);
-    const horizontalDurationMs = Math.round(horizontalDuration * 1000);
-
-    if (horizontalBar) {
-        horizontalBar.style.transition = `width ${horizontalDuration}s cubic-bezier(0.42, 0, 1, 1), left ${horizontalDuration}s cubic-bezier(0.42, 0, 1, 1)`;
-    }
-
-    if (info) {
-        info.style.bottom = `${window.innerHeight}px`;
-    }
 
     // 收集并注册所有资源
     const resourcePromises = [];
@@ -391,22 +405,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 监听平滑进度更新
     preciseLoader.getProgressManager().onUpdate((smoothProgress) => {
-        // 更新进度条
-        if (bar) bar.style.height = `${smoothProgress}%`;
-        
-        // 更新百分比文字（只显示数字，%符号由CSS伪元素添加）
+        if (bar) bar.style.width = `${smoothProgress}%`;
         if (percent) percent.textContent = Math.floor(smoothProgress);
         
-        // 更新进度信息位置
-        if (info) {
-            const trackHeight = window.innerHeight;
-            const currentPos = (smoothProgress / 100) * trackHeight;
-            // 限制最小距离屏幕底部20px
-            const bottomPos = Math.max(trackHeight - currentPos, 20);
-            info.style.bottom = `${bottomPos}px`;
-        }
-        
-        // 检查是否完成（100%且所有资源加载完成）
         if (smoothProgress >= 99.9 && preciseLoader.isAllLoaded() && !loadingCompleted) {
             loadingCompleted = true;
             completeLoading();
@@ -421,40 +422,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 完成加载处理
     function completeLoading() {
-        // 确保进度显示100%
-        if (bar) bar.style.height = '100%';
+        if (bar) bar.style.width = '100%';
         if (percent) percent.textContent = '100';
-        
-        // 纵向进度条达到100%后，等待0.3秒再开始横向进度条
-        setTimeout(() => {
-            if (horizontalBar) {
-                horizontalBar.style.width = '100%';
-
-                // 等待水平进度条完全展开后，再隐藏背景遮罩、垂直进度条和进度信息
-                setTimeout(() => {
-                    const loadingScreen = document.getElementById('loadingScreen');
-                    if (loadingScreen) {
-                        loadingScreen.classList.add('background-hidden');
-                    }
-                    if (info) {
-                        info.style.opacity = '0';
-                    }
-                }, horizontalDurationMs);
-
-                // 水平展开完成后，等待0.3秒间隔再开始退场
-                setTimeout(() => {
-                    horizontalBar.classList.add('exiting');
-                    const exitDuration = horizontalDuration * 0.6;
-                    horizontalBar.style.transition = `left ${exitDuration}s cubic-bezier(0, 0, 0.3, 1)`;
-                    horizontalBar.style.left = '120%';
-                    setTimeout(() => {
-                        hideLoading();
-                    }, Math.round(exitDuration * 1000));
-                }, horizontalDurationMs + 300);
-            } else {
-                hideLoading();
-            }
-        }, 300);
+        setTimeout(hideLoading, 400);
     }
 
     // 备用：最多等待6秒后强制完成
