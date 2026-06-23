@@ -71,34 +71,52 @@ function hideLoading() {
     }
 }
 
-function initTheme() {
-    const saved = localStorage.getItem('yuzhouTheme');
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-
-    if (saved === 'dark' || (!saved && prefersDark)) {
+function setTheme(mode) {
+    if (mode === 'dark') {
         document.documentElement.dataset.theme = 'dark';
+    } else if (mode === 'light') {
+        delete document.documentElement.dataset.theme;
+    } else {
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        if (prefersDark) {
+            document.documentElement.dataset.theme = 'dark';
+        } else {
+            delete document.documentElement.dataset.theme;
+        }
     }
+}
 
-    updateThemeIcon();
+function initTheme() {
+    const saved = localStorage.getItem('yuzhouTheme') || 'auto';
+    setTheme(saved);
+    updateThemeIcon(saved);
+
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+        const current = localStorage.getItem('yuzhouTheme') || 'auto';
+        if (current === 'auto') {
+            setTheme('auto');
+            updateThemeIcon('auto');
+        }
+    });
 }
 
 function toggleTheme() {
-    const isDark = document.documentElement.dataset.theme === 'dark';
-    if (isDark) {
-        delete document.documentElement.dataset.theme;
-        localStorage.setItem('yuzhouTheme', 'light');
-    } else {
-        document.documentElement.dataset.theme = 'dark';
-        localStorage.setItem('yuzhouTheme', 'dark');
-    }
-    updateThemeIcon();
+    const saved = localStorage.getItem('yuzhouTheme') || 'auto';
+    const modes = ['auto', 'light', 'dark'];
+    const idx = modes.indexOf(saved);
+    const next = modes[(idx + 1) % modes.length];
+    localStorage.setItem('yuzhouTheme', next);
+    setTheme(next);
+    updateThemeIcon(next);
 }
 
-function updateThemeIcon() {
+function updateThemeIcon(mode) {
     const btn = document.getElementById('themeToggle');
     if (!btn) return;
-    const isDark = document.documentElement.dataset.theme === 'dark';
-    btn.innerHTML = isDark ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+    const icons = { auto: 'fa-circle-half-stroke', light: 'fa-sun', dark: 'fa-moon' };
+    const labels = { auto: '跟随系统', light: '浅色模式', dark: '深色模式' };
+    btn.innerHTML = `<i class="fas ${icons[mode] || icons.auto}"></i>`;
+    btn.title = labels[mode] || labels.auto;
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -108,54 +126,25 @@ document.addEventListener('DOMContentLoaded', () => {
     // 主题切换
     const themeBtn = document.getElementById('themeToggle');
     if (themeBtn) themeBtn.addEventListener('click', toggleTheme);
-    
-    // 禁止页面滚动，防止加载期间用户滚动
+
+    // 汉堡菜单
+    const menuBtn = document.getElementById('menuToggle');
+    const sidebarNav = document.getElementById('sidebarNav');
+    if (menuBtn && sidebarNav) {
+        menuBtn.addEventListener('click', () => {
+            sidebarNav.classList.toggle('open');
+        });
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.sidebar') && sidebarNav.classList.contains('open')) {
+                sidebarNav.classList.remove('open');
+            }
+        });
+    }
+
+    // 加载动画：短暂展示后淡出
     document.body.classList.add('loading');
     window.scrollTo(0, 0);
-
-    const bar = document.getElementById('loadingBar');
-    const percent = document.getElementById('loadingPercent');
-    const startTime = Date.now();
-    const MIN_LOADING_MS = 400;
-    const MAX_LOADING_MS = 4000;
-
-    let pending = 0;
-    let loaded = 0;
-
-    function onProgress() {
-        loaded++;
-        const pct = pending > 0 ? Math.round(loaded / pending * 100) : 100;
-        if (bar) bar.style.width = pct + '%';
-        if (percent) percent.textContent = pct;
-        if (loaded >= pending) finishLoading();
-    }
-
-    function finishLoading() {
-        const elapsed = Date.now() - startTime;
-        const wait = Math.max(0, MIN_LOADING_MS - elapsed);
-        setTimeout(hideLoading, wait);
-    }
-
-    // 追踪初始 HTML 中的图片
-    const imgs = Array.from(document.querySelectorAll('img')).filter(img => img.src);
-    pending += imgs.length;
-    imgs.forEach(img => {
-        if (img.complete) { onProgress(); }
-        else { img.addEventListener('load', onProgress, { once: true });
-               img.addEventListener('error', onProgress, { once: true }); }
-    });
-
-    // 追踪字体
-    if (document.fonts) {
-        pending++;
-        document.fonts.ready.then(onProgress);
-    }
-
-    // 无资源时直接完成
-    if (pending === 0) finishLoading();
-
-    // 后备超时
-    setTimeout(hideLoading, MAX_LOADING_MS);
+    setTimeout(hideLoading, 600);
 
     // 导航切换（事件代理，支持动态插入的元素）
     document.addEventListener('click', (e) => {
@@ -173,6 +162,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelectorAll('[data-page].active').forEach(l => l.classList.remove('active'));
         document.querySelectorAll(`[data-page="${id}"]`).forEach(l => l.classList.add('active'));
         
+        if (sidebarNav) sidebarNav.classList.remove('open');
         loadPage(id).then(() => window.scrollTo(0, 0));
     });
 

@@ -140,6 +140,14 @@ body.loading {
   color: var(--accent);
 }
 
+.nav-label {
+  display: none;
+}
+
+.sidebar-hamburger {
+  display: none;
+}
+
 /* ===== 顶部栏 ===== */
 .topbar {
   position: fixed;
@@ -265,7 +273,7 @@ body.loading {
   justify-content: center;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.3s ease;
+  transition: opacity 0.4s ease;
 }
 
 .loading-screen.active {
@@ -278,49 +286,9 @@ body.loading {
 }
 
 .loading-logo {
-  width: 72px;
-  height: 72px;
-  margin-bottom: 24px;
-  opacity: 0.7;
-}
-
-.loading-bar-track {
-  width: 200px;
-  height: 3px;
-  background: var(--border);
-  border-radius: 2px;
-  margin: 0 auto 16px;
-  overflow: hidden;
-}
-
-.loading-bar {
-  height: 100%;
-  width: 0%;
-  background: var(--accent);
-  border-radius: 2px;
-  transition: width 0.3s ease;
-}
-
-.loading-info {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-}
-
-.loading-percent {
-  font-size: 0.9rem;
-  font-weight: 500;
-  color: var(--text-muted);
-}
-
-.loading-percent::after {
-  content: '%';
-}
-
-.loading-status {
-  font-size: 0.8rem;
-  color: var(--text-tertiary);
+  width: 80px;
+  height: 80px;
+  opacity: 0.6;
 }
 
 /* ===== 页脚 ===== */
@@ -351,6 +319,15 @@ body.loading {
   color: var(--accent);
 }
 
+/* ===== 导航标签文字（桌面隐藏，移动显示） ===== */
+.nav-label {
+  display: none;
+}
+
+.sidebar-hamburger {
+  display: none;
+}
+
 /* ===== 响应式 ===== */
 @media (max-width: 768px) {
   .sidebar {
@@ -370,19 +347,48 @@ body.loading {
   }
 
   .sidebar-nav {
-    flex-direction: row;
-    margin-left: auto;
-    gap: 2px;
+    display: none;
+    position: fixed;
+    top: 56px;
+    left: 0;
+    right: 0;
+    background: var(--bg-card);
+    border-bottom: 1px solid var(--border);
+    flex-direction: column;
+    padding: 8px;
+    gap: 4px;
+    box-shadow: var(--shadow-lg);
+    z-index: 999;
+    transition: background var(--transition);
+  }
+
+  .sidebar-nav.open {
+    display: flex;
   }
 
   .sidebar-link {
-    width: 42px;
-    height: 42px;
+    width: 100%;
+    height: auto;
+    justify-content: flex-start;
+    padding: 12px 16px;
+    gap: 12px;
+    font-size: 1rem;
+  }
+
+  .sidebar-link i {
+    width: 20px;
+    text-align: center;
+    font-size: 1.1rem;
+  }
+
+  .nav-label {
+    display: inline;
   }
 
   .sidebar-action {
     flex-direction: row;
     margin-top: 0;
+    margin-left: auto;
     padding-top: 0;
     border-top: none;
   }
@@ -390,6 +396,10 @@ body.loading {
   .sidebar-btn {
     width: 42px;
     height: 42px;
+  }
+
+  .sidebar-hamburger {
+    display: block;
   }
 
   .topbar {

@@ -15,13 +15,6 @@
     <div class="loading-screen active" id="loadingScreen">
         <div class="loading-container">
             <img src="images/雨州logo.svg" alt="" class="loading-logo">
-            <div class="loading-bar-track">
-                <div class="loading-bar" id="loadingBar"></div>
-            </div>
-            <div class="loading-info">
-                <span class="loading-percent" id="loadingPercent">0</span>
-                <span class="loading-status">Loading...</span>
-            </div>
         </div>
     </div>
 
@@ -31,34 +24,41 @@
             <img src="images/雨州logo.svg" alt="雨州Minecraft" class="sidebar-logo">
         </a>
         
-        <nav class="sidebar-nav">
+        <nav class="sidebar-nav" id="sidebarNav">
             <a href="/" class="sidebar-link active" data-page="home" title="首页">
                 <i class="fas fa-home"></i>
+                <span class="nav-label">首页</span>
             </a>
             <a href="/features" class="sidebar-link" data-page="features" title="特色">
                 <i class="fas fa-star"></i>
+                <span class="nav-label">特色</span>
             </a>
             <a href="/join" class="sidebar-link" data-page="join" title="加入">
                 <i class="fas fa-gamepad"></i>
+                <span class="nav-label">加入</span>
             </a>
             <a href="/about" class="sidebar-link" data-page="about" title="关于">
                 <i class="fas fa-info-circle"></i>
+                <span class="nav-label">关于</span>
             </a>
         </nav>
         
         <div class="sidebar-action">
-            <button class="sidebar-btn" id="themeToggle" title="切换主题">
-                <i class="fas fa-moon"></i>
+            <button class="sidebar-btn" id="themeToggle" title="跟随系统">
+                <i class="fas fa-circle-half-stroke"></i>
             </button>
             <button class="sidebar-btn" onclick="copyIP()" title="复制服务器IP">
                 <i class="fas fa-copy"></i>
+            </button>
+            <button class="sidebar-btn sidebar-hamburger" id="menuToggle" title="菜单">
+                <i class="fas fa-bars"></i>
             </button>
         </div>
     </aside>
 
     <!-- 顶部栏 -->
     <header class="topbar">
-        <div class="topbar-title">雨州 Minecraft 服务器</div>
+        <div class="topbar-title">雨州 Minecraft</div>
     </header>
 
     <!-- 主内容区 -->
