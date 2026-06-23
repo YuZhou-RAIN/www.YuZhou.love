@@ -268,13 +268,19 @@
   }
 
   .hero-actions {
-    flex-direction: column;
-    align-items: center;
+    flex-wrap: wrap;
+    justify-content: center;
   }
 
   .server-info {
-    flex-direction: column;
-    align-items: center;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .server-info-card {
+    flex: 1;
+    min-width: 240px;
+    max-width: 400px;
   }
 
   .features-section,

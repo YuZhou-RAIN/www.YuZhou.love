@@ -106,6 +106,10 @@ function initTheme() {
 }
 
 function toggleTheme() {
+    if (window._themeToggling) return;
+    window._themeToggling = true;
+    requestAnimationFrame(() => { window._themeToggling = false; });
+
     const saved = localStorage.getItem('yuzhouTheme') || 'auto';
     const modes = ['auto', 'light', 'dark'];
     const idx = modes.indexOf(saved);
@@ -199,6 +203,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         
         loadPage(pageId);
+        document.querySelectorAll('[data-page].active').forEach(l => l.classList.remove('active'));
         document.querySelectorAll(`[data-page="${pageId}"]`).forEach(l => l.classList.add('active'));
         return;
     }
@@ -217,5 +222,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     loadPage(pageId);
+    document.querySelectorAll('[data-page].active').forEach(l => l.classList.remove('active'));
     document.querySelectorAll(`[data-page="${pageId}"]`).forEach(l => l.classList.add('active'));
 });
