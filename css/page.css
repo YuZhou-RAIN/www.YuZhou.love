@@ -262,34 +262,16 @@
   .join-image {
     position: static;
     max-width: 500px;
-    margin: 0 auto;
-  }
-}
-
-@media (max-width: 768px) {
-  .page-hero {
-    padding: 100px 20px 48px;
+    margin: 16px auto 0;
   }
 
-  .page-hero-title {
-    font-size: 2.2rem;
-  }
-
-  .page-section {
-    padding: 48px 20px;
-  }
-
+  /* 所有 ≤1024px 使用紧凑列表步骤 */
   .steps-grid {
-    grid-template-columns: 1fr;
     gap: 0;
   }
 
-  .contact-grid {
-    grid-template-columns: 1fr;
-  }
-
   .step-card {
-    padding: 14px 0;
+    padding: 12px 0;
     border: none;
     border-radius: 0;
     background: none;
@@ -310,34 +292,53 @@
   }
 
   .step-number {
-    width: 28px;
-    height: 28px;
+    width: 26px;
+    height: 26px;
     border-radius: 50%;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     font-weight: 600;
     margin: 0;
     flex-shrink: 0;
   }
 
   .step-card h3 {
-    font-size: 1rem;
+    font-size: 0.95rem;
     font-weight: 600;
     margin: 0;
-    padding-top: 3px;
+    padding-top: 2px;
     flex: 1;
   }
 
   .step-card p {
     width: 100%;
-    padding-left: 40px;
-    font-size: 0.85rem;
+    padding-left: 38px;
+    font-size: 0.8rem;
     line-height: 1.5;
     margin: 0;
+    color: var(--text-muted);
+  }
+}
+
+@media (max-width: 768px) {
+  .page-hero {
+    padding: 100px 20px 40px;
+  }
+
+  .page-hero-title {
+    font-size: 2.2rem;
+  }
+
+  .page-section {
+    padding: 32px 20px;
+  }
+
+  .contact-grid {
+    grid-template-columns: 1fr;
   }
 
   .join-image {
     max-width: 100%;
-    margin-top: 16px;
+    margin-top: 12px;
   }
 
   .join-image img {
@@ -345,6 +346,7 @@
   }
 
   .section-title-sm {
-    margin-bottom: 20px;
+    margin-bottom: 16px;
+    font-size: 1.25rem;
   }
 }

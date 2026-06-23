@@ -87,7 +87,12 @@ function setTheme(mode) {
 }
 
 function initTheme() {
-    const saved = localStorage.getItem('yuzhouTheme') || 'auto';
+    const valid = ['auto', 'light', 'dark'];
+    let saved = localStorage.getItem('yuzhouTheme');
+    if (!valid.includes(saved)) {
+        saved = 'auto';
+        localStorage.setItem('yuzhouTheme', 'auto');
+    }
     setTheme(saved);
     updateThemeIcon(saved);
 
