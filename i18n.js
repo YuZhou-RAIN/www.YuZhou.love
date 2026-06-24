@@ -17,7 +17,7 @@ const i18nData = {
     menu: { label: '菜单' },
     language: { label: '语言' },
     footer: {
-      copyright: '© 2025 雨州 Minecraft 服务器',
+      copyright: '© 雨州 Minecraft',
       home: '首页', features: '特色', join: '加入', about: '关于'
     },
     error: { load: '加载失败' },
@@ -70,10 +70,10 @@ const i18nData = {
   },
 
   en: {
-    site: { title: 'Rain State Minecraft' },
-    sidebar: { title: 'Rain State Minecraft' },
+    site: { title: 'YuZhou Minecraft' },
+    sidebar: { title: 'YuZhou Minecraft' },
     nav: { home: 'Home', features: 'Features', join: 'Join', about: 'About' },
-    topbar: { title: 'Rain State Minecraft' },
+    topbar: { title: 'YuZhou Minecraft' },
     theme: { auto: 'System', light: 'Light Mode', dark: 'Dark Mode' },
     copy: {
       ip: 'Copy Server IP',
@@ -82,16 +82,16 @@ const i18nData = {
     menu: { label: 'Menu' },
     language: { label: 'Language' },
     footer: {
-      copyright: '© 2025 Rain State Minecraft Server',
+      copyright: '© YuZhou Minecraft',
       home: 'Home', features: 'Features', join: 'Join', about: 'About'
     },
     error: { load: 'Failed to Load' },
-    loading: { alt: 'Rain State Minecraft Loading' },
+    loading: { alt: 'YuZhou Minecraft Loading' },
     lang: {
       auto: 'Follow System', zh: 'Chinese', en: 'English', ja: 'Japanese', ko: 'Korean'
     },
     hero: {
-      title1: 'Rain State', title2: 'Minecraft Server',
+      title1: 'YuZhou', title2: 'Minecraft Server',
       subtitle: 'Cross-platform connectivity for the ultimate gaming world. Whether you\'re a Java Edition or Bedrock Edition player, you can meet here.',
       joinBtn: 'Join Now', exploreBtn: 'Explore Features'
     },
@@ -108,7 +108,7 @@ const i18nData = {
       desc: 'Stay up to date with the latest updates and events',
       card1: { title: 'Server Version Update', desc: 'Upgraded to the latest version with new game features and optimized server performance.' },
       card2: { title: 'Main City Construction Launched', desc: 'The main city building project has officially started. Players are welcome to join and build a vibrant metropolis together.' },
-      card3: { title: 'Open Beta Launch', desc: 'Rain State server is now in open beta! Both Java Edition and Bedrock Edition players can join and experience it!' }
+      card3: { title: 'Open Beta Launch', desc: 'YuZhou server is now in open beta! Both Java Edition and Bedrock Edition players can join and experience it!' }
     },
     'features.page': {
       tag: 'FEATURES', title: 'Server Features',
@@ -147,7 +147,7 @@ const i18nData = {
     menu: { label: 'メニュー' },
     language: { label: '言語' },
     footer: {
-      copyright: '© 2025 雨州 Minecraft サーバー',
+      copyright: '© 雨州 Minecraft',
       home: 'ホーム', features: '特徴', join: '参加', about: '概要'
     },
     error: { load: '読み込みに失敗しました' },
@@ -200,10 +200,10 @@ const i18nData = {
   },
 
   ko: {
-    site: { title: 'Rain State Minecraft' },
-    sidebar: { title: 'Rain State Minecraft' },
+    site: { title: 'YuZhou Minecraft' },
+    sidebar: { title: 'YuZhou Minecraft' },
     nav: { home: '홈', features: '특징', join: '참가', about: '소개' },
-    topbar: { title: 'Rain State Minecraft' },
+    topbar: { title: 'YuZhou Minecraft' },
     theme: { auto: '시스템 따르기', light: '라이트 모드', dark: '다크 모드' },
     copy: {
       ip: '서버 IP 복사',
@@ -212,16 +212,16 @@ const i18nData = {
     menu: { label: '메뉴' },
     language: { label: '언어' },
     footer: {
-      copyright: '© 2025 Rain State Minecraft 서버',
+      copyright: '© YuZhou Minecraft',
       home: '홈', features: '특징', join: '참가', about: '소개'
     },
     error: { load: '로딩 실패' },
-    loading: { alt: 'Rain State Minecraft 로딩 중' },
+    loading: { alt: 'YuZhou Minecraft 로딩 중' },
     lang: {
       auto: '시스템 따르기', zh: '중국어', en: '영어', ja: '일본어', ko: '한국어'
     },
     hero: {
-      title1: 'Rain State', title2: 'Minecraft 서버',
+      title1: 'YuZhou', title2: 'Minecraft 서버',
       subtitle: '크로스 플랫폼 호환으로 최고의 게임 세계를 제공합니다. Java Edition과 Bedrock Edition 플레이어 모두 이곳에서 만날 수 있습니다.',
       joinBtn: '지금 참가', exploreBtn: '기능 살펴보기'
     },
@@ -238,7 +238,7 @@ const i18nData = {
       desc: '서버의 최신 업데이트와 이벤트를 확인하세요',
       card1: { title: '서버 버전 업데이트', desc: '최신 버전으로 업그레이드되어 새로운 게임 기능이 추가되고 서버 성능이 최적화되었습니다.' },
       card2: { title: '메인 시티 건설 시작', desc: '메인 시티 건설 프로젝트가 공식적으로 시작되었습니다. 플레이어 여러분의 참여를 환영하며 함께 번화한 도시를 만들어 갑니다.' },
-      card3: { title: '오픈 베타 시작', desc: 'Rain State 서버가 정식 오픈 베타를 시작했습니다! Java Edition과 Bedrock Edition 플레이어 모두 참여할 수 있습니다!' }
+      card3: { title: '오픈 베타 시작', desc: 'YuZhou 서버가 정식 오픈 베타를 시작했습니다! Java Edition과 Bedrock Edition 플레이어 모두 참여할 수 있습니다!' }
     },
     'features.page': {
       tag: '특징', title: '서버 특징',
@@ -268,11 +268,17 @@ const i18nData = {
 function _(key) {
   const parts = key.split('.');
   let obj = i18nData[currentLang];
-  for (const part of parts) {
-    if (!obj || typeof obj !== 'object') return key;
-    obj = obj[part];
+  for (let i = parts.length; i > 0; i--) {
+    const flat = parts.slice(0, i).join('.');
+    if (obj[flat] !== undefined) {
+      let r = obj[flat];
+      for (let j = i; j < parts.length; j++) {
+        r = r?.[parts[j]];
+      }
+      return typeof r === 'string' ? r : key;
+    }
   }
-  return typeof obj === 'string' ? obj : key;
+  return key;
 }
 
 function detectLang() {
