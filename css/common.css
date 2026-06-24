@@ -417,11 +417,15 @@ body.loading {
 
   .sidebar-title {
     display: block;
-    flex: 1;
-    text-align: center;
     font-size: 1rem;
     font-weight: 600;
     color: var(--text);
+    margin-left: 8px;
+  }
+
+  .nav-logo {
+    display: flex;
+    align-items: center;
   }
 
   .topbar {
