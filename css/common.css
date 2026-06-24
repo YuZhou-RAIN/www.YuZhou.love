@@ -154,6 +154,61 @@ body.loading {
   display: none;
 }
 
+/* ===== 语言切换菜单 ===== */
+.lang-toggle-wrapper {
+  position: relative;
+}
+
+.lang-menu {
+  display: none;
+  position: absolute;
+  left: 64px;
+  bottom: 0;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  z-index: 1100;
+  flex-direction: column;
+  padding: 4px;
+  min-width: 180px;
+  opacity: 0;
+  transform: translateX(-10px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.lang-menu.open {
+  display: flex;
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.lang-menu-item {
+  display: block;
+  width: 100%;
+  padding: 10px 14px;
+  background: none;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 0.9rem;
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+  transition: background var(--transition);
+  white-space: nowrap;
+}
+
+.lang-menu-item:hover {
+  background: var(--accent-bg);
+  color: var(--accent);
+}
+
+.lang-menu-item.active {
+  background: var(--accent-bg);
+  color: var(--accent);
+  font-weight: 600;
+}
+
 /* ===== 顶部栏 ===== */
 .topbar {
   position: fixed;
@@ -421,6 +476,18 @@ body.loading {
     font-weight: 600;
     color: var(--text);
     margin-left: 8px;
+  }
+
+  .lang-menu {
+    left: auto;
+    right: 0;
+    bottom: auto;
+    top: 100%;
+    transform: translateY(-10px);
+  }
+
+  .lang-menu.open {
+    transform: translateY(0);
   }
 
   @media (max-width: 320px) {

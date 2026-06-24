@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>雨州 Minecraft</title>
+    <title data-i18n="site.title">雨州 Minecraft</title>
     <link rel="icon" href="images/雨州logo.svg" type="image/svg+xml">
     <link rel="stylesheet" href="css/common.css">
     <link rel="stylesheet" href="css/page.css">
@@ -14,7 +14,7 @@
     <!-- 加载界面 -->
     <div class="loading-screen active" id="loadingScreen">
         <div class="loading-container">
-            <img src="images/雨州logo.svg" alt="" class="loading-logo">
+            <img src="images/雨州logo.svg" alt="雨州Minecraft加载中" class="loading-logo" data-i18n-alt="loading.alt">
         </div>
     </div>
 
@@ -24,35 +24,47 @@
             <img src="images/雨州logo.svg" alt="雨州Minecraft" class="sidebar-logo">
         </a>
         
-        <div class="sidebar-title">雨州 Minecraft</div>
+        <div class="sidebar-title" data-i18n="sidebar.title">雨州 Minecraft</div>
         
         <nav class="sidebar-nav" id="sidebarNav">
-            <a href="/" class="sidebar-link active" data-page="home" title="首页">
+            <a href="/" class="sidebar-link active" data-page="home" title="首页" data-i18n-title="nav.home">
                 <i class="fas fa-home"></i>
-                <span class="nav-label">首页</span>
+                <span class="nav-label" data-i18n="nav.home">首页</span>
             </a>
-            <a href="/features" class="sidebar-link" data-page="features" title="特色">
+            <a href="/features" class="sidebar-link" data-page="features" title="特色" data-i18n-title="nav.features">
                 <i class="fas fa-star"></i>
-                <span class="nav-label">特色</span>
+                <span class="nav-label" data-i18n="nav.features">特色</span>
             </a>
-            <a href="/join" class="sidebar-link" data-page="join" title="加入">
+            <a href="/join" class="sidebar-link" data-page="join" title="加入" data-i18n-title="nav.join">
                 <i class="fas fa-gamepad"></i>
-                <span class="nav-label">加入</span>
+                <span class="nav-label" data-i18n="nav.join">加入</span>
             </a>
-            <a href="/about" class="sidebar-link" data-page="about" title="关于">
+            <a href="/about" class="sidebar-link" data-page="about" title="关于" data-i18n-title="nav.about">
                 <i class="fas fa-info-circle"></i>
-                <span class="nav-label">关于</span>
+                <span class="nav-label" data-i18n="nav.about">关于</span>
             </a>
         </nav>
         
         <div class="sidebar-action">
-            <button class="sidebar-btn" id="themeToggle" title="跟随系统">
+            <button class="sidebar-btn" id="themeToggle" title="跟随系统" data-i18n-title="theme.auto">
                 <i class="fas fa-circle-half-stroke"></i>
             </button>
-            <button class="sidebar-btn" onclick="copyIP()" title="复制服务器IP">
+            <button class="sidebar-btn" onclick="copyIP()" title="复制服务器IP" data-i18n-title="copy.ip">
                 <i class="fas fa-copy"></i>
             </button>
-            <button class="sidebar-btn sidebar-hamburger" id="menuToggle" title="菜单">
+            <div class="lang-toggle-wrapper">
+                <button class="sidebar-btn" id="langToggle" title="语言" data-i18n-title="language.label" onclick="toggleLangMenu(event)">
+                    <i class="fas fa-language"></i>
+                </button>
+                <div class="lang-menu" id="langMenu">
+                    <button class="lang-menu-item" data-lang="auto">跟随系统</button>
+                    <button class="lang-menu-item" data-lang="zh">中文</button>
+                    <button class="lang-menu-item" data-lang="en">English</button>
+                    <button class="lang-menu-item" data-lang="ja">日本語</button>
+                    <button class="lang-menu-item" data-lang="ko">한국어</button>
+                </div>
+            </div>
+            <button class="sidebar-btn sidebar-hamburger" id="menuToggle" title="菜单" data-i18n-title="menu.label">
                 <i class="fas fa-bars"></i>
             </button>
         </div>
@@ -60,7 +72,7 @@
 
     <!-- 顶部栏 -->
     <header class="topbar">
-        <div class="topbar-title">雨州 Minecraft</div>
+        <div class="topbar-title" data-i18n="topbar.title">雨州 Minecraft</div>
     </header>
 
     <!-- 主内容区 -->
@@ -70,15 +82,16 @@
 
     <!-- 页脚 -->
     <footer class="footer">
-        <div>&copy; 2025 雨州 Minecraft 服务器</div>
+        <div data-i18n="footer.copyright">&copy; 2025 雨州 Minecraft 服务器</div>
         <div class="footer-links">
-            <a href="/" data-page="home">首页</a>
-            <a href="/features" data-page="features">特色</a>
-            <a href="/join" data-page="join">加入</a>
-            <a href="/about" data-page="about">关于</a>
+            <a href="/" data-page="home" data-i18n="footer.home">首页</a>
+            <a href="/features" data-page="features" data-i18n="footer.features">特色</a>
+            <a href="/join" data-page="join" data-i18n="footer.join">加入</a>
+            <a href="/about" data-page="about" data-i18n="footer.about">关于</a>
         </div>
     </footer>
 
+    <script src="i18n.js"></script>
     <script src="script.js"></script>
 </body>
 </html>

@@ -16,8 +16,8 @@ function copyText(text, msg = '已复制到剪贴板！') {
     }
 }
 
-function copyIP() { copyText('mc.yuzhou.love', '服务器IP已复制！'); }
-function copyQQ() { copyText('823557774', 'QQ群号已复制！'); }
+function copyIP() { copyText('mc.yuzhou.love', _('copy.success.ip')); }
+function copyQQ() { copyText('823557774', _('copy.success.qq')); }
 
 function showToast(msg) {
     const t = document.createElement('div');
@@ -57,8 +57,9 @@ async function loadPage(id) {
         content.classList.add('active');
         
         loadedPages.add(id);
+        applyLanguage(currentLang);
     } catch (err) {
-        main.innerHTML = '<div class="page-content active" style="padding:150px 40px;text-align:center"><h1>加载失败</h1></div>';
+        main.innerHTML = '<div class="page-content active" style="padding:150px 40px;text-align:center"><h1 data-i18n="error.load">' + _('error.load') + '</h1></div>';
     }
 }
 
@@ -123,18 +124,29 @@ function updateThemeIcon(mode) {
     const btn = document.getElementById('themeToggle');
     if (!btn) return;
     const icons = { auto: 'fa-circle-half-stroke', light: 'fa-sun', dark: 'fa-moon' };
-    const labels = { auto: '跟随系统', light: '浅色模式', dark: '深色模式' };
     btn.innerHTML = `<i class="fas ${icons[mode] || icons.auto}"></i>`;
-    btn.title = labels[mode] || labels.auto;
+    btn.title = _('theme.' + (mode || 'auto'));
 }
 
 document.addEventListener('DOMContentLoaded', () => {
     // 初始化主题
     initTheme();
+
+    // 初始化语言
+    initLang();
     
     // 主题切换
     const themeBtn = document.getElementById('themeToggle');
     if (themeBtn) themeBtn.addEventListener('click', toggleTheme);
+
+    // 语言切换
+    document.addEventListener('click', (e) => {
+        const item = e.target.closest('.lang-menu-item');
+        if (!item) return;
+        const lang = item.getAttribute('data-lang');
+        document.getElementById('langMenu').classList.remove('open');
+        setLang(lang);
+    });
 
     // 汉堡菜单
     const menuBtn = document.getElementById('menuToggle');
