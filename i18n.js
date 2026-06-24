@@ -313,6 +313,8 @@ function applyLanguage(lang) {
 
 function initLang() {
   applyLanguage(detectLang());
+  const menu = document.getElementById('langMenu');
+  if (menu) menu.classList.remove('open');
 }
 
 function setLang(lang) {
@@ -353,7 +355,17 @@ function updateLangMenu() {
 
 document.addEventListener('click', (e) => {
   const menu = document.getElementById('langMenu');
-  if (menu && menu.classList.contains('open') && !e.target.closest('.lang-toggle-wrapper')) {
+  if (!menu) return;
+
+  const item = e.target.closest('.lang-menu-item');
+  if (item) {
+    const lang = item.getAttribute('data-lang');
+    menu.classList.remove('open');
+    setLang(lang);
+    return;
+  }
+
+  if (menu.classList.contains('open') && !e.target.closest('.lang-toggle-wrapper')) {
     menu.classList.remove('open');
   }
 });

@@ -139,15 +139,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const themeBtn = document.getElementById('themeToggle');
     if (themeBtn) themeBtn.addEventListener('click', toggleTheme);
 
-    // 语言切换
-    document.addEventListener('click', (e) => {
-        const item = e.target.closest('.lang-menu-item');
-        if (!item) return;
-        const lang = item.getAttribute('data-lang');
-        document.getElementById('langMenu').classList.remove('open');
-        setLang(lang);
-    });
-
     // 汉堡菜单
     const menuBtn = document.getElementById('menuToggle');
     const sidebarNav = document.getElementById('sidebarNav');
