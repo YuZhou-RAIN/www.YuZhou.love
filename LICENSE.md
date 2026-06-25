@@ -1,0 +1,1 @@
+Copyright © 2025-2026 [雨州](https://github.com/YuZhou-RAIN). All Rights Reserved.
