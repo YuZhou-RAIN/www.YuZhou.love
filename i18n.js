@@ -17,7 +17,8 @@ const i18nData = {
     menu: { label: '菜单' },
     language: { label: '语言' },
     footer: {
-      copyright: '© 雨州 Minecraft',
+      copyright: 'Copyright © 2025-2026 ',
+      rights: '. All Rights Reserved.',
       home: '首页', features: '特色', join: '加入', about: '关于'
     },
     error: { load: '加载失败' },
@@ -82,7 +83,8 @@ const i18nData = {
     menu: { label: 'Menu' },
     language: { label: 'Language' },
     footer: {
-      copyright: '© YuZhou Minecraft',
+      copyright: 'Copyright © 2025-2026 ',
+      rights: '. All Rights Reserved.',
       home: 'Home', features: 'Features', join: 'Join', about: 'About'
     },
     error: { load: 'Failed to Load' },
@@ -147,7 +149,8 @@ const i18nData = {
     menu: { label: 'メニュー' },
     language: { label: '言語' },
     footer: {
-      copyright: '© 雨州 Minecraft',
+      copyright: 'Copyright © 2025-2026 ',
+      rights: '. All Rights Reserved.',
       home: 'ホーム', features: '特徴', join: '参加', about: '概要'
     },
     error: { load: '読み込みに失敗しました' },
@@ -212,7 +215,8 @@ const i18nData = {
     menu: { label: '메뉴' },
     language: { label: '언어' },
     footer: {
-      copyright: '© YuZhou Minecraft',
+      copyright: 'Copyright © 2025-2026 ',
+      rights: '. All Rights Reserved.',
       home: '홈', features: '특징', join: '참가', about: '소개'
     },
     error: { load: '로딩 실패' },
