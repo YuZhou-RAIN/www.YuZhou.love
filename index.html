@@ -14,6 +14,13 @@
     <link rel="stylesheet" href="fonts/fontawesome-free-6.4.0-web/css/all.min.css">
 </head>
 <body>
+    <!-- 废弃横幅 -->
+    <div class="deprecation-banner" id="deprecationBanner">
+      <i class="fas fa-exclamation-triangle banner-icon"></i>
+      <span class="banner-text">yuzhou.love 将于 10 月废弃，请使用 mc.yuzhou-mc.cn 访问</span>
+      <button class="banner-close" onclick="document.getElementById('deprecationBanner').remove()">&times;</button>
+    </div>
+
     <!-- 加载界面 -->
     <div class="loading-screen active" id="loadingScreen">
         <div class="loading-container">

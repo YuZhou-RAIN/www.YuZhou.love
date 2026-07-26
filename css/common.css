@@ -393,6 +393,60 @@ body.loading {
   display: none;
 }
 
+/* ===== 废弃横幅提示 ===== */
+.deprecation-banner {
+  position: fixed;
+  top: 0;
+  left: var(--sidebar-w);
+  right: 0;
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 24px;
+  background: rgba(220, 38, 38, 0.12);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(220, 38, 38, 0.3);
+  color: #dc2626;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.deprecation-banner .banner-icon {
+  margin-right: 10px;
+  font-size: 1rem;
+}
+
+.deprecation-banner .banner-text {
+  flex: 1;
+}
+
+.deprecation-banner .banner-close {
+  background: none;
+  border: none;
+  color: #dc2626;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: background 0.2s;
+  opacity: 0.7;
+}
+
+.deprecation-banner .banner-close:hover {
+  background: rgba(220, 38, 38, 0.15);
+  opacity: 1;
+}
+
+@media (max-width: 768px) {
+  .deprecation-banner {
+    left: 0;
+    padding: 10px 16px;
+    font-size: 0.8rem;
+  }
+}
+
 /* ===== 响应式 ===== */
 @media (max-width: 768px) {
   .sidebar {
