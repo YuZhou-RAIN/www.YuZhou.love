@@ -23,6 +23,7 @@ const i18nData = {
     },
     error: { load: '加载失败' },
     loading: { alt: '雨州Minecraft加载中' },
+    banner: { deprecation: 'yuzhou.love 将于 10 月废弃，请使用 yuzhou-mc.cn 访问' },
     lang: {
       auto: '跟随系统', zh: '中文', en: '英语', ja: '日语', ko: '韩语'
     },
@@ -89,6 +90,7 @@ const i18nData = {
     },
     error: { load: 'Failed to Load' },
     loading: { alt: 'YuZhou Minecraft Loading' },
+    banner: { deprecation: 'yuzhou.love will be deprecated in October, please use yuzhou-mc.cn' },
     lang: {
       auto: 'Follow System', zh: 'Chinese', en: 'English', ja: 'Japanese', ko: 'Korean'
     },
@@ -155,6 +157,7 @@ const i18nData = {
     },
     error: { load: '読み込みに失敗しました' },
     loading: { alt: '雨州Minecraft読み込み中' },
+    banner: { deprecation: 'yuzhou.love は 10 月に廃止されます。yuzhou-mc.cn をご利用ください' },
     lang: {
       auto: 'システムに従う', zh: '中国語', en: '英語', ja: '日本語', ko: '韓国語'
     },
@@ -221,6 +224,7 @@ const i18nData = {
     },
     error: { load: '로딩 실패' },
     loading: { alt: 'YuZhou Minecraft 로딩 중' },
+    banner: { deprecation: 'yuzhou.love는 10월에 폐지됩니다. yuzhou-mc.cn을 사용해 주세요' },
     lang: {
       auto: '시스템 따르기', zh: '중국어', en: '영어', ja: '일본어', ko: '한국어'
     },
