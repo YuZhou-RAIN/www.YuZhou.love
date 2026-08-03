@@ -16,7 +16,7 @@ function copyText(text, msg = '已复制到剪贴板！') {
     }
 }
 
-function copyIP() { copyText('mc.yuzhou-mc.cn', _('copy.success.ip')); }
+function copyIP() { copyText('mc.yzmc.top', _('copy.success.ip')); }
 function copyQQ() { copyText('823557774', _('copy.success.qq')); }
 
 function showToast(msg) {
