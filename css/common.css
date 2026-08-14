@@ -416,7 +416,7 @@ body.loading {
 }
 
 .deprecation-banner .banner-link {
-  color: #dc2626;
+  color: #0066cc;
   font-weight: 700;
   text-decoration: underline;
   white-space: nowrap;
@@ -425,7 +425,7 @@ body.loading {
 }
 
 .deprecation-banner .banner-link:hover {
-  color: #b91c1c;
+  color: #004499;
 }
 
 .deprecation-banner .banner-close {
