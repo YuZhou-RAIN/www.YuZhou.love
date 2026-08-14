@@ -415,6 +415,19 @@ body.loading {
   box-shadow: 0 4px 16px rgba(220, 38, 38, 0.15);
 }
 
+.deprecation-banner .banner-link {
+  color: #dc2626;
+  font-weight: 700;
+  text-decoration: underline;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.deprecation-banner .banner-link:hover {
+  color: #b91c1c;
+}
+
 .deprecation-banner .banner-close {
   margin-left: auto;
   background: none;
